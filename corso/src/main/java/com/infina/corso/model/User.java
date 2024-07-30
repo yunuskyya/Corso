@@ -13,4 +13,6 @@ public class User {
     private String activationToken;
     private String passwordResetToken;
     private String profileDescription;
+
+
 }
