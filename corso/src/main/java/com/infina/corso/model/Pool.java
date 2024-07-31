@@ -22,5 +22,6 @@ public class Pool {
     @ManyToOne
     @JoinColumn(name = "currency_id")
     private Currency currency;
+    // .
 
 }
