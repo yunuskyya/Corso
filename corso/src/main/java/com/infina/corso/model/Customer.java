@@ -3,7 +3,10 @@ package com.infina.corso.model;
 import com.infina.corso.enums.MusteriTur;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -28,5 +31,10 @@ public class Customer {
      @JoinColumn(name = "customer_id")
      private List<Account> accounts;
 
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }
 
