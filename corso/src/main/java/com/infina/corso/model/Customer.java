@@ -28,7 +28,6 @@ public class Customer {
     private String email;
 
      @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE)
-     @JoinColumn(name = "customer_id")
      private List<Account> accounts;
 
     @CreationTimestamp
