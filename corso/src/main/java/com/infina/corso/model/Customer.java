@@ -27,8 +27,12 @@ public class Customer {
     private CustomerType musteriTur;
     private String email;
 
-     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE)
-     private List<Account> accounts;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE)
+    private List<Account> accounts;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
