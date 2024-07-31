@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public class User {
     private boolean active;
     private boolean isDeleted;
     private String activationToken;
+
+    @OneToMany(mappedBy = "customer")
+    private List<Customer> customerList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Token> tokens;
