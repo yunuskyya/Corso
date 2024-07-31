@@ -1,5 +1,6 @@
 package com.infina.corso.model;
 
+import com.infina.corso.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
