@@ -1,4 +1,4 @@
-package com.infina.corso.model;
+package com.infina.corso.model.enums;
 
 public enum Role  {
     ROLE_MANAGER,
