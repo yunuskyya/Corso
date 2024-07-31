@@ -18,7 +18,7 @@ public class Pool {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private  Long  brokerId;
-    private BigDecimal amount;
+    private BigDecimal balance;
     private Long currencyId;
 
     public Pool(){
