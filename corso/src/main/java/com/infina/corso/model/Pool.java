@@ -1,18 +1,17 @@
 package com.infina.corso.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import jakarta.persistence.*;
 
-@Data
+@Entity
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
+@Table(name = "pools")
 public class Pool {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,8 +20,5 @@ public class Pool {
     private BigDecimal balance;
     private Long currencyId;
 
-    public Pool(){
-
-    }
 
 }
