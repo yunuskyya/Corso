@@ -2,7 +2,7 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.RegisterUserRequest;
-import com.infina.corso.model.Role;
+import com.infina.corso.model.enums.Role;
 import com.infina.corso.model.User;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.UserService;
