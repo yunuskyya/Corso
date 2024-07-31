@@ -1,0 +1,32 @@
+package com.infina.corso.model;
+
+import com.infina.corso.enums.MusteriTur;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.util.List;
+
+@Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Table(name = "customers")
+public class Customer {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String surname;
+    private String tcKimlikNo;
+    private String companyNo;
+    private MusteriTur musteriTur;
+    private String email;
+
+     @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE)
+     @JoinColumn(name = "customer_id")
+     private List<Account> accounts;
+
+}
+
