@@ -18,7 +18,9 @@ public class Pool {
     private Long id;
     private  Long  brokerId;
     private BigDecimal balance;
-    private Long currencyId;
 
+    @ManyToOne
+    @JoinColumn(name = "currency_id")
+    private Currency currency;
 
 }
