@@ -28,7 +28,7 @@ public class User {
     private boolean isDeleted;
     private String activationToken;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "user")
     private List<Customer> customerList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
