@@ -8,9 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,6 +19,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "transactions")
 public class Transaction {
 
     @Id
@@ -26,19 +28,19 @@ public class Transaction {
     private Long id;
 
     @Column
-    private char transaction_type;
+    private char transactionType;
 
     @Column
-    private String purchased_currency;
+    private String purchasedCurrency;
 
     @Column
-    private String sold_currency;
+    private String soldCurrency;
 
     @Column
     private int amount;
 
     @CreationTimestamp
-    private LocalDateTime transaction_date;
+    private LocalDateTime transactionDate;
 
     // Currency unit price --> Price
 
