@@ -4,22 +4,17 @@ spring:
   application:
     name: corso
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:file:./data/devdb3;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
-    username: sa
-    password:
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    url: jdbc:sqlserver://192.168.144.76:1450;databaseName=corso;encrypt=true;trustServerCertificate=true
+    username: grup3
+    password: inFina2050!!**
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true
     hibernate:
       ddl-auto: update
-  output:
-    ansi:
-      enabled: always
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.SQLServerDialect
   data:
     redis:
       host: localhost
