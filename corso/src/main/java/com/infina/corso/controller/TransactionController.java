@@ -20,7 +20,7 @@ public class TransactionController {
 
     @PostMapping("/create")
     public void create (@RequestBody TransactionDTO transactionDto){
-
+        transactionServiceImp.transactionSave(transactionDto);
     }
 
     @DeleteMapping("/delete")
@@ -33,10 +33,10 @@ public class TransactionController {
 
     }
 
-    @GetMapping("/get/all")
-    public List<TransactionDTO> getAll(){
+    @GetMapping("/get/all/{id}")
+    public List<TransactionDTO> getAll(@PathVariable Long id){
 
-        return null;
+        return transactionServiceImp.collectTransactions(id);
 
     }
 
