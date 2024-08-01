@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
-
 @Service
 public class AuthServiceImp implements AuthService {
 
@@ -26,7 +24,6 @@ public class AuthServiceImp implements AuthService {
     private final ModelMapperConfig modelMapperConfig;
     private final UserRepository userRepository;
 
-
     @Autowired
     public AuthServiceImp(TokenService tokenService, PasswordEncoder passwordEncoder,
                           ModelMapperConfig modelMapperConfig, UserRepository userRepository) {
@@ -34,7 +31,6 @@ public class AuthServiceImp implements AuthService {
         this.passwordEncoder = passwordEncoder;
         this.modelMapperConfig = modelMapperConfig;
         this.userRepository = userRepository;
-
     }
 
     private static final Logger logger = LogManager.getLogger(AuthServiceImp.class);
@@ -42,22 +38,17 @@ public class AuthServiceImp implements AuthService {
     @Override
     public AuthResponse authenticate(CredentialsRequest credentials) {
         User inDB = userRepository.findByEmail(credentials.email())
-                .orElseGet(() -> userRepository.findByUsername(credentials.username())
-                        .orElseThrow(() -> {
-                            logger.error("User not found: {}",
-                                    credentials.email() != null ? credentials.email() : credentials.username());
-                            return new RuntimeException("User not found: " +
-                                    (credentials.email() != null ? credentials.email() : credentials.username()));
-                        }));
+                .orElseThrow(() -> {
+                    logger.error("User not found: {}", credentials.email());
+                    return new RuntimeException("User not found: " + credentials.email());
+                });
 
         if (!passwordEncoder.matches(credentials.password(), inDB.getPassword())) {
-            logger.error("Invalid credentials for user: {}", credentials.email() != null ? credentials.email() : credentials.username());
-            throw new RuntimeException("Invalid credentials for user: " +
-                    (credentials.email() != null ? credentials.email() : credentials.username()));
+            logger.error("Invalid credentials for user: {}", credentials.email());
+            throw new RuntimeException("Invalid credentials for user: " + credentials.email());
         } else if (!inDB.isActive() || inDB.isDeleted()) {
-            logger.error("User is not active or deleted: {}", credentials.email() != null ? credentials.email() : credentials.username());
-            throw new RuntimeException("User is not active or deleted: " +
-                    (credentials.email() != null ? credentials.email() : credentials.username()));
+            logger.error("User is not active or deleted: {}", credentials.email());
+            throw new RuntimeException("User is not active or deleted: " + credentials.email());
         }
 
         logger.info("User authenticated: {}", inDB.getEmail());
@@ -65,7 +56,6 @@ public class AuthServiceImp implements AuthService {
         Token token = tokenService.generateToken(userResp, credentials);
         return new AuthResponse(userResp, token);
     }
-
 
     @Override
     public void logout(String authorizationHeader) {

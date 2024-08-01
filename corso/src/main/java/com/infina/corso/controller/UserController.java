@@ -1,17 +1,19 @@
 package com.infina.corso.controller;
 
+
+
 import com.infina.corso.dto.request.RegisterUserRequest;
-
+import com.infina.corso.dto.response.GetAllUserResponse;
 import com.infina.corso.service.UserService;
-import jakarta.validation.Valid;
 
-import org.springframework.http.HttpStatus;
+
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Validated
@@ -24,9 +26,22 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser( @RequestBody RegisterUserRequest request) {
-        userService.registerUser(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("user registered successfully");
+
+    @GetMapping("/brokers")
+    public ResponseEntity<List<GetAllUserResponse>> getAllBrokers() {
+        List<GetAllUserResponse> brokers = userService.getAllUser();
+        return ResponseEntity.ok(brokers);
     }
+
+    @PostMapping("/register/broker")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public void registerBroker(@RequestBody RegisterUserRequest request) {
+        userService.registerBroker(request);
+    }
+    @PostMapping("/register/manager")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public void registerManager(@RequestBody RegisterUserRequest request) {
+        userService.registerManager(request);
+    }
+
 }
