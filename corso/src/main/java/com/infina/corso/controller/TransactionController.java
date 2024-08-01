@@ -3,8 +3,7 @@ package com.infina.corso.controller;
 
 
 import com.infina.corso.dto.TransactionDTO;
-import com.infina.corso.service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.infina.corso.service.impl.TransactionServiceImp;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,11 +12,11 @@ import java.util.List;
 @RequestMapping("/transaction")
 public class TransactionController {
 
-    public TransactionController(TransactionService transactionService) {
-        this.transactionService = transactionService;
+    public TransactionController(TransactionServiceImp transactionServiceImp) {
+        this.transactionServiceImp = transactionServiceImp;
     }
 
-    private final TransactionService transactionService;
+    private final TransactionServiceImp transactionServiceImp;
 
     @PostMapping("/create")
     public void create (@RequestBody TransactionDTO transactionDto){
