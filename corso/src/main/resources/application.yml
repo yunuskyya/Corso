@@ -19,24 +19,6 @@ spring:
         dialect: org.hibernate.dialect.SQLServer2012Dialect
         format_sql: true
         use_sql_comments: true
-
-#  datasource:
-#    driver-class-name: org.h2.Driver
-#    url: jdbc:h2:file:./data/devdb3;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;
-#    username: sa
-#    password:
-#  h2:
-#    console:
-#      enabled: true
-#      path: /h2-console
-#  jpa:
-#    database-platform: org.hibernate.dialect.H2Dialect
-#    show-sql: true
-#    hibernate:
-#      ddl-auto: update
-#  output:
-#    ansi:
-#      enabled: always
   data:
     redis:
       host: localhost
@@ -51,3 +33,15 @@ logging:
     root: info
     com.: DEBUG
     org.springframework.security: DEBUG
+  spring:
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: infinaakademi@gmail.com
+      password: svvg xhnq scjs ovla
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true

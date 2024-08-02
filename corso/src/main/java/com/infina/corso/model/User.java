@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,6 +28,8 @@ public class User {
     private boolean active;
     private boolean isDeleted;
     private String activationToken;
+    private int loginAttempts;
+    private boolean accountLocked;
 
     @OneToMany(mappedBy = "user")
     private List<Customer> customerList;

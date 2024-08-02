@@ -32,6 +32,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests((authentication) -> authentication
                 .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/v1/auth/currentUser")).authenticated()
                 .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/v1/user/brokers")).authenticated()
+                .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/v1/user/role")).authenticated()
                 .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/v1/user/register/manager")).hasRole("ADMIN")
                 .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/v1/user/register/broker")).hasRole("MANAGER")
                 .requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/api/v1/user/register/customer")).hasRole("BROKER")
