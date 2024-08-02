@@ -1,20 +1,19 @@
 package com.infina.corso.service.impl;
 
-
-import com.infina.corso.service.EmailService;
+import com.infina.corso.service.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EmailServiceImpl implements EmailService {
+public class MailServiceImpl implements MailService {
 
-    private final JavaMailSender emailSender;
+    private JavaMailSender mailSender;
 
     @Autowired
-    public EmailServiceImpl(JavaMailSender emailSender) {
-        this.emailSender = emailSender;
+    public MailServiceImpl(JavaMailSender emailSender) {
+        this.mailSender = emailSender;
     }
 
     @Override
@@ -23,6 +22,6 @@ public class EmailServiceImpl implements EmailService {
         message.setTo(to);
         message.setSubject(subject);
         message.setText(text);
-        emailSender.send(message);
+        mailSender.send(message);
     }
 }
