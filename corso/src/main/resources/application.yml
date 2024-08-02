@@ -29,3 +29,15 @@ logging:
     root: info
     com.: DEBUG
     org.springframework.security: DEBUG
+  spring:
+    mail:
+      host: smtp.gmail.com
+      port: 587
+      username: infinaakademi@gmail.com
+      password: svvg xhnq scjs ovla
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
