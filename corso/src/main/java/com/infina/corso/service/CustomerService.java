@@ -1,0 +1,16 @@
+package com.infina.corso.service;
+
+import com.infina.corso.dto.request.CustomerRequest;
+import com.infina.corso.dto.response.CustomerResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+
+public interface CustomerService {
+    CustomerResponse getCustomerById(Long id);
+    Page<CustomerResponse> getAllCustomersPaged(Pageable pageable);
+    void createCustomer(CustomerRequest customer);
+    CustomerResponse updateCustomer(Long id, CustomerRequest customer);
+    void deleteCustomer(Long id);
+
+}
