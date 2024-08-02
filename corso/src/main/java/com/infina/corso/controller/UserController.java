@@ -1,6 +1,7 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.config.CurrentUser;
+import com.infina.corso.service.MailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,9 +25,11 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final MailService emailService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, MailService emailService) {
         this.userService = userService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/brokers")
@@ -55,5 +58,15 @@ public class UserController {
         CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
         return ResponseEntity.ok(currentUser.getAuthorities());
     }
+    @GetMapping("/send")
+    public String sendEmail() {
+        String to = "yunuskyya@gmail.com";
+        String subject = "Test Email";
+        String text = "This is a test email sent from Spring Boot application.";
+
+        emailService.sendSimpleMessage(to, subject, text);
+        return "Email sent successfully!";
+    }
+
 }
 
