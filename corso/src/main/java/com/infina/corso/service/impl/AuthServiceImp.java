@@ -15,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 @Service
 public class AuthServiceImp implements AuthService {
 
@@ -23,6 +22,7 @@ public class AuthServiceImp implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapperConfig modelMapperConfig;
     private final UserRepository userRepository;
+    private static final int MAX_ATTEMPTS = 5;
 
     @Autowired
     public AuthServiceImp(TokenService tokenService, PasswordEncoder passwordEncoder,
@@ -43,13 +43,26 @@ public class AuthServiceImp implements AuthService {
                     return new RuntimeException("User not found: " + credentials.email());
                 });
 
+        if (inDB.isAccountLocked()) {
+            logger.error("User account is locked: {}", credentials.email());
+            throw new RuntimeException("User account is locked: " + credentials.email());
+        }
+
         if (!passwordEncoder.matches(credentials.password(), inDB.getPassword())) {
             logger.error("Invalid credentials for user: {}", credentials.email());
+            inDB.setLoginAttempts(inDB.getLoginAttempts() + 1);
+
+            if (inDB.getLoginAttempts() >= MAX_ATTEMPTS) {
+                inDB.setAccountLocked(true);
+                logger.error("User account locked due to too many failed attempts: {}", credentials.email());
+            }
+
+            userRepository.save(inDB);
             throw new RuntimeException("Invalid credentials for user: " + credentials.email());
-        } else if (!inDB.isActive() || inDB.isDeleted()) {
-            logger.error("User is not active or deleted: {}", credentials.email());
-            throw new RuntimeException("User is not active or deleted: " + credentials.email());
         }
+
+        inDB.setLoginAttempts(0);
+        userRepository.save(inDB);
 
         logger.info("User authenticated: {}", inDB.getEmail());
         GetUserByEmailResponse userResp = modelMapperConfig.modelMapperForResponse().map(inDB, GetUserByEmailResponse.class);
