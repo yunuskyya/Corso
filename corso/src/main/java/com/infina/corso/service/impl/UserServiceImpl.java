@@ -7,6 +7,7 @@ import com.infina.corso.model.enums.Role;
 import com.infina.corso.model.User;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.UserService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +35,7 @@ public class UserServiceImpl implements UserService {
                 .collect(Collectors.toList());
     }
     @Override
-    public void registerBroker(RegisterUserRequest registerUserRequest) {
+    public void registerBroker(@Valid RegisterUserRequest registerUserRequest) {
         User newUser = mapper.modelMapperForRequest().map(registerUserRequest, User.class);
         newUser.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
         newUser.setAuthorities(new HashSet<>() {{
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
         logger.info("Broker registered: {}", newUser.getUsername());
     }
     @Override
-    public void registerManager(RegisterUserRequest registerUserRequest) {
+    public void registerManager(@Valid RegisterUserRequest registerUserRequest) {
         User newUser = mapper.modelMapperForRequest().map(registerUserRequest, User.class);
         newUser.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
         newUser.setAuthorities(new HashSet<>() {{
