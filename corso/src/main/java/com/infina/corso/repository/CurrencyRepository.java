@@ -9,8 +9,4 @@ public interface CurrencyRepository extends JpaRepository<Currency, Integer> {
 
     Currency findById(Long id);
 
-    Currency findByCode(String code);
-
-
-
 }
