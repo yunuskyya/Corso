@@ -7,6 +7,9 @@ import com.infina.corso.model.Customer;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.CustomerService;
 import lombok.AllArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,11 +17,18 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository customerRepository;
-    private final ModelMapperConfig modelMapperConfig;
+    private final ModelMapper modelMapperResponse;
+    private final ModelMapper modelMapperRequest;
+
+    public CustomerServiceImpl(CustomerRepository customerRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperResponse,
+                               @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest) {
+        this.customerRepository = customerRepository;
+        this.modelMapperResponse = modelMapperResponse;
+        this.modelMapperRequest = modelMapperRequest;
+    }
 
     @Override
     public CustomerResponse getCustomerById(Long id) {
@@ -59,12 +69,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private Customer mapToCustomer(CustomerRequest customer) {
-        return modelMapperConfig.modelMapperForRequest()
+        return modelMapperRequest
                 .map(customer, Customer.class);
     }
 
     private CustomerResponse mapToGetCustomerResponse(Customer customer) {
-        return modelMapperConfig.modelMapperForResponse()
+        return modelMapperResponse
                 .map(customer, CustomerResponse.class);
     }
 }
