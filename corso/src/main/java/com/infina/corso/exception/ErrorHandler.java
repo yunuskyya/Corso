@@ -9,3 +9,4 @@ public class ErrorHandler {
         // do something
     }*/
 }
+            AuthenticationException.class,
