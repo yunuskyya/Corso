@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImp implements TransactionService {
@@ -100,16 +101,12 @@ public class TransactionServiceImp implements TransactionService {
         return convertTractionListAsDto(transactionList);
     }
 
-    //Converting Entity to Dto as a List
+    //Entity listesinin Dto listesine çevrimi
     public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
-        List<TransactionResponse> transactionResponseList = new ArrayList<>();
-
-        for (int i = 0; i < transactionList.size(); i++) {
-            TransactionResponse transactionResponse = modelMapperConfig.modelMapperForResponse().map(transactionList.get(i), TransactionResponse.class);
-            transactionResponseList.add(transactionResponse);
-        }
-
-        return transactionResponseList;
+        return transactionList.stream()
+                .map(transaction -> modelMapperConfig.modelMapperForResponse()
+                .map(transaction, TransactionResponse.class))
+                .collect(Collectors.toList());
     }
 
 
