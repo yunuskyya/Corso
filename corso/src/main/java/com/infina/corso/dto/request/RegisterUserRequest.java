@@ -21,7 +21,6 @@ public class RegisterUserRequest {
     @NotBlank
     private String email;
     @Size(min = 3, max = 50)
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\.]).{8,}$",
-            message = "Password must contain at least one lowercase letter, one uppercase letter, one digit, one special character and must be at least 8 characters long")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\.]).{8,}$",message = "corso.validation.pattern.password")
     private String password;
 }
