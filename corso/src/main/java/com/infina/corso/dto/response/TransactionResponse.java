@@ -1,5 +1,7 @@
 package com.infina.corso.dto.response;
 
+import java.time.LocalDateTime;
+
 public class TransactionResponse {
 
     private Long userId;
@@ -7,5 +9,5 @@ public class TransactionResponse {
     private String purchasedCurrency;
     private String soldCurrency;
     private int amount;
-    private String transactionDate;
+    private LocalDateTime transactionDate;
 }
