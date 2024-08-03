@@ -2,19 +2,29 @@ import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { Navigate } from 'react-router-dom';
 import { loginUser } from '../../features/authSlice';
+import { useEffect } from 'react';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const error = useAppSelector((state) => state.auth.error);
     const dispatch = useAppDispatch();
     const auth = useAppSelector((state) => state.auth);
+
+    useEffect(() => {
+        if (error) {
+            setEmail('');
+            setPassword('');
+        }
+    }, [error]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         dispatch(loginUser({ email, password }));
     };
 
-    if (auth.isAuthenticated) {
+    if (auth.isLoginSuccess && auth.user) {
+        console.log("Navigate to dashboard");
         return <Navigate to="/dashboard" />;
     }
 
@@ -41,7 +51,7 @@ const Login = () => {
                 </div>
                 <button type="submit" className="btn btn-primary">Login</button>
                 {auth.status === 'loading' && <p>Loading...</p>}
-                {auth.error && <p>{auth.error}</p>}
+                {auth.status === 'failed' && auth.error && <p>{auth.error}</p>}
             </form>
         </div>
     );
