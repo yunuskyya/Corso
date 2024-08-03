@@ -1,11 +1,11 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useAppSelector } from '../../redux/hooks';
 
 const Navbar = ({ onLogout }) => {
-    const navigate = useNavigate();
-
+    const isLoginSuccess = useAppSelector((state) => state.auth.isLoginSuccess);
     const handleLogout = async () => {
         await onLogout();
-        navigate('/login'); // Redirect to login page
+        //navigate('/login'); // Redirect to login page
     };
 
     return (
@@ -17,7 +17,7 @@ const Navbar = ({ onLogout }) => {
                         <Link className="nav-link" to="/dashboard">Dashboard</Link>
                     </li>
                 </ul>
-                <button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Logout</button>
+                {isLoginSuccess && (<button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Logout</button>)}
             </div>
         </nav>
     );
