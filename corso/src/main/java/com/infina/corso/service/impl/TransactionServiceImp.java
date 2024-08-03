@@ -6,9 +6,11 @@ import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Currency;
 import com.infina.corso.model.Transaction;
+import com.infina.corso.model.User;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.repository.TransactionRepository;
+import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.TransactionService;
 import com.infina.corso.service.UserService;
 import org.springframework.stereotype.Service;
@@ -16,14 +18,16 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TransactionServiceImp implements TransactionService {
 
     private final CustomerServiceImpl customerServiceImpl;
     private final CurrencyRepository currencyRepository;
+    private final UserRepository userRepository;
 
-    public TransactionServiceImp(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserService userService, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyServiceImp, CustomerServiceImpl customerServiceImpl, AccountRepository accountRepository, CurrencyRepository currencyRepository) {
+    public TransactionServiceImp(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserService userService, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyServiceImp, CustomerServiceImpl customerServiceImpl, AccountRepository accountRepository, CurrencyRepository currencyRepository, UserRepository userRepository) {
         this.transactionRepository = transactionRepository;
         this.modelMapperConfig = modelMapperConfig;
         this.userServiceImpl = userServiceImpl;
@@ -31,6 +35,7 @@ public class TransactionServiceImp implements TransactionService {
         this.customerServiceImpl = customerServiceImpl;
         this.accountRepository = accountRepository;
         this.currencyRepository = currencyRepository;
+        this.userRepository = userRepository;
     }
 
     private final ModelMapperConfig modelMapperConfig;
@@ -61,7 +66,9 @@ public class TransactionServiceImp implements TransactionService {
         BigDecimal cost =  calculateTransactionCost(transaction.getTransactionType(), account.getAccountNumber(), transaction.getAmount(), transaction.getPurchasedCurrency());
         BigDecimal newBalance = balance.subtract(cost);
         account.setBalance(newBalance);
-        //Transaction kendi repository'si ile kaydedilir
+        //account bakiyesi güncellendikten sonra veritabanına kaydedilir
+        accountRepository.save(account);
+        //Transaction veritabanına kaydedilir
         transactionRepository.save(transaction);
 
     }
@@ -78,12 +85,19 @@ public class TransactionServiceImp implements TransactionService {
         return cost;
     }
 
-    //FINDING ALL TRANSACTION's AND PUTING ON LIST
-    public List collectTransactions (Long id){
-
-        //List<Transaction> transactionList = transactionRepository.findByUserId(id);
+    //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
+    public List<TransactionResponse> collectTransactionsForSelectedUser (int id){
+        //işlem yapan kullanıcının yaptığı işlemleri görebilmek için user üzerinden customerlarına
+        //ve customerlar içinden transactionlar listesini çekmemiz gerekiyor ??
+        // List<Transaction> transactionList = transactionRepository.findByUserId(id);
         //return convertTractionListAsDto(transactionList);
         return null;
+    }
+
+    //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
+    public List<TransactionResponse> collectAllTransactions(){
+        List<Transaction> transactionList = transactionRepository.findAll();
+        return convertTractionListAsDto(transactionList);
     }
 
     //Converting Entity to Dto as a List
