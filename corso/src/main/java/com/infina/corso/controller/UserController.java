@@ -1,6 +1,7 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.config.CurrentUser;
+import com.infina.corso.dto.request.ChangePasswordRequest;
 import com.infina.corso.service.MailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -73,6 +74,16 @@ public class UserController {
         String text = "This is a test email sent from Spring Boot application.";
         emailService.sendSimpleMessage(to, subject, text);
         return "Email sent successfully!";
+    }
+    @PutMapping("/change-password")
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        try {
+            userService.changePassword(changePasswordRequest);
+            return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 }
