@@ -90,4 +90,16 @@ public class UserController {
         }
     }
 
+
+    @PutMapping("/activate")
+    @PreAuthorize("hasRole('ROLE_MANAGER') OR hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Activate a user account by email", description = "Activate a user account that is currently locked using their email.")
+    public ResponseEntity<String> activateUserByEmail(@RequestParam String email) {
+        try {
+            userService.activateUserByEmail(email);
+            return ResponseEntity.ok("Kullanıcı başarıyla aktifleştirildi.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
