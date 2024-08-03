@@ -25,7 +25,7 @@ const AppContent = () => {
 
   useEffect(() => {
     if(isLoginSuccess) {
-      dispatch(fetchCurrentUser('admin')).catch(() => {
+      dispatch(fetchCurrentUser()).catch(() => {
         setShowModal(true);
         setTimeout(() => {
           dispatch(logout());
@@ -34,9 +34,10 @@ const AppContent = () => {
         }, 3000);
       });
     }
-  }, [dispatch, navigate, isLoginSuccess]);
+  }, [navigate, dispatch, isLoginSuccess]);
 
   const handleLogout = async () => {
+    console.log("LOGOUT calling..")
     dispatch(logout());
     navigate('/login'); // Redirect to login page
   };
@@ -47,8 +48,8 @@ const AppContent = () => {
       <div className="container mt-4">
         <Routes>
           <Route exact path="/" element={<HomePage />} />
-          <Route path="login" element={<Login />} />
-          <Route path="dashboard" element={
+          <Route path="/login" element={<Login />} />
+          <Route path="/dashboard" element={
             <PrivateRoute>
               <DashboardPage />
             </PrivateRoute>
