@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -41,6 +42,7 @@ public class AuthServiceImp implements AuthService {
     private static final Logger logger = LogManager.getLogger(AuthServiceImp.class);
 
     @Override
+    @Transactional
     public AuthResponse authenticate(CredentialsRequest credentials) {
         User inDB = userRepository.findByEmail(credentials.email())
                 .orElseThrow(() -> {
