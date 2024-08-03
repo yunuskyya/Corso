@@ -11,5 +11,5 @@ public interface UserService {
    public void registerBroker(RegisterUserRequest registerUserRequest);
    public void registerManager(RegisterUserRequest registerUserRequest);
    void changePassword(ChangePasswordRequest changePasswordRequest);
-   void activateUserByEmail(int userId);
+   void activateUserByEmail(String email);
 }
