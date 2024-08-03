@@ -17,7 +17,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Validated
@@ -55,15 +57,20 @@ public class UserController {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required");
         }
+
         CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
-        return ResponseEntity.ok(currentUser.getAuthorities());
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", currentUser.getId());
+        response.put("authorities", currentUser.getAuthorities());
+
+        return ResponseEntity.ok(response);
     }
+
     @GetMapping("/send")
     public String sendEmail() {
-        String to = "yunuskyya@gmail.com";
+        String to = "nhtyl07@gmail.com";
         String subject = "Test Email";
         String text = "This is a test email sent from Spring Boot application.";
-
         emailService.sendSimpleMessage(to, subject, text);
         return "Email sent successfully!";
     }

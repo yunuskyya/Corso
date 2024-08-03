@@ -13,7 +13,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.SQLServer2012Dialect
@@ -33,6 +33,7 @@ logging:
     root: info
     com.: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.web: trace
   spring:
     mail:
       host: smtp.gmail.com

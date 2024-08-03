@@ -2,6 +2,8 @@ package com.infina.corso.controller;
 
 import com.infina.corso.dto.request.CredentialsRequest;
 import com.infina.corso.dto.response.AuthResponse;
+import com.infina.corso.model.User;
+import com.infina.corso.model.enums.Role;
 import com.infina.corso.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -48,4 +52,21 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    @GetMapping("/currentUser")
+    public ResponseEntity<User> getCurrentUser(@RequestParam(value = "role", defaultValue = "broker") String role) {
+        return ResponseEntity.ok(
+                User.builder()
+                        .id(1)
+                        .authorities(Set.of(
+                                switch (role) {
+                                    case "admin" -> Role.ROLE_ADMIN;
+                                    case "manager" -> Role.ROLE_MANAGER;
+                                    default -> Role.ROLE_BROKER;
+                                }
+                        ))
+                        .build()
+        );
+    }
+
 }
