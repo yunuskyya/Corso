@@ -2,7 +2,7 @@ package com.infina.corso.controller;
 
 
 
-import com.infina.corso.dto.TransactionDTO;
+import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.service.impl.TransactionServiceImp;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,22 +19,22 @@ public class TransactionController {
     private final TransactionServiceImp transactionServiceImp;
 
     @PostMapping("/create")
-    public void create (@RequestBody TransactionDTO transactionDto){
-        transactionServiceImp.transactionSave(transactionDto);
+    public void create (@RequestBody TransactionResponse transactionResponse){
+        //transactionServiceImp.transactionSave(transactionResponse);
     }
 
     @DeleteMapping("/delete")
-    public void delete (@RequestBody TransactionDTO transactionDto){
+    public void delete (@RequestBody TransactionResponse transactionResponse){
 
     }
 
     @PostMapping("/update")
-    public void update (@RequestBody TransactionDTO transactionDto){
+    public void update (@RequestBody TransactionResponse transactionResponse){
 
     }
 
     @GetMapping("/get/all/{id}")
-    public List<TransactionDTO> getAll(@PathVariable Long id){
+    public List<TransactionResponse> getAll(@PathVariable Long id){
 
         return transactionServiceImp.collectTransactions(id);
 

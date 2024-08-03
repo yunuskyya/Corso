@@ -1,8 +1,6 @@
-package com.infina.corso.dto;
+package com.infina.corso.dto.response;
 
-import jakarta.persistence.Column;
-
-public class TransactionDTO {
+public class TransactionResponse {
 
     private Long userId;
     private char transactionType;

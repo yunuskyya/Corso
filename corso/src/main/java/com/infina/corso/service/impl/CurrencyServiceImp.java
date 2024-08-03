@@ -1,24 +1,22 @@
 package com.infina.corso.service.impl;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.CurrencyResponse;
 import com.infina.corso.model.Currency;
 import com.infina.corso.repository.CurrencyRepository;
+import com.infina.corso.service.CurrencyService;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 
 @Service
-public class CurrencyService {
+public class CurrencyServiceImp implements CurrencyService {
 
     private static final String API_URL = "https://api.collectapi.com/economy/allCurrency";
     private static final String API_KEY = "apikey 4lsKq5b8POPVmTb8nmK8zT:0GfAzShp6bNHJ93JGlyYKT";
@@ -26,9 +24,14 @@ public class CurrencyService {
     private  final CurrencyRepository currencyRepository;
     private  final ObjectMapper objectMapper;
 
-    public CurrencyService(ObjectMapper objectMapper, CurrencyRepository currencyRepository) {
+    public CurrencyServiceImp(ObjectMapper objectMapper, CurrencyRepository currencyRepository) {
         this.objectMapper = objectMapper;
         this.currencyRepository = currencyRepository;
+    }
+
+    public Currency findByCode(TransactionRequest transactionRequest) {
+        String code = transactionRequest.getPurchasedCurrency();
+        return currencyRepository.findByCode(code);
     }
 
     public CurrencyResponse getCurrencyRates() throws Exception {
