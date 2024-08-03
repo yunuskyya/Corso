@@ -69,7 +69,7 @@ public class UserController {
 
     @GetMapping("/send")
     public String sendEmail() {
-        String to = "yunuskyya@gmail.com";
+        String to = "nhtyl07@gmail.com";
         String subject = "Test Email";
         String text = "This is a test email sent from Spring Boot application.";
         emailService.sendSimpleMessage(to, subject, text);
