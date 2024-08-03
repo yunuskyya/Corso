@@ -40,7 +40,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerBroker(@Valid RegisterUserRequest registerUserRequest) {
         User newUser = mapper.modelMapperForRequest().map(registerUserRequest, User.class);
-        newUser.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
+        String rawPassword = registerUserRequest.getPassword();  // Ham şifreyi saklayın
+        newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setAuthorities(new HashSet<>() {{
             add(Role.ROLE_BROKER);
         }});
@@ -48,10 +49,20 @@ public class UserServiceImpl implements UserService {
         userRepository.save(newUser);
         logger.info("Broker registered: {}", newUser.getUsername());
         String subject = "Kayıt Onayı";
-        String text = "Merhaba " + newUser.getFirstName() + ",\n\n" +
-                "Sistemimize başarıyla kayıt oldunuz.\n\n" +
-                "Teşekkürler,\n" +
-                "Infina Corso";
+        String text = String.format(
+                "Merhaba %s %s,\n\n" +
+                        "Sistemimize başarıyla kayıt oldunuz.\n\n" +
+                        "Kullanıcı Adınız: %s\n" +
+                        "Geçici Şifreniz: %s\n\n" +
+                        "Güvenliğiniz için lütfen şifrenizi değiştirmek için sisteme giriş yapın veya aşağıdaki bağlantıyı kullanın:\n" +
+                        "http://localhost:8080/change-password\n\n" +
+                        "Teşekkürler,\n" +
+                        "Infina Corso Ekibi",
+                newUser.getFirstName(),
+                newUser.getLastName(),
+                newUser.getUsername(),
+                rawPassword
+        );
         emailService.sendSimpleMessage(newUser.getEmail(), subject, text);
     }
     @Override
@@ -63,12 +74,22 @@ public class UserServiceImpl implements UserService {
         }});
         newUser.setActive(true);
         userRepository.save(newUser);
-        logger.info("Manager registered: {}", newUser.getUsername());
+        logger.info("Manager registered: {}", newUser.getEmail());
         String subject = "Kayıt Onayı";
-        String text = "Merhaba " + newUser.getFirstName() + ",\n\n" +
-                "Sistemimize başarıyla kayıt oldunuz.\n\n" +
-                "Teşekkürler,\n" +
-                "Infina Corso";
+        String text = String.format(
+                "Merhaba %s %s,\n\n" +
+                        "Sistemimize başarıyla kayıt oldunuz.\n\n" +
+                        "Kullanıcı Adınız: %s\n" +
+                        "Geçici Şifreniz: %s\n\n" +
+                        "Güvenliğiniz için lütfen şifrenizi değiştirmek için sisteme giriş yapın veya aşağıdaki bağlantıyı kullanın:\n" +
+                        "http://localhost:8080/change-password\n\n" +
+                        "Teşekkürler,\n" +
+                        "Infina Corso Ekibi",
+                newUser.getFirstName(),
+                newUser.getLastName(),
+                newUser.getUsername(),
+                registerUserRequest.getPassword()
+        );
         emailService.sendSimpleMessage(newUser.getEmail(), subject, text);
     }
     @Override
@@ -83,4 +104,30 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
         userRepository.save(user);
     }
+
+    @Override
+    public void activateUserByEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        if (!user.isAccountLocked()) {
+            throw new RuntimeException("Hesap zaten aktif.");
+        }
+
+        user.setAccountLocked(false);
+        userRepository.save(user);
+        logger.info("Kullanıcı aktifleştirildi: {}", user.getUsername());
+
+        String subject = "Hesap Aktifleştirildi";
+        String text = String.format(
+                "Merhaba %s %s,\n\n" +
+                        "Hesabınız başarıyla aktifleştirildi.\n\n" +
+                        "Teşekkürler,\n" +
+                        "Infina Corso Ekibi",
+                user.getFirstName(),
+                user.getLastName()
+        );
+        emailService.sendSimpleMessage(user.getEmail(), subject, text);
+    }
+
 }
