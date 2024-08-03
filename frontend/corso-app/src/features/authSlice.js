@@ -14,12 +14,13 @@ export const loginUser = createAsyncThunk('auth/loginUser', async (credentials) 
 });
 
 // delete role here. it is for mock request
-export const fetchCurrentUser = createAsyncThunk('auth/fetchCurrentUser', async (role) => {
-    const response = await fetchUser(role);
+export const fetchCurrentUser = createAsyncThunk('auth/fetchCurrentUser', async () => {
+    const response = await fetchUser();
     return response;
 });
 
 export const logout = createAsyncThunk('auth/logout', async () => {
+    console.log("LOGOUT slice..")
     await logoutUser();
 });
 
