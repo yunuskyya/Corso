@@ -22,7 +22,7 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() != 0) {
+        if (userRepository.count() == 0) {
             //userRepository.deleteAll();
             addUsers();
         }
