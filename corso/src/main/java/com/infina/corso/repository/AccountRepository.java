@@ -12,4 +12,6 @@ import java.util.List;
 public interface AccountRepository extends JpaRepository<Account, Long> {
     Account findByAccountNumber(String accountNumber);
     List<Account> findByCustomerId(Long customerId);
+    List<Account> findByCurrencyAndCustomerCustomerType(String currency, CustomerType customerType);
+    List<Account> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
