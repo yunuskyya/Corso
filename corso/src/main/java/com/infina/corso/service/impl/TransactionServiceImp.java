@@ -86,12 +86,23 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
-    public List<TransactionResponse> collectTransactionsForSelectedUser (int id){
-        //işlem yapan kullanıcının yaptığı işlemleri görebilmek için user üzerinden customerlarına
-        //ve customerlar içinden transactionlar listesini çekmemiz gerekiyor ??
-        // List<Transaction> transactionList = transactionRepository.findByUserId(id);
-        //return convertTractionListAsDto(transactionList);
-        return null;
+    public List<TransactionResponse> collectTransactionsForSelectedUser(int id) {
+        //Gelen id ile ilgili kullanıcı veritabanından bulunur --> bulunnan kullanıcının Customer listesi alınır -->
+        //Customer listesinin içindeki Account listeleri alınır --> Account listeleri içindeki Transaction Listeleri bir listeye toplanır
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("User not found for id: " + id));
+        List<Customer> customerList = user.getCustomerList();
+        // Customer listesinin içindeki Account listeleri alınır ve Transaction listeleri bir listeye toplanır
+        List<Transaction> transactionList = customerList.stream()
+                .flatMap(customer -> customer.getAccounts().stream())
+                .flatMap(account -> account.getTransactions().stream())
+                .collect(Collectors.toList());
+
+        for (Transaction transaction : transactionList) {
+            System.out.println(transaction.toString());
+        }
+
+        return convertTractionListAsDto(transactionList, id);
     }
 
 
@@ -107,7 +118,7 @@ public class TransactionServiceImp implements TransactionService {
 
 
     //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
-    public List<TransactionResponse> collectAllTransactions(){
+    public List<TransactionResponse> collectAllTransactions() {
         List<Transaction> transactionList = transactionRepository.findAll();
         return convertTractionListAsDto(transactionList);
     }
@@ -127,7 +138,7 @@ public class TransactionServiceImp implements TransactionService {
     public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
                 .map(transaction -> modelMapperConfig.modelMapperForResponse()
-                .map(transaction, TransactionResponse.class))
+                        .map(transaction, TransactionResponse.class))
                 .collect(Collectors.toList());
     }
 
