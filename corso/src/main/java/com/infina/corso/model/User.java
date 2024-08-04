@@ -31,10 +31,10 @@ public class User {
     private int loginAttempts;
     private boolean accountLocked;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user" /*fetch = FetchType.EAGER*/)
     private List<Customer> customerList;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE /*fetch = FetchType.EAGER*/)
     private List<Token> tokens;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
