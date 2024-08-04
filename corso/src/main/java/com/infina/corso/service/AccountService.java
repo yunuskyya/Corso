@@ -1,14 +1,18 @@
 package com.infina.corso.service;
 
 import com.infina.corso.model.Account;
+import com.infina.corso.model.enums.CustomerType;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccountService {
     Account createAccount(Account account);
-    //Account updateAccount(Long id, Account account);
+    Account updateAccount(Long id, Account account); // Güncelleme metodu
     void deleteAccount(Long id);
     Account getAccountById(Long id);
     List<Account> getAllAccounts();
     Account getAccountByAccountNumber(String accountNumber);
+    List<Account> getAccountsByCustomerId(Long customerId);
+
 }
