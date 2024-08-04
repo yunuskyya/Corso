@@ -5,12 +5,14 @@ package com.infina.corso.controller;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.service.impl.TransactionServiceImp;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/transaction")
+@Tag(name = "Transaction Management", description = "Operations related to transaction management")
 public class TransactionController {
 
     public TransactionController(TransactionServiceImp transactionServiceImp) {
