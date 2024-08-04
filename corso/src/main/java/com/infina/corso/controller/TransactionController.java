@@ -42,9 +42,8 @@ public class TransactionController {
     }
 
     @GetMapping("/get/all/user/{userId}")
-    public List<TransactionResponse> getTransactionsSelectedUser(@RequestParam Long userId){
-
-        return null;
+    public List<TransactionResponse> getTransactionsSelectedUser(@PathVariable int userId){
+        return transactionServiceImp.collectTransactionsForSelectedUser(userId);
 
     }
 
