@@ -64,13 +64,11 @@ public class TransactionServiceImp implements TransactionService {
         BigDecimal cost = calculateTransactionCost(transaction.getTransactionType(), transaction.getAmount(), transaction.getPurchasedCurrency());
         BigDecimal newBalance = balance.subtract(cost);
         account.setBalance(newBalance);
+        //Transaction veritabanına kaydedilir
+        transaction.setAccount(account);
+        transactionRepository.save(transaction);
         //account bakiyesi güncellendikten sonra veritabanına kaydedilir
         accountRepository.save(account);
-        transaction.setAccount(account);
-        //Transaction veritabanına kaydedilir
-        System.out.println(transaction.toString());
-        transactionRepository.save(transaction);
-
     }
 
 
@@ -86,6 +84,7 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
+    @Transactional
     public List<TransactionResponse> collectTransactionsForSelectedUser(int id) {
         //Gelen id ile ilgili kullanıcı veritabanından bulunur --> bulunnan kullanıcının Customer listesi alınır -->
         //Customer listesinin içindeki Account listeleri alınır --> Account listeleri içindeki Transaction Listeleri bir listeye toplanır
@@ -97,11 +96,6 @@ public class TransactionServiceImp implements TransactionService {
                 .flatMap(customer -> customer.getAccounts().stream())
                 .flatMap(account -> account.getTransactions().stream())
                 .collect(Collectors.toList());
-
-        for (Transaction transaction : transactionList) {
-            System.out.println(transaction.toString());
-        }
-
         return convertTractionListAsDto(transactionList, id);
     }
 
@@ -121,7 +115,7 @@ public class TransactionServiceImp implements TransactionService {
     public List<TransactionResponse> collectAllTransactions() {
         List<Transaction> transactionList = transactionRepository.findAll();
         return convertTractionListAsDto(transactionList);
-    }
+    } //TODO çekilen transaction işleminde userid ler set edilmediği için düzgün gelmiyor yanlış geliyor.
 
     //Entity listesinin Dto listesine çevrimi ** User ID'ye göre **
     public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList, int userId) {
