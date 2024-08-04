@@ -6,8 +6,12 @@ import com.infina.corso.dto.request.RegisterUserRequest;
 import com.infina.corso.dto.response.GetAllUserResponse;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.UserService;
+import com.infina.corso.shared.GenericMessage;
+import com.infina.corso.shared.Messages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -43,15 +47,19 @@ public class UserController {
     @PostMapping("/register/broker")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @Operation(summary = "Register a new broker", description = "Register a new broker with the given details.")
-    public void registerBroker(@RequestBody RegisterUserRequest request) {
+   public GenericMessage registerUser(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerBroker(request);
+        return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @PostMapping("/register/manager")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Register a new manager", description = "Register a new manager with the given details.")
-    public void registerManager(@RequestBody RegisterUserRequest request) {
+    public GenericMessage registerManager(@RequestBody RegisterUserRequest request) {
         userService.registerManager(request);
+        return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @GetMapping("/role")
@@ -65,7 +73,6 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("id", currentUser.getId());
         response.put("authorities", currentUser.getAuthorities());
-
         return ResponseEntity.ok(response);
     }
 
