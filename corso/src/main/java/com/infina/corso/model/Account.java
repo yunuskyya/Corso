@@ -37,6 +37,6 @@ public class Account {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "account" /* fetch = FetchType.EAGER*/)
     private List<Transaction> transactions;
 }
