@@ -24,8 +24,10 @@ public class Customer {
     private String surname;
     private String tcKimlikNo;
     private String companyNo;
-    private CustomerType musteriTur;
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    private CustomerType customerType;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
