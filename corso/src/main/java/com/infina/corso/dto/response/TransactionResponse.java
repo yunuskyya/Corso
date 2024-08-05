@@ -1,11 +1,18 @@
 package com.infina.corso.dto.response;
 
+import lombok.Getter;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
 public class TransactionResponse {
 
-    private Long userId;
+    private int userId;
     private char transactionType;
     private String purchasedCurrency;
     private String soldCurrency;
     private int amount;
-    private String transactionDate;
+    private LocalDateTime transactionDate;
 }

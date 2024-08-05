@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { Navigate } from 'react-router-dom';
 import { loginUser } from '../../features/authSlice';
 import { useEffect } from 'react';
+import { resetLoginStatus } from '../../features/authSlice';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -17,6 +18,13 @@ const Login = () => {
             setPassword('');
         }
     }, [error]);
+
+    useEffect(() => {
+        
+        return () => {
+            dispatch(resetLoginStatus());
+        };
+    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();

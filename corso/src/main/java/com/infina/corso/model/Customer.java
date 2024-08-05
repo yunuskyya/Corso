@@ -22,18 +22,18 @@ public class Customer {
     private Long id;
     private String name;
     private String surname;
-    private String tcKimlikNo;
-    private String companyNo;
-    private String email;
-
-    @Enumerated(EnumType.STRING)
+    private String companyName;
+    private String tcKimlikNo; // bireysel müşteriler için tc kimlik numarası
+    private String vkn; // kurumsal müşteriler için vergi numarası
     private CustomerType customerType;
+    private String email;
+    private String phone;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL /* fetch = FetchType.EAGER*/)
     private List<Account> accounts;
 
     @CreationTimestamp
