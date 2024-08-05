@@ -1,14 +1,11 @@
 package com.infina.corso.service.impl;
 
-import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.CustomerRequest;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Customer;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.CustomerService;
-import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
         this.modelMapperRequest = modelMapperRequest;
     }
 
+    // only manager or broker
     @Override
     public CustomerResponse getCustomerById(Long id) {
         return customerRepository.findById(id)
@@ -37,18 +35,28 @@ public class CustomerServiceImpl implements CustomerService {
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
     }
 
+    // only manager or broker
+    @Override
+    public Page<CustomerResponse> getAllCustomersByBrokerId(Long brokerId, Pageable pageable) {
+        return customerRepository.findAllByBrokerId(brokerId, pageable)
+                .map(this::mapToGetCustomerResponse);
+    }
+
+    // Only manager or admin can use this method or the controller that calls this method must have a security check
     @Override
     public Page<CustomerResponse> getAllCustomersPaged(Pageable pageable) {
         return customerRepository.findAll(pageable)
                 .map(this::mapToGetCustomerResponse);
     }
 
+    // only manager or broker
     @Override
     public void createCustomer(CustomerRequest customer) {
         Customer customerEntity = mapToCustomer(customer);
         customerRepository.save(customerEntity);
     }
 
+    // only manager or broker
     @Override
     public CustomerResponse updateCustomer(Long id, CustomerRequest customer) {
         Optional<Customer> foundCustomer = customerRepository.findById(id);
@@ -63,6 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
+    // only manager or broker
     @Override
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);

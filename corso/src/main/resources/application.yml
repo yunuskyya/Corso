@@ -33,7 +33,7 @@ logging:
     root: info
     com.: DEBUG
     org.springframework.security: DEBUG
-    org.springframework.web: trace
+#    org.springframework.web: trace
   spring:
     mail:
       host: smtp.gmail.com
