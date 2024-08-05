@@ -24,6 +24,10 @@ const AppContent = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
+    dispatch(fetchCurrentUser());
+  }, []);
+
+  useEffect(() => {
     if(isLoginSuccess) {
       dispatch(fetchCurrentUser()).catch(() => {
         setShowModal(true);
