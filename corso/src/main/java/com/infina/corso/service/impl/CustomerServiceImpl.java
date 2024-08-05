@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService {
     // only manager or broker
     @Override
     public Page<CustomerResponse> getAllCustomersByBrokerId(Long brokerId, Pageable pageable) {
-        return customerRepository.findAllByBrokerId(brokerId, pageable)
+        return customerRepository.findAllByUserId(brokerId, pageable)
                 .map(this::mapToGetCustomerResponse);
     }
 
