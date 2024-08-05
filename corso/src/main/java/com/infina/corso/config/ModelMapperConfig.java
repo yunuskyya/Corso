@@ -31,6 +31,7 @@ public class ModelMapperConfig {
     }
 
     @Bean
+    @Qualifier("modelMapperForTransaction")
     public ModelMapper modelMapperForTransaction() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.addMappings(new PropertyMap<Transaction, TransactionResponse>() {
