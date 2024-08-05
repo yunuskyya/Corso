@@ -56,6 +56,13 @@ public class AccountServiceImp implements AccountService {
         return accountRepository.findByAccountNumber(accountNumber);
     }
 
+    public boolean checkIfAccountExists(String accountNumber, String currencyCode) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        if (currencyCode == account.getCurrency()) {
+            return true;
+        } else return false;
+    }
+
     @Override
     public List<Account> getAccountsByCustomerId(Long customerId) {
         return accountRepository.findByCustomerId(customerId);
