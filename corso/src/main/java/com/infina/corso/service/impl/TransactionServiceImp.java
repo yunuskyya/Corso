@@ -75,6 +75,15 @@ public class TransactionServiceImp implements TransactionService {
         userRepository.save(user);
     }
 
+    private Double calculateCurrencyRate(TransactionRequest transactionRequest){
+        String soldCurrency = transactionRequest.getSoldCurrency();
+        String purchasedCurrency = transactionRequest.getPurchasedCurrency();
+        Currency soldCurrencyEntity = currencyRepository.findByCode(soldCurrency);
+        Currency purchasedCurrencyEntity = currencyRepository.findByCode(purchasedCurrency);
+
+        return null;
+    }
+
     private BigDecimal calculateNewBalance(Account account, int amount, String purchasedCurrency, char transactionType) {
         BigDecimal balance = account.getBalance();
         BigDecimal cost = calculateTransactionCost(transactionType, amount, purchasedCurrency);
@@ -100,7 +109,7 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
-    private List<TransactionResponse> collectAllTransactions() {
+    public List<TransactionResponse> collectAllTransactions() {
         List<Transaction> transactionList = transactionRepository.findAll();
         return convertTractionListAsDto(transactionList);
     }
