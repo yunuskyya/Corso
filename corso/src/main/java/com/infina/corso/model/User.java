@@ -37,6 +37,9 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE /*fetch = FetchType.EAGER*/)
     private List<Token> tokens;
 
+    @OneToMany(mappedBy = "user" /* fetch = FetchType.EAGER*/)
+    private List<Transaction> transactions;
+
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role", nullable = false)

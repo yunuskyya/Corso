@@ -1,5 +1,6 @@
 package com.infina.corso.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.CurrencyResponse;
@@ -8,6 +9,7 @@ import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.service.CurrencyService;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -34,38 +36,44 @@ public class CurrencyServiceImp implements CurrencyService {
         return currencyRepository.findByCode(code);
     }
 
-    public CurrencyResponse getCurrencyRates() throws Exception {
-        // HTTP Client ve isteği oluşturma
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(API_URL))
-                .header("content-type", "application/json")
-                .header("authorization", "apikey " + API_KEY)
-                .build();
+    public CurrencyResponse getCurrencyRates() {
+        try {
+            // HTTP Client ve isteği oluşturma
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(API_URL))
+                    .header("content-type", "application/json")
+                    .header("authorization", "apikey " + API_KEY)
+                    .build();
 
-        // İsteği gönderme ve yanıtı alma
+            // İsteği gönderme ve yanıtı alma
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String responseBody = response.body();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        String responseBody = response.body();
-        CurrencyResponse currencyResponse = objectMapper.readValue(responseBody, CurrencyResponse.class);
-        List<Currency> currencies = currencyResponse.getResult();
-        currencyRepository.saveAllAndFlush(currencies);
+            if (response.statusCode() == 200) {
+                // JSON yanıtını `CurrencyResponse` nesnesine dönüştür
+                CurrencyResponse currencyResponse = objectMapper.readValue(responseBody, CurrencyResponse.class);
+                List<Currency> currencies = currencyResponse.getResult();
+                currencyRepository.saveAllAndFlush(currencies);
 
-        for (Currency currency : currencies) {
-            System.out.println("Name: "+ currency.getName());
-            System.out.println("Code: "+ currency.getCode());
-            System.out.println("Selling Price: "+ currency.getSelling());
-            System.out.println("Buying Price: "+currency.getBuying());
-            System.out.println("/n");
-        }
+                for (Currency currency : currencies) {
+                    System.out.println("Name: " + currency.getName());
+                    System.out.println("Code: " + currency.getCode());
+                    System.out.println("Selling Price: " + currency.getSelling());
+                    System.out.println("Buying Price: " + currency.getBuying());
+                    System.out.println("/n");
+                }
 
-        if (response.statusCode() == 200) {
-            // JSON yanıtını `CurrencyResponse` nesnesine dönüştür
-            return objectMapper.readValue(response.body(), CurrencyResponse.class);
-        } else {
-            throw new RuntimeException("API çağrısında bir hata oluştu: " + response.statusCode());
+                return currencyResponse;
+            } else {
+                throw new RuntimeException("API çağrısında bir hata oluştu: " + response.statusCode());
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Veri alımı sırasında bir hata oluştu", e);
         }
     }
+
 
 }
 
