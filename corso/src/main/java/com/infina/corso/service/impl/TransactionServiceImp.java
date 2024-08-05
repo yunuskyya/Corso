@@ -1,6 +1,7 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
+import com.infina.corso.config.UserNotFoundException;
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.model.*;
@@ -61,23 +62,28 @@ public class TransactionServiceImp implements TransactionService {
         //Yapılan transaction ilgili account sınıfı içindeki Transaction listesine eklenir
         account.getTransactions().add(transaction);
         //İlgili account içindeki bakiye değişikliği yapılır
-        BigDecimal balance = account.getBalance();
-        BigDecimal cost = calculateTransactionCost(transaction.getTransactionType(), transaction.getAmount(), transaction.getPurchasedCurrency());
-        BigDecimal newBalance = balance.subtract(cost);
+        BigDecimal newBalance = calculateNewBalance(account,transaction.getAmount() ,transaction.getPurchasedCurrency(),transaction.getTransactionType());
         account.setBalance(newBalance);
         //Transaction'u yapan user bulunur ve transaction user içine yerleştirilir
-        User user = transaction.getUser();
-        user.getTransactions().add(transaction);
-        //Transaction veritabanına kaydedilir
+        User user = userRepository.findById(transactionRequest.getUser_id())
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
+        transaction.setUser(user);
         transaction.setAccount(account);
         transactionRepository.save(transaction);
-        //account bakiyesi güncellendikten sonra veritabanına kaydedilir
+        user.getTransactions().add(transaction);
         accountRepository.save(account);
+        userRepository.save(user);
     }
 
+    private BigDecimal calculateNewBalance(Account account, int amount, String purchasedCurrency, char transactionType) {
+        BigDecimal balance = account.getBalance();
+        BigDecimal cost = calculateTransactionCost(transactionType, amount, purchasedCurrency);
+        BigDecimal newBalance = balance.subtract(cost);
+        return newBalance;
+    }
 
     //Yapılan transaction işleminin maliyet hesabı
-    public BigDecimal calculateTransactionCost(char transactionType, double amount, String currencyCode) {
+    private BigDecimal calculateTransactionCost(char transactionType, double amount, String currencyCode) {
         Currency currency = currencyRepository.findByCode(currencyCode);
         double currencyPrice;
         if (transactionType == 'S') {
@@ -94,13 +100,13 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
-    public List<TransactionResponse> collectAllTransactions() {
+    private List<TransactionResponse> collectAllTransactions() {
         List<Transaction> transactionList = transactionRepository.findAll();
         return convertTractionListAsDto(transactionList);
     }
 
     //Entity listesinin Dto listesine çevrimi
-    public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
+    private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
                 .map(transaction -> modelMapperConfig.modelMapperForTransaction()
                         .map(transaction, TransactionResponse.class))
