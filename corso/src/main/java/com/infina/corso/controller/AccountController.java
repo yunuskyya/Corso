@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/accounts")
+@RequestMapping("api/v1/accounts")
 @Tag(name = "Account Management", description = "Operations related to account management")
 public class AccountController {
 
