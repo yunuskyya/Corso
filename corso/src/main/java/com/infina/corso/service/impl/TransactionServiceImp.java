@@ -1,6 +1,7 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
+import com.infina.corso.config.UserNotFoundException;
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.model.*;
@@ -10,6 +11,7 @@ import com.infina.corso.repository.TransactionRepository;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.TransactionService;
 import com.infina.corso.service.UserService;
+import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,20 +62,37 @@ public class TransactionServiceImp implements TransactionService {
         //Yapılan transaction ilgili account sınıfı içindeki Transaction listesine eklenir
         account.getTransactions().add(transaction);
         //İlgili account içindeki bakiye değişikliği yapılır
-        BigDecimal balance = account.getBalance();
-        BigDecimal cost = calculateTransactionCost(transaction.getTransactionType(), transaction.getAmount(), transaction.getPurchasedCurrency());
-        BigDecimal newBalance = balance.subtract(cost);
+        BigDecimal newBalance = calculateNewBalance(account,transaction.getAmount() ,transaction.getPurchasedCurrency(),transaction.getTransactionType());
         account.setBalance(newBalance);
-        //Transaction veritabanına kaydedilir
+        //Transaction'u yapan user bulunur ve transaction user içine yerleştirilir
+        User user = userRepository.findById(transactionRequest.getUser_id())
+                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
+        transaction.setUser(user);
         transaction.setAccount(account);
         transactionRepository.save(transaction);
-        //account bakiyesi güncellendikten sonra veritabanına kaydedilir
+        user.getTransactions().add(transaction);
         accountRepository.save(account);
+        userRepository.save(user);
     }
 
+    private Double calculateCurrencyRate(TransactionRequest transactionRequest){
+        String soldCurrency = transactionRequest.getSoldCurrency();
+        String purchasedCurrency = transactionRequest.getPurchasedCurrency();
+        Currency soldCurrencyEntity = currencyRepository.findByCode(soldCurrency);
+        Currency purchasedCurrencyEntity = currencyRepository.findByCode(purchasedCurrency);
+
+        return null;
+    }
+
+    private BigDecimal calculateNewBalance(Account account, int amount, String purchasedCurrency, char transactionType) {
+        BigDecimal balance = account.getBalance();
+        BigDecimal cost = calculateTransactionCost(transactionType, amount, purchasedCurrency);
+        BigDecimal newBalance = balance.subtract(cost);
+        return newBalance;
+    }
 
     //Yapılan transaction işleminin maliyet hesabı
-    public BigDecimal calculateTransactionCost(char transactionType, double amount, String currencyCode) {
+    private BigDecimal calculateTransactionCost(char transactionType, double amount, String currencyCode) {
         Currency currency = currencyRepository.findByCode(currencyCode);
         double currencyPrice;
         if (transactionType == 'S') {
@@ -86,52 +105,19 @@ public class TransactionServiceImp implements TransactionService {
     //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
     @Transactional
     public List<TransactionResponse> collectTransactionsForSelectedUser(int id) {
-        //Gelen id ile ilgili kullanıcı veritabanından bulunur --> bulunnan kullanıcının Customer listesi alınır -->
-        //Customer listesinin içindeki Account listeleri alınır --> Account listeleri içindeki Transaction Listeleri bir listeye toplanır
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found for id: " + id));
-        List<Customer> customerList = user.getCustomerList();
-        // Customer listesinin içindeki Account listeleri alınır ve Transaction listeleri bir listeye toplanır
-        List<Transaction> transactionList = customerList.stream()
-                .flatMap(customer -> customer.getAccounts().stream())
-                .flatMap(account -> account.getTransactions().stream())
-                .collect(Collectors.toList());
-        return convertTractionListAsDto(transactionList, id);
+        return convertTractionListAsDto(userServiceImpl.getAllTransactionsById(id));
     }
-
-
-    /* //Gelen id ile ilgili kullanıcı veritabanından bulunur --> bulunnan kullanıcının Customer listesi alınır--
-        //--> Customer listesinin içindeki Account listeleri alınır --> Account listeleri içindeki Transaction Listeleri bir listeye toplanır
-        Optional<User> user = userRepository.findById(id);
-        List<Customer> customerList = user.get().getCustomerList();
-        List<Account> accountList = new ArrayList<>();
-        customerList.forEach(customer -> customer.getAccounts().addAll(accountList));
-        List<Transaction> transactionList = new ArrayList<>();
-        accountList.forEach(account -> account.getTransactions().addAll(transactionList));
-        return convertTractionListAsDto(transactionList); */
-
 
     //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
     public List<TransactionResponse> collectAllTransactions() {
         List<Transaction> transactionList = transactionRepository.findAll();
         return convertTractionListAsDto(transactionList);
-    } //TODO çekilen transaction işleminde userid ler set edilmediği için düzgün gelmiyor yanlış geliyor.
-
-    //Entity listesinin Dto listesine çevrimi ** User ID'ye göre **
-    public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList, int userId) {
-        return transactionList.stream()
-                .map(transaction -> {
-                    TransactionResponse response = modelMapperConfig.modelMapperForResponse().map(transaction, TransactionResponse.class);
-                    response.setUserId((int) userId);  // userId'yi DTO'ya set ediyoruz
-                    return response;
-                })
-                .collect(Collectors.toList());
     }
 
     //Entity listesinin Dto listesine çevrimi
-    public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
+    private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
-                .map(transaction -> modelMapperConfig.modelMapperForResponse()
+                .map(transaction -> modelMapperConfig.modelMapperForTransaction()
                         .map(transaction, TransactionResponse.class))
                 .collect(Collectors.toList());
     }

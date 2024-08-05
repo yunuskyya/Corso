@@ -13,5 +13,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Customer deleteByEmail(String email);
 
-    Page<Customer> findAllByBrokerId(Long brokerId, Pageable pageable);
+    Page<Customer> findAllByUserId(Long userId, Pageable pageable); // findAllByBrokerId idi
 }

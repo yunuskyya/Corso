@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Setter
 public class TransactionResponse {
 
-    private int userId;
+    private int user_id;
     private char transactionType;
     private String purchasedCurrency;
     private String soldCurrency;

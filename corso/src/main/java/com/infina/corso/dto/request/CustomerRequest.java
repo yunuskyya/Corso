@@ -1,5 +1,6 @@
 package com.infina.corso.dto.request;
 
+import com.infina.corso.model.enums.CustomerType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -17,6 +18,8 @@ public class CustomerRequest {
     private String name;
     @NotNull
     private String surname;
+    @NotNull
+    private CustomerType customerType;
     private String tcKimlikNo;
     private String companyName;
     private String vkn;
@@ -24,5 +27,5 @@ public class CustomerRequest {
     private String phone;
     @Email
     private String email;
-    private Long userId;
+    private Long userId; // hangi broker'ın customer'ı
 }
