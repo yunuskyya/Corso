@@ -17,7 +17,7 @@ public class CurrencyController {
         this.currencyServiceImp = currencyServiceImp;
     }
     @GetMapping("get-all")
-    public CurrencyResponse getCurrencies() throws Exception {
+    public CurrencyResponse getCurrencies() {
         return currencyServiceImp.getCurrencyRates();
     }
 }

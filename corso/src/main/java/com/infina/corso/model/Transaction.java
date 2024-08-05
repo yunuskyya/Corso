@@ -17,6 +17,10 @@ import java.time.LocalDateTime;
 @Table(name = "transactions")
 public class Transaction {
 
+    public Transaction (char transactionType, String purchasedCurrency, String soldCurrency, int amount){
+
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -41,12 +45,8 @@ public class Transaction {
     @JoinColumn(name = "account_id")
     private Account account;
 
-
-    // Currency unit price --> Price
-
-    // Currency id  --> Currency
-
-
-
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }

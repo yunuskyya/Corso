@@ -10,5 +10,5 @@ public class TransactionRequest {
     private String purchasedCurrency; //Eğer alınan döviz TL ise bu işlemin türü "S(satış)" eğer alınan döviz TL değil ise "A(alış)" olarak kaydedilecek
     private String soldCurrency;
     private double amount;
-    //private Long userId;
+    private int user_id;
 }

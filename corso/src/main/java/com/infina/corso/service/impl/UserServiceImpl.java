@@ -3,6 +3,7 @@ package com.infina.corso.service.impl;
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.RegisterUserRequest;
 import com.infina.corso.dto.response.GetAllUserResponse;
+import com.infina.corso.model.Transaction;
 import com.infina.corso.model.enums.Role;
 import com.infina.corso.model.User;
 import com.infina.corso.repository.UserRepository;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,5 +57,10 @@ public class UserServiceImpl implements UserService {
         newUser.setActive(true);
         userRepository.save(newUser);
         logger.info("Manager registered: {}", newUser.getUsername());
+    }
+
+    public List<Transaction> getAllTransactionsById(int id){
+        Optional<User> user = userRepository.findById(id);
+        return user.get().getTransactions();
     }
 }
