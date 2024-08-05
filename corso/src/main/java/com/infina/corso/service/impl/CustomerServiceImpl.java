@@ -1,5 +1,7 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.config.ModelMapperConfig;
+import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.CustomerRequest;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Account;
@@ -21,12 +23,14 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapperResponse;
     private final ModelMapper modelMapperRequest;
+    private final ModelMapperConfig modelMapperConfig;
 
     public CustomerServiceImpl(CustomerRepository customerRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperResponse,
-                               @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest) {
+                               @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest, ModelMapperConfig modelMapperConfig) {
         this.customerRepository = customerRepository;
         this.modelMapperResponse = modelMapperResponse;
         this.modelMapperRequest = modelMapperRequest;
+        this.modelMapperConfig = modelMapperConfig;
     }
 
     // only manager or broker
@@ -51,18 +55,18 @@ public class CustomerServiceImpl implements CustomerService {
                 .map(this::mapToGetCustomerResponse);
     }
 
-    public boolean checkAccountsForPurchasedCurrency(Account account, String currencyCode) {
+    public AccountRequestTransaction checkAccountsForPurchasedCurrency(Account account, String currencyCode) {
         Optional<Customer> customer = customerRepository.findById(account.getCustomer().getId());
         List<Account> accountList = customer.get().getAccounts();
-        Account account1 = null;
+        AccountRequestTransaction accountRequestTransaction= null;
         for (Account a : accountList) {
             if (a.getCurrency().equals(currencyCode)) {
-                account1 = a;
+                modelMapperConfig.modelMapperForRequest().map(a, accountRequestTransaction);
             }
         }
-        if (account1 != null) {
-            return true;
-        } else return false;
+        if (accountRequestTransaction != null) {
+            return accountRequestTransaction;
+        } else return null;
     }
 
     // only manager or broker

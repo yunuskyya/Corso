@@ -2,6 +2,7 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.config.UserNotFoundException;
+import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.model.*;
@@ -54,20 +55,21 @@ public class TransactionServiceImp implements TransactionService {
 
     @Transactional
     public void transactionSave(TransactionRequest transactionRequest) throws AccountNotFoundException {
-        if(accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency())){
+
+        AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
+
+        if(accountRequestTransaction != null){
         Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
-        //Transaction'un türü belirlenip set edilir.
+        //Transaction'un türü belirlenip set edilir. **Gerekli mi belirsiz?
         if (transaction.getSoldCurrency().equals("TL")) {
             transaction.setTransactionType('A');
         } else transaction.setTransactionType('S');
-        //Gelen request içindeki account no ile ilgli Account sınıfı bulunur
         Account account = accountRepository.findByAccountNumber(transactionRequest.getAccountNumber());
-        //Yapılan transaction ilgili account sınıfı içindeki Transaction listesine eklenir
         account.getTransactions().add(transaction);
-        //İlgili account içindeki bakiye değişikliği yapılır
         BigDecimal newBalance = calculateNewBalance(account,transaction.getAmount() ,transaction.getPurchasedCurrency(),transaction.getTransactionType());
         account.setBalance(newBalance);
-        //Transaction'u yapan user bulunur ve transaction user içine yerleştirilir
+        Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
+        accountPurchasedCurrency.getBalance().add(BigDecimal.valueOf(transactionRequest.getAmount()));
         User user = userRepository.findById(transactionRequest.getUser_id())
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
         transaction.setUser(user);
@@ -75,6 +77,7 @@ public class TransactionServiceImp implements TransactionService {
         transactionRepository.save(transaction);
         user.getTransactions().add(transaction);
         accountRepository.save(account);
+        accountRepository.save(accountPurchasedCurrency);
         userRepository.save(user);}
         else throw new AccountNotFoundException("Account not found with id: " + transactionRequest.getAccountNumber());
     }
