@@ -1,20 +1,21 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.config.CurrentUser;
-import com.infina.corso.service.MailService;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.infina.corso.dto.request.ChangePasswordRequest;
 import com.infina.corso.dto.request.RegisterUserRequest;
 import com.infina.corso.dto.response.GetAllUserResponse;
+import com.infina.corso.service.MailService;
 import com.infina.corso.service.UserService;
-
+import com.infina.corso.shared.GenericMessage;
+import com.infina.corso.shared.Messages;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -22,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@Validated
 @RequestMapping("/api/v1/user")
+@Tag(name = "User Management", description = "Operations related to user management")
 public class UserController {
 
     private final UserService userService;
@@ -35,24 +36,32 @@ public class UserController {
     }
 
     @GetMapping("/brokers")
+    @Operation(summary = "Get all brokers", description = "Retrieve a list of all brokers.")
     public ResponseEntity<List<GetAllUserResponse>> getAllBrokers() {
         List<GetAllUserResponse> brokers = userService.getAllUser();
         return ResponseEntity.ok(brokers);
     }
 
     @PostMapping("/register/broker")
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
-    public void registerBroker(@RequestBody RegisterUserRequest request) {
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
+    @Operation(summary = "Register a new broker", description = "Register a new broker with the given details.")
+   public GenericMessage registerUser(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerBroker(request);
+        return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @PostMapping("/register/manager")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void registerManager(@RequestBody RegisterUserRequest request) {
+    @Operation(summary = "Register a new manager", description = "Register a new manager with the given details.")
+    public GenericMessage registerManager(@RequestBody RegisterUserRequest request) {
         userService.registerManager(request);
+        return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @GetMapping("/role")
+    @Operation(summary = "Get user role", description = "Retrieve the role of the currently authenticated user.")
     public ResponseEntity<?> getUserRole(Authentication authentication) {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required");
@@ -62,11 +71,11 @@ public class UserController {
         Map<String, Object> response = new HashMap<>();
         response.put("id", currentUser.getId());
         response.put("authorities", currentUser.getAuthorities());
-
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/send")
+    @Operation(summary = "Send test email", description = "Send a test email to a predefined address.")
     public String sendEmail() {
         String to = "nhtyl07@gmail.com";
         String subject = "Test Email";
@@ -75,5 +84,27 @@ public class UserController {
         return "Email sent successfully!";
     }
 
-}
+    @PutMapping("/change-password")
+    @Operation(summary = "Change user password", description = "Change the password of a user.")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+        try {
+            userService.changePassword(changePasswordRequest);
+            return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
+
+    @PutMapping("/activate")
+    @PreAuthorize("hasRole('ROLE_MANAGER') OR hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Activate a user account by email", description = "Activate a user account that is currently locked using their email.")
+    public ResponseEntity<String> activateUserByEmail(@RequestParam String email) {
+        try {
+            userService.activateUserByEmail(email);
+            return ResponseEntity.ok("Kullanıcı başarıyla aktifleştirildi.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+}

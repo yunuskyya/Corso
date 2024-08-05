@@ -5,6 +5,8 @@ import com.infina.corso.dto.response.AuthResponse;
 import com.infina.corso.model.User;
 import com.infina.corso.model.enums.Role;
 import com.infina.corso.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/v1/auth")
+@Tag(name = "Authentication", description = "Operations related to user authentication")
 public class AuthController {
     private final AuthService authService;
 
@@ -24,6 +27,7 @@ public class AuthController {
     }
 
     @PostMapping
+    @Operation(summary = "Authenticate user", description = "Authenticate a user with the given credentials.")
     public ResponseEntity<Void> handleAuthentication(@Valid @RequestBody CredentialsRequest credentials) {
         try {
             AuthResponse authResponse = authService.authenticate(credentials);
@@ -38,6 +42,7 @@ public class AuthController {
     }
 
     @DeleteMapping
+    @Operation(summary = "Logout user", description = "Logout the currently authenticated user.")
     public ResponseEntity<Void> logout(
             @CookieValue(name = "corso-token", required = false) String cookieValue) {
         try {
@@ -54,6 +59,7 @@ public class AuthController {
     }
 
     @GetMapping("/currentUser")
+    @Operation(summary = "Get current user", description = "Retrieve the currently authenticated user.")
     public ResponseEntity<User> getCurrentUser(@RequestParam(value = "role", defaultValue = "broker") String role) {
         return ResponseEntity.ok(
                 User.builder()
