@@ -10,6 +10,7 @@ import com.infina.corso.repository.TransactionRepository;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.TransactionService;
 import com.infina.corso.service.UserService;
+import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -64,6 +65,9 @@ public class TransactionServiceImp implements TransactionService {
         BigDecimal cost = calculateTransactionCost(transaction.getTransactionType(), transaction.getAmount(), transaction.getPurchasedCurrency());
         BigDecimal newBalance = balance.subtract(cost);
         account.setBalance(newBalance);
+        //Transaction'u yapan user bulunur ve transaction user içine yerleştirilir
+        User user = transaction.getUser();
+        user.getTransactions().add(transaction);
         //Transaction veritabanına kaydedilir
         transaction.setAccount(account);
         transactionRepository.save(transaction);
@@ -86,52 +90,19 @@ public class TransactionServiceImp implements TransactionService {
     //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
     @Transactional
     public List<TransactionResponse> collectTransactionsForSelectedUser(int id) {
-        //Gelen id ile ilgili kullanıcı veritabanından bulunur --> bulunnan kullanıcının Customer listesi alınır -->
-        //Customer listesinin içindeki Account listeleri alınır --> Account listeleri içindeki Transaction Listeleri bir listeye toplanır
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found for id: " + id));
-        List<Customer> customerList = user.getCustomerList();
-        // Customer listesinin içindeki Account listeleri alınır ve Transaction listeleri bir listeye toplanır
-        List<Transaction> transactionList = customerList.stream()
-                .flatMap(customer -> customer.getAccounts().stream())
-                .flatMap(account -> account.getTransactions().stream())
-                .collect(Collectors.toList());
-        return convertTractionListAsDto(transactionList, id);
+        return convertTractionListAsDto(userServiceImpl.getAllTransactionsById(id));
     }
-
-
-    /* //Gelen id ile ilgili kullanıcı veritabanından bulunur --> bulunnan kullanıcının Customer listesi alınır--
-        //--> Customer listesinin içindeki Account listeleri alınır --> Account listeleri içindeki Transaction Listeleri bir listeye toplanır
-        Optional<User> user = userRepository.findById(id);
-        List<Customer> customerList = user.get().getCustomerList();
-        List<Account> accountList = new ArrayList<>();
-        customerList.forEach(customer -> customer.getAccounts().addAll(accountList));
-        List<Transaction> transactionList = new ArrayList<>();
-        accountList.forEach(account -> account.getTransactions().addAll(transactionList));
-        return convertTractionListAsDto(transactionList); */
-
 
     //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
     public List<TransactionResponse> collectAllTransactions() {
         List<Transaction> transactionList = transactionRepository.findAll();
         return convertTractionListAsDto(transactionList);
-    } //TODO çekilen transaction işleminde userid ler set edilmediği için düzgün gelmiyor yanlış geliyor.
-
-    //Entity listesinin Dto listesine çevrimi ** User ID'ye göre **
-    public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList, int userId) {
-        return transactionList.stream()
-                .map(transaction -> {
-                    TransactionResponse response = modelMapperConfig.modelMapperForResponse().map(transaction, TransactionResponse.class);
-                    response.setUserId((int) userId);  // userId'yi DTO'ya set ediyoruz
-                    return response;
-                })
-                .collect(Collectors.toList());
     }
 
     //Entity listesinin Dto listesine çevrimi
     public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
-                .map(transaction -> modelMapperConfig.modelMapperForResponse()
+                .map(transaction -> modelMapperConfig.modelMapperForTransaction()
                         .map(transaction, TransactionResponse.class))
                 .collect(Collectors.toList());
     }
