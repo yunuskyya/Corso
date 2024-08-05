@@ -25,6 +25,7 @@ public class Customer {
     private String companyName;
     private String tcKimlikNo; // bireysel müşteriler için tc kimlik numarası
     private String vkn; // kurumsal müşteriler için vergi numarası
+    @Enumerated(EnumType.STRING)
     private CustomerType customerType;
     private String email;
     private String phone;
