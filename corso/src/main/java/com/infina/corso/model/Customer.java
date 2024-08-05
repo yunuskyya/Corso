@@ -22,10 +22,13 @@ public class Customer {
     private Long id;
     private String name;
     private String surname;
-    private String tcKimlikNo;
-    private String companyNo;
-    private CustomerType musteriTur;
+    private String companyName;
+    private String tcKimlikNo; // bireysel müşteriler için tc kimlik numarası
+    private String vkn; // kurumsal müşteriler için vergi numarası
+    @Enumerated(EnumType.STRING)
+    private CustomerType customerType;
     private String email;
+    private String phone;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

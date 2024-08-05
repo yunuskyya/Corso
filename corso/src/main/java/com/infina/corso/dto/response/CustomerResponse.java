@@ -20,8 +20,10 @@ public class CustomerResponse {
     private String name;
     private String surname;
     private String tcKimlikNo;
-    private String companyNo;
-    private CustomerType musteriTur;
+    private String companyName;
+    private String vkn;
+    private CustomerType customerType;
+    private String phone;
     private String email;
     private User user;
     private List<Account> accounts;
