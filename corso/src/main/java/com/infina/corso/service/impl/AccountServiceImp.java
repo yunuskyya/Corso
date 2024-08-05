@@ -16,6 +16,8 @@ public class AccountServiceImp implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private CustomerServiceImpl customerServiceImpl;
 
     @Override
     public Account createAccount(Account account) {
@@ -58,9 +60,7 @@ public class AccountServiceImp implements AccountService {
 
     public boolean checkIfAccountExists(String accountNumber, String currencyCode) {
         Account account = accountRepository.findByAccountNumber(accountNumber);
-        if (currencyCode == account.getCurrency()) {
-            return true;
-        } else return false;
+        return customerServiceImpl.checkAccountsForPurchasedCurrency(account, currencyCode);
     }
 
     @Override

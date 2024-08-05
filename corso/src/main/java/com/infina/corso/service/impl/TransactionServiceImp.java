@@ -54,7 +54,6 @@ public class TransactionServiceImp implements TransactionService {
 
     @Transactional
     public void transactionSave(TransactionRequest transactionRequest) throws AccountNotFoundException {
-
         if(accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency())){
         Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
         //Transaction'un türü belirlenip set edilir.
