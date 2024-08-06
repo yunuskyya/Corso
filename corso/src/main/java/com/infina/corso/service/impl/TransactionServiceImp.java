@@ -58,7 +58,7 @@ public class TransactionServiceImp implements TransactionService {
 
         AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
 
-        if(accountRequestTransaction != null){
+        if(accountRequestTransaction.getAccountNo() != null){
         Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
         //Transaction'un türü belirlenip set edilir. **Gerekli mi belirsiz?
         if (transaction.getSoldCurrency().equals("TL")) {
@@ -69,7 +69,9 @@ public class TransactionServiceImp implements TransactionService {
         BigDecimal newBalance = calculateNewBalance(account,transaction.getAmount() ,transaction.getPurchasedCurrency(),transaction.getTransactionType());
         account.setBalance(newBalance);
         Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
-        accountPurchasedCurrency.getBalance().add(BigDecimal.valueOf(transactionRequest.getAmount()));
+        BigDecimal newBalancePurchasedCurrency = BigDecimal.valueOf(transactionRequest.getAmount());
+        accountPurchasedCurrency.getBalance().add(newBalancePurchasedCurrency);
+        accountPurchasedCurrency.setBalance(newBalancePurchasedCurrency);
         User user = userRepository.findById(transactionRequest.getUser_id())
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
         transaction.setUser(user);
@@ -79,7 +81,7 @@ public class TransactionServiceImp implements TransactionService {
         accountRepository.save(account);
         accountRepository.save(accountPurchasedCurrency);
         userRepository.save(user);}
-        else throw new AccountNotFoundException("Account not found with id: " + transactionRequest.getAccountNumber());
+        else throw new AccountNotFoundException("Customer does not have an account in the desired currency. Please open an account first");
     }
 
     private Double calculateCurrencyRate(TransactionRequest transactionRequest){

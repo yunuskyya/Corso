@@ -58,15 +58,15 @@ public class CustomerServiceImpl implements CustomerService {
     public AccountRequestTransaction checkAccountsForPurchasedCurrency(Account account, String currencyCode) {
         Optional<Customer> customer = customerRepository.findById(account.getCustomer().getId());
         List<Account> accountList = customer.get().getAccounts();
-        AccountRequestTransaction accountRequestTransaction= null;
+        AccountRequestTransaction accountRequestTransaction = new AccountRequestTransaction();
         for (Account a : accountList) {
             if (a.getCurrency().equals(currencyCode)) {
-                modelMapperConfig.modelMapperForRequest().map(a, accountRequestTransaction);
+                modelMapperConfig.modelMapperForResponse().map(a, accountRequestTransaction);
             }
         }
         if (accountRequestTransaction != null) {
             return accountRequestTransaction;
-        } else return null;
+        } else return accountRequestTransaction;
     }
 
     // only manager or broker
