@@ -54,7 +54,7 @@ public class UserController {
     @PostMapping("/register/manager")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Register a new manager", description = "Register a new manager with the given details.")
-    public GenericMessage registerManager(@RequestBody RegisterUserRequest request) {
+    public GenericMessage registerManager(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerManager(request);
         return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
@@ -86,7 +86,7 @@ public class UserController {
 
     @PutMapping("/change-password")
     @Operation(summary = "Change user password", description = "Change the password of a user.")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
             userService.changePassword(changePasswordRequest);
             return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
