@@ -2,8 +2,8 @@ package com.infina.corso.controller;
 
 import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
-import com.infina.corso.dto.response.AccountResponse;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
+import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,12 +20,15 @@ import java.util.List;
 @Tag(name = "Account Management", description = "Operations related to account management")
 public class AccountController {
 
-    @Autowired
     private AccountService accountService;
+
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @GetMapping
     @Operation(summary = "Get all accounts", description = "Retrieve a list of all accounts.")
-    public ResponseEntity<List<Account>> getAllAccounts() {
+    public ResponseEntity<List<GetAllAccountResponse>> getAllAccounts() {
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
 
@@ -37,9 +40,9 @@ public class AccountController {
 
     @GetMapping("/customer/{customerId}")
     @Operation(summary = "Get accounts by customer ID", description = "Retrieve a list of accounts by customer ID.")
-    public ResponseEntity<List<Account>> getAccountsByCustomerId(@PathVariable Long customerId) {
-        return ResponseEntity.ok(accountService.getAccountsByCustomerId(customerId));
-    }
+    public ResponseEntity<List<GetAllAccountResponse>> getAccountsByCustomerId(@PathVariable Long customerId) {
+
+        return ResponseEntity.ok(accountService.getAccountsByCustomerId(customerId));}
 
     @PostMapping
     @Operation(summary = "Create a new account", description = "Create a new account with the given details.")
