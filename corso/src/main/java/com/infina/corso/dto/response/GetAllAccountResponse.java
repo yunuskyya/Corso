@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class AccountResponse {
+public class GetAllAccountResponse {
     private String accountNumber;
     private String iban;
     private String bankName;
