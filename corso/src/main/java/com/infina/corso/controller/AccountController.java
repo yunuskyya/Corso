@@ -8,7 +8,6 @@ import com.infina.corso.model.Account;
 import com.infina.corso.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +40,6 @@ public class AccountController {
     @GetMapping("/customer/{customerId}")
     @Operation(summary = "Get accounts by customer ID", description = "Retrieve a list of accounts by customer ID.")
     public ResponseEntity<List<GetAllAccountResponse>> getAccountsByCustomerId(@PathVariable Long customerId) {
-
         return ResponseEntity.ok(accountService.getAccountsByCustomerId(customerId));}
 
     @PostMapping
@@ -50,10 +48,15 @@ public class AccountController {
         return ResponseEntity.status(HttpStatus.CREATED).body(accountService.createAccount(createAccountRequest));
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update an account", description = "Update an account with the given details.")
-    public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody UpdateAccountRequest updateAccountRequest) {
-        return ResponseEntity.ok(accountService.updateAccount(id, updateAccountRequest));
+
+    @PutMapping("/update/{customerId}/{accountId}")
+    @Operation(summary = "Update an account", description = "Update an account by ID.")
+    public ResponseEntity<GetAccountByIdResponse> updateAccount(
+            @PathVariable Long customerId,
+            @PathVariable Long accountId,
+            @RequestBody UpdateAccountRequest updateAccountRequest) {
+        GetAccountByIdResponse updatedAccount = accountService.updateAccount(customerId, accountId, updateAccountRequest);
+        return ResponseEntity.ok(updatedAccount);
     }
 
     @DeleteMapping("/{id}")
