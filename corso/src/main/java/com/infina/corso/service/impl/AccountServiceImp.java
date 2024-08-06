@@ -3,8 +3,8 @@ package com.infina.corso.service.impl;
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
-import com.infina.corso.dto.response.AccountResponse;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
+import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.service.AccountService;
@@ -14,8 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -53,18 +53,25 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
+    public List<GetAllAccountResponse> getAllAccounts() {
+        List<Account> accounts = accountRepository.findAll();
+        return accounts.stream()
+                .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
+                .collect(Collectors.toList());
+
     }
 
     @Override
-    public Account getAccountByAccountNumber(String accountNumber) {
+    public Account getByAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber);
     }
 
     @Override
-    public List<Account> getAccountsByCustomerId(Long customerId) {
-        return accountRepository.findByCustomerId(customerId);
-    }
+    public List<GetAllAccountResponse> getAccountsByCustomerId(Long customerId) {
+        List<Account> accounts = accountRepository.findByCustomerId(customerId);
+        return accounts.stream()
+                .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
+                .collect(Collectors.toList());
+        }
 
 }
