@@ -36,7 +36,7 @@ public class TokenServiceImpl implements TokenService {
         Token token = new Token();
         token.setTokenId(UUID.randomUUID().toString());
         token.setUser(inDb);
-        token.setExpirationDate(System.currentTimeMillis() + (3 * 60 * 60 * 1000));
+        token.setExpirationDate(System.currentTimeMillis() + (5 * 60 * 1000));
         redisTemplate.opsForValue().set(token.getTokenId(), token);
         logger.info("Token generated: {}", token.getTokenId());
         return token;
