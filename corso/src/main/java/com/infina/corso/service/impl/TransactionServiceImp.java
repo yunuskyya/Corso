@@ -69,9 +69,9 @@ public class TransactionServiceImp implements TransactionService {
         BigDecimal newBalance = calculateNewBalance(account,transaction.getAmount() ,transaction.getPurchasedCurrency(),transaction.getTransactionType());
         account.setBalance(newBalance);
         Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
-        BigDecimal newBalancePurchasedCurrency = BigDecimal.valueOf(transactionRequest.getAmount());
-        accountPurchasedCurrency.getBalance().add(newBalancePurchasedCurrency);
-        accountPurchasedCurrency.setBalance(newBalancePurchasedCurrency);
+        BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
+        BigDecimal updatedBalancePurchasedCurrency = accountPurchasedCurrency.getBalance().add(amountToAdd);
+        accountPurchasedCurrency.setBalance(updatedBalancePurchasedCurrency);
         User user = userRepository.findById(transactionRequest.getUser_id())
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
         transaction.setUser(user);
