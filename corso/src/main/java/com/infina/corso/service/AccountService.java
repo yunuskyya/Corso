@@ -2,12 +2,10 @@ package com.infina.corso.service;
 
 import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
-import com.infina.corso.dto.response.AccountResponse;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
+import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.model.Account;
-import com.infina.corso.model.enums.CustomerType;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface AccountService {
@@ -15,7 +13,7 @@ public interface AccountService {
     Account updateAccount(Long id, UpdateAccountRequest updateAccountRequest); // Güncelleme metodu
     void deleteAccount(Long id);
     GetAccountByIdResponse getAccountById(Long id);
-    List<Account> getAllAccounts();
-    Account getAccountByAccountNumber(String accountNumber);
-    List<Account> getAccountsByCustomerId(Long customerId);
+    List<GetAllAccountResponse> getAllAccounts();
+    Account getByAccountNumber(String accountNumber);
+    List<GetAllAccountResponse> getAccountsByCustomerId(Long customerId);
 }
