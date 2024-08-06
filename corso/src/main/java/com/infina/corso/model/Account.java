@@ -21,12 +21,10 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String accountNumber;
-    private String iban;
     private String bankName;
     private String currency;
     private BigDecimal balance;
     private boolean isDeleted;
-    private String status;  // Eklenen alan
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
