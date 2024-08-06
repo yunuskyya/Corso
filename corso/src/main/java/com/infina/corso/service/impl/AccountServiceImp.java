@@ -67,14 +67,4 @@ public class AccountServiceImp implements AccountService {
         return accountRepository.findByCustomerId(customerId);
     }
 
-   /*@Override
-    public List<Account> getAccountsByCurrencyAndCustomerType(String currency, CustomerType customerType) {
-        return accountRepository.findByCurrencyAndCustomerType(currency, customerType);
-    }*/
-
-    @Override
-    public List<Account> getAccountsByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-
-        return accountRepository.findByCreatedAtBetween(startDate, endDate);
-    }
 }

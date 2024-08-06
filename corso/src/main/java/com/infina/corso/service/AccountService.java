@@ -18,6 +18,4 @@ public interface AccountService {
     List<Account> getAllAccounts();
     Account getAccountByAccountNumber(String accountNumber);
     List<Account> getAccountsByCustomerId(Long customerId);
-    /*List<Account> getAccountsByCurrencyAndCustomerType(String currency, CustomerType customerType); */
-    List<Account> getAccountsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
 }
