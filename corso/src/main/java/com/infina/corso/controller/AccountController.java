@@ -1,5 +1,9 @@
 package com.infina.corso.controller;
 
+import com.infina.corso.dto.request.CreateAccountRequest;
+import com.infina.corso.dto.request.UpdateAccountRequest;
+import com.infina.corso.dto.response.AccountResponse;
+import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.service.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,8 +30,9 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
-        return ResponseEntity.ok(accountService.getAccountById(id));
+    @Operation(summary = "Get account by ID", description = "Retrieve an account by ID.")
+    public GetAccountByIdResponse getAccountById(@PathVariable Long id) {
+        return accountService.getAccountById(id);
     }
 
     @GetMapping("/customer/{customerId}")
@@ -38,14 +43,14 @@ public class AccountController {
 
     @PostMapping
     @Operation(summary = "Create a new account", description = "Create a new account with the given details.")
-    public ResponseEntity<Account> createAccount(@RequestBody Account account) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountService.createAccount(account));
+    public ResponseEntity<Account> createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(accountService.createAccount(createAccountRequest));
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an account", description = "Update an account with the given details.")
-    public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody Account account) {
-        return ResponseEntity.ok(accountService.updateAccount(id, account));
+    public ResponseEntity<Account> updateAccount(@PathVariable Long id, @RequestBody UpdateAccountRequest updateAccountRequest) {
+        return ResponseEntity.ok(accountService.updateAccount(id, updateAccountRequest));
     }
 
     @DeleteMapping("/{id}")
@@ -54,6 +59,4 @@ public class AccountController {
         accountService.deleteAccount(id);
         return ResponseEntity.noContent().build();
     }
-
-
 }
