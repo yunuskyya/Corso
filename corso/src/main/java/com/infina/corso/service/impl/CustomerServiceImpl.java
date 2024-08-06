@@ -1,7 +1,10 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.config.ModelMapperConfig;
+import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.CustomerRequest;
 import com.infina.corso.dto.response.CustomerResponse;
+import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.CustomerService;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,12 +23,14 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapperResponse;
     private final ModelMapper modelMapperRequest;
+    private final ModelMapperConfig modelMapperConfig;
 
     public CustomerServiceImpl(CustomerRepository customerRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperResponse,
-                               @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest) {
+                               @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest, ModelMapperConfig modelMapperConfig) {
         this.customerRepository = customerRepository;
         this.modelMapperResponse = modelMapperResponse;
         this.modelMapperRequest = modelMapperRequest;
+        this.modelMapperConfig = modelMapperConfig;
     }
 
     // only manager or broker
@@ -49,6 +55,20 @@ public class CustomerServiceImpl implements CustomerService {
                 .map(this::mapToGetCustomerResponse);
     }
 
+    public AccountRequestTransaction checkAccountsForPurchasedCurrency(Account account, String currencyCode) {
+        Optional<Customer> customer = customerRepository.findById(account.getCustomer().getId());
+        List<Account> accountList = customer.get().getAccounts();
+        AccountRequestTransaction accountRequestTransaction = new AccountRequestTransaction();
+        for (Account a : accountList) {
+            if (a.getCurrency().equals(currencyCode)) {
+                modelMapperConfig.modelMapperForResponse().map(a, accountRequestTransaction);
+            }
+        }
+        if (accountRequestTransaction != null) {
+            return accountRequestTransaction;
+        } else return accountRequestTransaction;
+    }
+
     // only manager or broker
     @Override
     public void createCustomer(CustomerRequest customer) {
@@ -61,7 +81,7 @@ public class CustomerServiceImpl implements CustomerService {
     public CustomerResponse updateCustomer(Long id, CustomerRequest customer) {
         Optional<Customer> foundCustomer = customerRepository.findById(id);
 
-        if(foundCustomer.isPresent()) {
+        if (foundCustomer.isPresent()) {
             Customer customerEntity = mapToCustomer(customer);
             customerEntity.setId(id);
             customerRepository.save(customerEntity);

@@ -74,6 +74,42 @@ public class CurrencyServiceImp implements CurrencyService {
         }
     }
 
+    public CurrencyResponse updateCurrencyRates() {
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(API_URL))
+                    .header("content-type", "application/json")
+                    .header("authorization", "apikey " + API_KEY)
+                    .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String responseBody = response.body();
+
+            if (response.statusCode() == 200) {
+                CurrencyResponse currencyResponse = objectMapper.readValue(responseBody, CurrencyResponse.class);
+                List<Currency> currencies = currencyResponse.getResult();
+
+                for (Currency currency : currencies) {
+                    Currency existingCurrency = currencyRepository.findByCode(currency.getCode());
+                    if (existingCurrency != null) {
+                        existingCurrency.setSelling(currency.getSelling());
+                        existingCurrency.setBuying(currency.getBuying());
+                        existingCurrency.setName(currency.getName());
+                        currencyRepository.save(existingCurrency);
+                    }
+                }
+
+                return currencyResponse;
+            } else {
+                throw new RuntimeException("API çağrısında bir hata oluştu: " + response.statusCode());
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Veri alımı sırasında bir hata oluştu", e);
+        }
+    }
+
 
 }
 

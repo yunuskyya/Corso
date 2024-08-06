@@ -7,6 +7,7 @@ import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.service.impl.TransactionServiceImp;
 import org.springframework.web.bind.annotation.*;
 
+import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 
 @RestController
@@ -20,7 +21,7 @@ public class TransactionController {
     private final TransactionServiceImp transactionServiceImp;
 
     @PostMapping("/create")
-    public void create (@RequestBody TransactionRequest transactionRequest){
+    public void create (@RequestBody TransactionRequest transactionRequest) throws AccountNotFoundException {
         transactionServiceImp.transactionSave(transactionRequest);
     }
 

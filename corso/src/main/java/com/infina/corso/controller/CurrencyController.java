@@ -3,6 +3,7 @@ package com.infina.corso.controller;
 import com.infina.corso.dto.response.CurrencyResponse;
 import com.infina.corso.service.impl.CurrencyServiceImp;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,5 +20,10 @@ public class CurrencyController {
     @GetMapping("get-all")
     public CurrencyResponse getCurrencies() {
         return currencyServiceImp.getCurrencyRates();
+    }
+
+    @PostMapping("update")
+    public CurrencyResponse updateCurrencies() {
+        return currencyServiceImp.updateCurrencyRates();
     }
 }

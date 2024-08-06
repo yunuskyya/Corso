@@ -1,5 +1,6 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.enums.CustomerType;
 import com.infina.corso.repository.AccountRepository;
@@ -16,6 +17,8 @@ public class AccountServiceImp implements AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private CustomerServiceImpl customerServiceImpl;
 
     @Override
     public Account createAccount(Account account) {
@@ -54,6 +57,11 @@ public class AccountServiceImp implements AccountService {
     @Override
     public Account getAccountByAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber);
+    }
+
+    public AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        return customerServiceImpl.checkAccountsForPurchasedCurrency(account, currencyCode);
     }
 
     @Override
