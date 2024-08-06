@@ -6,7 +6,9 @@ import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.model.Account;
+import com.infina.corso.model.Customer;
 import com.infina.corso.repository.AccountRepository;
+import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AccountService;
 
 import lombok.AllArgsConstructor;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class AccountServiceImp implements AccountService {
     private ModelMapperConfig mapper;
     private AccountRepository accountRepository;
+    private CustomerRepository customerRepository;
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
     @Override
@@ -33,17 +36,26 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public Account updateAccount(Long id, UpdateAccountRequest updateAccountRequest) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found: " + id));
-        mapper.modelMapperForRequest().map(updateAccountRequest, Account.class);
-        return accountRepository.save(account);
+    public GetAccountByIdResponse updateAccount(Long customerId, Long accountId, UpdateAccountRequest updateAccountRequest) {
+
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
+
+        Account existingAccount = accountRepository.findById(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found with id " + accountId));
+
+        if (!existingAccount.getCustomer().getId().equals(customerId)) {
+            throw new RuntimeException("Account does not belong to the specified customer");
+        }
+
+        mapper.modelMapperForRequest().map(updateAccountRequest, existingAccount);
+        Account updatedAccount = accountRepository.save(existingAccount);
+        return mapper.modelMapperForResponse().map(updatedAccount, GetAccountByIdResponse.class);
     }
 
     @Override
     public void deleteAccount(Long id) {
         accountRepository.deleteById(id);
-        logger.info("Account deleted: {}", id);
     }
 
     @Override
@@ -58,7 +70,6 @@ public class AccountServiceImp implements AccountService {
         return accounts.stream()
                 .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
                 .collect(Collectors.toList());
-
     }
 
     @Override

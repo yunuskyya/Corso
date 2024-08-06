@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface AccountService {
     Account createAccount(CreateAccountRequest createAccountRequest);
-    Account updateAccount(Long id, UpdateAccountRequest updateAccountRequest); // Güncelleme metodu
+    GetAccountByIdResponse updateAccount(Long customerId, Long accountId, UpdateAccountRequest updateAccountRequest); // Güncelleme metodu
     void deleteAccount(Long id);
     GetAccountByIdResponse getAccountById(Long id);
     List<GetAllAccountResponse> getAllAccounts();
