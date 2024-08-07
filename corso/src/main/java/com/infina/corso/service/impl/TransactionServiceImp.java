@@ -59,12 +59,18 @@ public class TransactionServiceImp implements TransactionService {
                     Double rate = calculateCurrencyRate(transactionRequest);
                     double transactionAmountInSoldCurrency = transactionRequest.getAmount();
                     BigDecimal newBalance = calculateTransactionCostForCross(account, transactionRequest.getAmount(), rate);
+                    if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+                        throw new RuntimeException("Account balance is negative for account number: " + account.getAccountNumber());
+                    }
                     account.setBalance(newBalance);
                 } else {
                     if (transaction.getSoldCurrency().equals("TL")) {
                         transaction.setTransactionType('A');
                     } else transaction.setTransactionType('S');
                     BigDecimal newBalance = calculateNewBalanceForTRY(account, transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                    if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
+                        throw new RuntimeException("Account balance is negative for account number: " + account.getAccountNumber());
+                    }
                     account.setBalance(newBalance);
                 }
                 if (account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
