@@ -30,7 +30,7 @@ public class TransactionController {
 
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public void update (@RequestBody TransactionResponse transactionResponse){
 
     }

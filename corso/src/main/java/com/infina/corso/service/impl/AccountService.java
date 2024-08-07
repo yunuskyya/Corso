@@ -2,23 +2,20 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.model.Account;
-import com.infina.corso.model.enums.CustomerType;
 import com.infina.corso.repository.AccountRepository;
-import com.infina.corso.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class AccountServiceImp implements AccountService {
+public class AccountService implements com.infina.corso.service.AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
     @Autowired
-    private CustomerServiceImpl customerServiceImpl;
+    private CustomerService customerService;
 
     @Override
     public Account createAccount(Account account) {
@@ -61,7 +58,7 @@ public class AccountServiceImp implements AccountService {
 
     public AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode) {
         Account account = accountRepository.findByAccountNumber(accountNumber);
-        return customerServiceImpl.checkAccountsForPurchasedCurrency(account, currencyCode);
+        return customerService.checkAccountsForPurchasedCurrency(account, currencyCode);
     }
 
     @Override

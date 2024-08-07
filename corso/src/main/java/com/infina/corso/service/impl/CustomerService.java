@@ -7,7 +7,6 @@ import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.repository.CustomerRepository;
-import com.infina.corso.service.CustomerService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -18,15 +17,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CustomerServiceImpl implements CustomerService {
+public class CustomerService implements com.infina.corso.service.CustomerService {
 
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapperResponse;
     private final ModelMapper modelMapperRequest;
     private final ModelMapperConfig modelMapperConfig;
 
-    public CustomerServiceImpl(CustomerRepository customerRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperResponse,
-                               @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest, ModelMapperConfig modelMapperConfig) {
+    public CustomerService(CustomerRepository customerRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperResponse,
+                           @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest, ModelMapperConfig modelMapperConfig) {
         this.customerRepository = customerRepository;
         this.modelMapperResponse = modelMapperResponse;
         this.modelMapperRequest = modelMapperRequest;

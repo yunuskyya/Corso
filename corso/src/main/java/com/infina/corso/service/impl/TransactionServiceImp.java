@@ -12,7 +12,6 @@ import com.infina.corso.repository.TransactionRepository;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.CurrencyService;
 import com.infina.corso.service.TransactionService;
-import com.infina.corso.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,34 +23,27 @@ import java.util.stream.Collectors;
 @Service
 public class TransactionServiceImp implements TransactionService {
 
-    private final CustomerServiceImpl customerServiceImpl;
-    private final CurrencyRepository currencyRepository;
+    private final ModelMapperConfig modelMapperConfig;
+    private final TransactionRepository transactionRepository;
+    private final CustomerService customerService;
+    private final UserService userService;
     private final UserRepository userRepository;
+    private final CurrencyService currencyService;
+    private final CurrencyRepository currencyRepository;
+    private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
-    public TransactionServiceImp(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserService userService, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyService, CustomerServiceImpl customerServiceImpl, AccountRepository accountRepository, CurrencyRepository currencyRepository, UserRepository userRepository, AccountServiceImp accountService) {
+    public TransactionServiceImp(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, com.infina.corso.service.UserService userService, UserService userServiceImpl, CurrencyServiceImp currencyService, CustomerService customerService, AccountRepository accountRepository, CurrencyRepository currencyRepository, UserRepository userRepository, AccountService accountService) {
         this.transactionRepository = transactionRepository;
         this.modelMapperConfig = modelMapperConfig;
         this.userService = userServiceImpl;
         this.currencyService = currencyService;
-        this.customerServiceImpl = customerServiceImpl;
+        this.customerService = customerService;
         this.accountRepository = accountRepository;
         this.currencyRepository = currencyRepository;
         this.userRepository = userRepository;
         this.accountService = accountService;
     }
-
-    private final ModelMapperConfig modelMapperConfig;
-
-    private final TransactionRepository transactionRepository;
-
-    private final UserServiceImpl userService;
-
-    private final CurrencyService currencyService;
-
-    private final AccountRepository accountRepository; //AccountService sınıfı oluşturulduğunda oradan çekilecek
-
-    private final AccountServiceImp accountService;
-
 
     @Transactional
     public void transactionSave(TransactionRequest transactionRequest) throws AccountNotFoundException {
@@ -92,13 +84,13 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     //Parite işlemleri için hesaplar **************************************************
-    private Double calculateCurrencyRate(TransactionRequest transactionRequest) {
+    public Double calculateCurrencyRate(TransactionRequest transactionRequest) {
         String soldCurrency = transactionRequest.getSoldCurrency();
         String purchasedCurrency = transactionRequest.getPurchasedCurrency();
         return rateCalculate(soldCurrency, purchasedCurrency);
     }
 
-    private Double rateCalculate(String soldCurrency, String purchasedCurrency) {
+    public Double rateCalculate(String soldCurrency, String purchasedCurrency) {
         Currency soldCurrencyEntity = currencyRepository.findByCode(soldCurrency);
         Double a = Double.parseDouble(soldCurrencyEntity.getSelling());
         Currency purchasedCurrencyEntity = currencyRepository.findByCode(purchasedCurrency);
@@ -107,14 +99,14 @@ public class TransactionServiceImp implements TransactionService {
         return rate;
     }
 
-    private BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate) {
+    public BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate) {
         BigDecimal balance = account.getBalance();
         BigDecimal cost = calculateNewBalanceForCross(amount, rate);
         BigDecimal newBalance = balance.subtract(cost);
         return newBalance;
     }
 
-    private BigDecimal calculateNewBalanceForCross(double amount, double rate) {
+    public BigDecimal calculateNewBalanceForCross(double amount, double rate) {
         BigDecimal amountBigDecimal = BigDecimal.valueOf(amount);
         BigDecimal rateBigDecimal = BigDecimal.valueOf(rate);
         BigDecimal cost = amountBigDecimal.multiply(rateBigDecimal);
@@ -123,7 +115,7 @@ public class TransactionServiceImp implements TransactionService {
     //**************************************************************************
 
     //TRY ile yapılan işlemler için hesaplar ***********************************
-    private BigDecimal calculateTransactionCostForTRY(char transactionType, double amount, String currencyCode) {
+    public BigDecimal calculateTransactionCostForTRY(char transactionType, double amount, String currencyCode) {
         Currency currency = currencyRepository.findByCode(currencyCode);
         double currencyPrice;
         if (transactionType == 'S') {
@@ -133,7 +125,7 @@ public class TransactionServiceImp implements TransactionService {
         return cost;
     }
 
-    private BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType) {
+    public BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType) {
         BigDecimal balance = account.getBalance();
         BigDecimal cost = calculateTransactionCostForTRY(transactionType, amount, purchasedCurrency);
         BigDecimal newBalance = balance.subtract(cost);
@@ -154,7 +146,7 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     //Entity listesinin Dto listesine çevrimi
-    private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
+    public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
                 .map(transaction -> modelMapperConfig.modelMapperForTransaction()
                         .map(transaction, TransactionResponse.class))
