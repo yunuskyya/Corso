@@ -1,19 +1,25 @@
-// src/context/ThemeProvider.jsx
-import React, { createContext, useContext, useState, useEffect } from 'react';
+// context/ThemeProvider.jsx
+import React, { createContext, useState, useEffect } from 'react';
 
-const ThemeContext = createContext();
+// Create a context
+export const ThemeContext = createContext();
 
+// ThemeProvider component
 export const ThemeProvider = ({ children }) => {
-    const [theme, setTheme] = useState('light');
-
-    const toggleTheme = (newTheme) => {
-        setTheme(newTheme);
-        document.documentElement.setAttribute('data-theme', newTheme);
-    };
+    // Retrieve initial theme from localStorage or default to light
+    const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
 
     useEffect(() => {
-        document.documentElement.className = `theme-${theme}`;
+        // Apply the theme to the HTML element
+        document.documentElement.setAttribute('data-theme', theme);
+        // Store the theme in localStorage
+        localStorage.setItem('theme', theme);
     }, [theme]);
+
+    // Function to toggle the theme
+    const toggleTheme = (newTheme) => {
+        setTheme(newTheme);
+    };
 
     return (
         <ThemeContext.Provider value={{ theme, toggleTheme }}>
@@ -22,4 +28,5 @@ export const ThemeProvider = ({ children }) => {
     );
 };
 
-export const useTheme = () => useContext(ThemeContext);
+// Custom hook for easy access to the theme context
+export const useTheme = () => React.useContext(ThemeContext);
