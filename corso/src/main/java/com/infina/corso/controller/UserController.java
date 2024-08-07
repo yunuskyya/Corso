@@ -45,7 +45,7 @@ public class UserController {
     @PostMapping("/register/broker")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @Operation(summary = "Register a new broker", description = "Register a new broker with the given details.")
-   public GenericMessage registerUser(@Valid @RequestBody RegisterUserRequest request) {
+    public GenericMessage registerUser(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerBroker(request);
         return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
