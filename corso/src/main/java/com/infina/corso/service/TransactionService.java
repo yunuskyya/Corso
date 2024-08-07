@@ -5,7 +5,6 @@ import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Transaction;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
 

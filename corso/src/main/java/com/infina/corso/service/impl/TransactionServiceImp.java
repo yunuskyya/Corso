@@ -62,6 +62,10 @@ public class TransactionServiceImp implements TransactionService {
                     if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                         throw new RuntimeException("Account balance is negative for account number: " + account.getAccountNumber());
                     }
+                    //maliyeti transaction içine set edilmesi
+                 /* BigDecimal costBigDecimal = calculateNewBalanceForCross(transaction.getAmount(), rate);
+                    double cost = costBigDecimal.doubleValue();
+                    transaction.setCost(cost); */
                     account.setBalance(newBalance);
                 } else {
                     if (transaction.getSoldCurrency().equals("TL")) {
@@ -71,10 +75,14 @@ public class TransactionServiceImp implements TransactionService {
                     if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                         throw new RuntimeException("Insufficient funds for account number: " + account.getAccountNumber());
                     }
+                    //maliyeti transaction içine set edilmesi
+                 /* BigDecimal costDecimal = calculateTransactionCostForTRY(transaction.getTransactionType(), transactionRequest.getAmount(), transactionRequest.getPurchasedCurrency());
+                    double cost = costDecimal.doubleValue();
+                    transaction.setCost(cost); */
                     account.setBalance(newBalance);
                 }
                 if (account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
-                    throw new RuntimeException("Insufficient funds for account number: "  + account.getAccountNumber());
+                    throw new RuntimeException("Insufficient funds for account number: " + account.getAccountNumber());
                 }
                 Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
                 BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
