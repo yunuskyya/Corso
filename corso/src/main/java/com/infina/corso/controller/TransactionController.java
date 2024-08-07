@@ -34,12 +34,6 @@ public class TransactionController {
     public void update (@RequestBody TransactionResponse transactionResponse){
 
     }
-
-    @PostMapping("/cross-rate")
-    public void crossRate (@RequestBody TransactionRequest transactionRequest){
-        double a = transactionServiceImp.calculateCurrencyRate(transactionRequest);
-    }
-
     //Sadece admin ve yönetici erişebilecek
     @GetMapping("/get/all")
     public List<TransactionResponse> getAll(){
