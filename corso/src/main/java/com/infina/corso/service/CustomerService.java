@@ -11,7 +11,7 @@ public interface CustomerService {
     Page<CustomerResponse> getAllCustomersByBrokerId(Long brokerId, Pageable pageable);
     Page<CustomerResponse> getAllCustomersPaged(Pageable pageable);
     void createCustomer(CustomerUpdateRequest customer);
-    CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customer);
+    CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customerDto);
     void deleteCustomer(Long id);
 
 }
