@@ -6,6 +6,7 @@ import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
+import com.infina.corso.model.enums.CustomerType;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.CustomerService;
 import org.modelmapper.ModelMapper;
@@ -78,12 +79,22 @@ public class CustomerServiceImpl implements CustomerService {
 
     // only manager or broker
     @Override
-    public CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customer) {
+    public CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customerDto) {
         Optional<Customer> foundCustomer = customerRepository.findById(id);
 
         if (foundCustomer.isPresent()) {
-            Customer customerEntity = mapToCustomer(customer);
+            Customer customerEntity = modelMapperRequest.map(customerDto, Customer.class);
             customerEntity.setId(id);
+
+            if (customerDto.getCustomerType() == CustomerType.BIREYSEL) {
+                customerEntity.setCompanyName(null);
+                customerEntity.setVkn(null);
+            } else {
+                customerEntity.setTcKimlikNo(null);
+                customerEntity.setName(null);
+                customerEntity.setSurname(null);
+            }
+
             customerRepository.save(customerEntity);
             return mapToGetCustomerResponse(customerEntity);
         } else {
