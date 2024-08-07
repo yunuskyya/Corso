@@ -1,6 +1,8 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.dto.request.CustomerUpdateRequest;
+import com.infina.corso.dto.response.CustomerByBrokerResponse;
+import com.infina.corso.dto.response.CustomerGetByIdResponse;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.service.CustomerService;
 import org.springframework.data.domain.Page;
@@ -27,8 +29,8 @@ public class CustomerController {
     // Get a customer by ID
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
-        CustomerResponse customerResponse = customerService.getCustomerById(id);
+    public ResponseEntity<CustomerGetByIdResponse> getCustomerById(@PathVariable Long id) {
+        CustomerGetByIdResponse customerResponse = customerService.getCustomerById(id);
         return ResponseEntity.ok(customerResponse);
     }
 
@@ -43,8 +45,8 @@ public class CustomerController {
     // Get all customers by broker ID
     @GetMapping("/broker/{brokerId}")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<Page<CustomerResponse>> getAllCustomersByBrokerId(@PathVariable Long brokerId, Pageable pageable) {
-        Page<CustomerResponse> customers = customerService.getAllCustomersByBrokerId(brokerId, pageable);
+    public ResponseEntity<Page<CustomerByBrokerResponse>> getAllCustomersByBrokerId(@PathVariable Long brokerId, Pageable pageable) {
+        Page<CustomerByBrokerResponse> customers = customerService.getAllCustomersByBrokerId(brokerId, pageable);
         return ResponseEntity.ok(customers);
     }
 

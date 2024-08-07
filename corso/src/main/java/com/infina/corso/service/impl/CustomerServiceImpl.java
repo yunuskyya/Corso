@@ -3,6 +3,8 @@ package com.infina.corso.service.impl;
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
+import com.infina.corso.dto.response.CustomerByBrokerResponse;
+import com.infina.corso.dto.response.CustomerGetByIdResponse;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
@@ -36,24 +38,24 @@ public class CustomerServiceImpl implements CustomerService {
 
     // only manager or broker
     @Override
-    public CustomerResponse getCustomerById(Long id) {
+    public CustomerGetByIdResponse getCustomerById(Long id) {
         return customerRepository.findById(id)
-                .map(this::mapToGetCustomerResponse)
+                .map(customer -> modelMapperResponse.map(customer, CustomerGetByIdResponse.class))
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
     }
 
     // only manager or broker
     @Override
-    public Page<CustomerResponse> getAllCustomersByBrokerId(Long brokerId, Pageable pageable) {
+    public Page<CustomerByBrokerResponse> getAllCustomersByBrokerId(Long brokerId, Pageable pageable) {
         return customerRepository.findAllByUserId(brokerId, pageable)
-                .map(this::mapToGetCustomerResponse);
+                .map(customer -> modelMapperResponse.map(customer, CustomerByBrokerResponse.class));
     }
 
     // Only manager or admin can use this method or the controller that calls this method must have a security check
     @Override
     public Page<CustomerResponse> getAllCustomersPaged(Pageable pageable) {
         return customerRepository.findAll(pageable)
-                .map(this::mapToGetCustomerResponse);
+                .map(customer -> modelMapperResponse.map(customer, CustomerResponse.class));
     }
 
     public AccountRequestTransaction checkAccountsForPurchasedCurrency(Account account, String currencyCode) {
@@ -72,8 +74,8 @@ public class CustomerServiceImpl implements CustomerService {
 
     // only manager or broker
     @Override
-    public void createCustomer(CustomerUpdateRequest customer) {
-        Customer customerEntity = mapToCustomer(customer);
+    public void createCustomer(CustomerUpdateRequest customerDto) {
+        Customer customerEntity = modelMapperRequest.map(customerDto, Customer.class);
         customerRepository.save(customerEntity);
     }
 
@@ -96,7 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
             }
 
             customerRepository.save(customerEntity);
-            return mapToGetCustomerResponse(customerEntity);
+            return modelMapperResponse.map(customerEntity, CustomerResponse.class);
         } else {
             throw new RuntimeException("Customer not found");
         }
@@ -108,13 +110,4 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.deleteById(id);
     }
 
-    private Customer mapToCustomer(CustomerUpdateRequest customer) {
-        return modelMapperRequest
-                .map(customer, Customer.class);
-    }
-
-    private CustomerResponse mapToGetCustomerResponse(Customer customer) {
-        return modelMapperResponse
-                .map(customer, CustomerResponse.class);
-    }
 }
