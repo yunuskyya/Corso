@@ -65,7 +65,7 @@ public class TransactionServiceImp implements TransactionService {
             if (isCrossRate) {
                 Double rate = calculateCurrencyRate(transactionRequest);
                 double transactionAmountInSoldCurrency = transactionRequest.getAmount();
-                BigDecimal newBalance = calculateTransactionCostForCross(account,transactionRequest.getAmount(), rate);
+                BigDecimal newBalance = calculateTransactionCostForCross(account, transactionRequest.getAmount(), rate);
                 account.setBalance(newBalance);
             } else {
                 if (transaction.getSoldCurrency().equals("TL")) {
@@ -78,7 +78,6 @@ public class TransactionServiceImp implements TransactionService {
             BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
             BigDecimal updatedBalancePurchasedCurrency = accountPurchasedCurrency.getBalance().add(amountToAdd);
             accountPurchasedCurrency.setBalance(updatedBalancePurchasedCurrency);
-            //todo bakiye kontrolü yapılacak
             User user = userRepository.findById(transactionRequest.getUser_id())
                     .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
             transaction.setUser(user);
@@ -92,11 +91,11 @@ public class TransactionServiceImp implements TransactionService {
             throw new AccountNotFoundException("Customer does not have an account in the desired currency. Please open an account first");
     }
 
-    public Double calculateCurrencyRate(TransactionRequest transactionRequest) {
+    //Parite işlemleri için hesaplar **************************************************
+    private Double calculateCurrencyRate(TransactionRequest transactionRequest) {
         String soldCurrency = transactionRequest.getSoldCurrency();
         String purchasedCurrency = transactionRequest.getPurchasedCurrency();
         return rateCalculate(soldCurrency, purchasedCurrency);
-        //todo tl dışında döviz çapraz oran hesaplama yapılacak
     }
 
     private Double rateCalculate(String soldCurrency, String purchasedCurrency) {
@@ -106,29 +105,24 @@ public class TransactionServiceImp implements TransactionService {
         Double b = Double.parseDouble(purchasedCurrencyEntity.getBuying());
         Double rate = a / b;
         return rate;
-    } //todo
+    }
 
     private BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate) {
         BigDecimal balance = account.getBalance();
-        BigDecimal cost = calculateNewBalanceForCross(amount,rate);
+        BigDecimal cost = calculateNewBalanceForCross(amount, rate);
         BigDecimal newBalance = balance.subtract(cost);
-        return  newBalance;
+        return newBalance;
     }
-    private BigDecimal calculateNewBalanceForCross (double amount, double rate ){
+
+    private BigDecimal calculateNewBalanceForCross(double amount, double rate) {
         BigDecimal amountBigDecimal = BigDecimal.valueOf(amount);
         BigDecimal rateBigDecimal = BigDecimal.valueOf(rate);
         BigDecimal cost = amountBigDecimal.multiply(rateBigDecimal);
         return cost;
     }
+    //**************************************************************************
 
-    private BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType) {
-        BigDecimal balance = account.getBalance();
-        BigDecimal cost = calculateTransactionCostForTRY(transactionType, amount, purchasedCurrency);
-        BigDecimal newBalance = balance.subtract(cost);
-        return newBalance;
-    }
-
-    //Yapılan transaction işleminin maliyet hesabı
+    //TRY ile yapılan işlemler için hesaplar ***********************************
     private BigDecimal calculateTransactionCostForTRY(char transactionType, double amount, String currencyCode) {
         Currency currency = currencyRepository.findByCode(currencyCode);
         double currencyPrice;
@@ -138,6 +132,14 @@ public class TransactionServiceImp implements TransactionService {
         BigDecimal cost = new BigDecimal(currencyPrice * amount);
         return cost;
     }
+
+    private BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType) {
+        BigDecimal balance = account.getBalance();
+        BigDecimal cost = calculateTransactionCostForTRY(transactionType, amount, purchasedCurrency);
+        BigDecimal newBalance = balance.subtract(cost);
+        return newBalance;
+    }
+    //****************************************************************************
 
     //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
     @Transactional
