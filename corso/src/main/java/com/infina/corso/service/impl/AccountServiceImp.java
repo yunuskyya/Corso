@@ -1,6 +1,7 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
+import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
@@ -25,6 +26,7 @@ public class AccountServiceImp implements AccountService {
     private ModelMapperConfig mapper;
     private AccountRepository accountRepository;
     private CustomerRepository customerRepository;
+    private CustomerServiceImpl customerServiceImpl;
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
     @Override
@@ -75,6 +77,10 @@ public class AccountServiceImp implements AccountService {
     @Override
     public Account getByAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber);
+    }
+    public AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        return customerServiceImpl.checkAccountsForPurchasedCurrency(account, currencyCode);
     }
 
     @Override
