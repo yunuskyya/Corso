@@ -1,5 +1,6 @@
 package com.infina.corso.model;
 
+import com.infina.corso.model.enums.CustomerStatus;
 import com.infina.corso.model.enums.CustomerType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -29,6 +30,8 @@ public class Customer {
     private CustomerType customerType;
     private String email;
     private String phone;
+    @Enumerated(EnumType.STRING)
+    private CustomerStatus status;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
