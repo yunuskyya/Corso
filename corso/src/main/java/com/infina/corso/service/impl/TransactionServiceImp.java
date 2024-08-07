@@ -46,41 +46,54 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     @Transactional
-    public void transactionSave(TransactionRequest transactionRequest) throws AccountNotFoundException {
-        AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
-        if (accountRequestTransaction.getAccountNo() != null) {
-            Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
-            Account account = accountRepository.findByAccountNumber(transactionRequest.getAccountNumber());
-            account.getTransactions().add(transaction);
-            // Çapraz kur işlemi olup olmadığını kontrol et
-            boolean isCrossRate = !transactionRequest.getSoldCurrency().equals("TL") && !transactionRequest.getPurchasedCurrency().equals("TL");
-            if (isCrossRate) {
-                Double rate = calculateCurrencyRate(transactionRequest);
-                double transactionAmountInSoldCurrency = transactionRequest.getAmount();
-                BigDecimal newBalance = calculateTransactionCostForCross(account, transactionRequest.getAmount(), rate);
-                account.setBalance(newBalance);
-            } else {
-                if (transaction.getSoldCurrency().equals("TL")) {
-                    transaction.setTransactionType('A');
-                } else transaction.setTransactionType('S');
-                BigDecimal newBalance = calculateNewBalanceForTRY(account, transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
-                account.setBalance(newBalance);
-            }
-            Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
-            BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
-            BigDecimal updatedBalancePurchasedCurrency = accountPurchasedCurrency.getBalance().add(amountToAdd);
-            accountPurchasedCurrency.setBalance(updatedBalancePurchasedCurrency);
-            User user = userRepository.findById(transactionRequest.getUser_id())
-                    .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
-            transaction.setUser(user);
-            transaction.setAccount(account);
-            transactionRepository.save(transaction);
-            user.getTransactions().add(transaction);
-            accountRepository.save(account);
-            accountRepository.save(accountPurchasedCurrency);
-            userRepository.save(user);
-        } else
-            throw new AccountNotFoundException("Customer does not have an account in the desired currency. Please open an account first");
+    public void transactionSave(TransactionRequest transactionRequest) {
+        try {
+            AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
+            if (accountRequestTransaction.getAccountNo() != null) {
+                Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
+                Account account = accountRepository.findByAccountNumber(transactionRequest.getAccountNumber());
+                account.getTransactions().add(transaction);
+                // Çapraz kur işlemi olup olmadığını kontrol et
+                boolean isCrossRate = !transactionRequest.getSoldCurrency().equals("TL") && !transactionRequest.getPurchasedCurrency().equals("TL");
+                if (isCrossRate) {
+                    Double rate = calculateCurrencyRate(transactionRequest);
+                    double transactionAmountInSoldCurrency = transactionRequest.getAmount();
+                    BigDecimal newBalance = calculateTransactionCostForCross(account, transactionRequest.getAmount(), rate);
+                    account.setBalance(newBalance);
+                } else {
+                    if (transaction.getSoldCurrency().equals("TL")) {
+                        transaction.setTransactionType('A');
+                    } else transaction.setTransactionType('S');
+                    BigDecimal newBalance = calculateNewBalanceForTRY(account, transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                    account.setBalance(newBalance);
+                }
+                if (account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
+                    throw new RuntimeException("Account balance is negative for account number: " + account.getAccountNumber());
+                }
+                Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
+                BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
+                BigDecimal updatedBalancePurchasedCurrency = accountPurchasedCurrency.getBalance().add(amountToAdd);
+                accountPurchasedCurrency.setBalance(updatedBalancePurchasedCurrency);
+                User user = userRepository.findById(transactionRequest.getUser_id())
+                        .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
+                transaction.setUser(user);
+                transaction.setAccount(account);
+                transactionRepository.save(transaction);
+                user.getTransactions().add(transaction);
+                accountRepository.save(account);
+                accountRepository.save(accountPurchasedCurrency);
+                userRepository.save(user);
+            } else
+                throw new AccountNotFoundException("Customer does not have an account in the desired currency. Please open an account first");
+        } catch (AccountNotFoundException e) {
+            System.out.println("Account not found: " + e.getMessage());
+        } catch (UserNotFoundException e) {
+            System.out.println("User not found: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Runtime exception: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unexpected exception: " + e.getMessage());
+        }
     }
 
     //Parite işlemleri için hesaplar **************************************************

@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface TransactionService {
-    void transactionSave(TransactionRequest transactionRequest)throws AccountNotFoundException;
+    void transactionSave(TransactionRequest transactionRequest);
     Double calculateCurrencyRate(TransactionRequest transactionRequest);
     Double rateCalculate(String soldCurrency, String purchasedCurrency);
     BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate);

@@ -21,7 +21,7 @@ public class TransactionController {
     private final TransactionServiceImp transactionServiceImp;
 
     @PostMapping("/create")
-    public void create (@RequestBody TransactionRequest transactionRequest) throws AccountNotFoundException {
+    public void create (@RequestBody TransactionRequest transactionRequest){
         transactionServiceImp.transactionSave(transactionRequest);
     }
 
