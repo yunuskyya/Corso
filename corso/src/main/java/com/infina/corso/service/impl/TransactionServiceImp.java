@@ -69,12 +69,12 @@ public class TransactionServiceImp implements TransactionService {
                     } else transaction.setTransactionType('S');
                     BigDecimal newBalance = calculateNewBalanceForTRY(account, transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
                     if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-                        throw new RuntimeException("Account balance is negative for account number: " + account.getAccountNumber());
+                        throw new RuntimeException("Insufficient funds for account number: " + account.getAccountNumber());
                     }
                     account.setBalance(newBalance);
                 }
                 if (account.getBalance().compareTo(BigDecimal.ZERO) < 0) {
-                    throw new RuntimeException("Account balance is negative for account number: " + account.getAccountNumber());
+                    throw new RuntimeException("Insufficient funds for account number: "  + account.getAccountNumber());
                 }
                 Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
                 BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
