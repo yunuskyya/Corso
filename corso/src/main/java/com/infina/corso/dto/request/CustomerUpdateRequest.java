@@ -1,5 +1,6 @@
 package com.infina.corso.dto.request;
 
+import com.infina.corso.model.enums.CustomerStatus;
 import com.infina.corso.model.enums.CustomerType;
 import com.infina.corso.validation.annotations.ValidCustomerUpdateRequest;
 import jakarta.validation.constraints.Email;
@@ -22,6 +23,8 @@ public class CustomerUpdateRequest {
     private String surname;
     @NotNull
     private CustomerType customerType;
+    @NotNull
+    private CustomerStatus status;
 
     private String tcKimlikNo;
     private String companyName;

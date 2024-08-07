@@ -1,6 +1,7 @@
 package com.infina.corso.dto.response;
 
 import com.infina.corso.model.User;
+import com.infina.corso.model.enums.CustomerStatus;
 import com.infina.corso.model.enums.CustomerType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ public class CustomerByBrokerResponse {
     private String companyName;
     private String vkn;
     private CustomerType customerType;
+    private CustomerStatus status;
     private String phone;
     private String email;
     private User user;
