@@ -1,6 +1,6 @@
 package com.infina.corso.controller;
 
-import com.infina.corso.dto.request.CustomerRequest;
+import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.service.CustomerService;
 import org.springframework.data.domain.Page;
@@ -51,7 +51,7 @@ public class CustomerController {
     // Create a new customer
     @PostMapping
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CustomerRequest customerRequest) {
+    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CustomerUpdateRequest customerRequest) {
         customerService.createCustomer(customerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -59,7 +59,7 @@ public class CustomerController {
     // Update a customer
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @RequestBody @Validated CustomerRequest customerRequest) {
+    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @RequestBody @Validated CustomerUpdateRequest customerRequest) {
         CustomerResponse updatedCustomer = customerService.updateCustomer(id, customerRequest);
         return ResponseEntity.ok(updatedCustomer);
     }

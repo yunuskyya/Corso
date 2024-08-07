@@ -2,7 +2,7 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.AccountRequestTransaction;
-import com.infina.corso.dto.request.CustomerRequest;
+import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
@@ -71,14 +71,14 @@ public class CustomerServiceImpl implements CustomerService {
 
     // only manager or broker
     @Override
-    public void createCustomer(CustomerRequest customer) {
+    public void createCustomer(CustomerUpdateRequest customer) {
         Customer customerEntity = mapToCustomer(customer);
         customerRepository.save(customerEntity);
     }
 
     // only manager or broker
     @Override
-    public CustomerResponse updateCustomer(Long id, CustomerRequest customer) {
+    public CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customer) {
         Optional<Customer> foundCustomer = customerRepository.findById(id);
 
         if (foundCustomer.isPresent()) {
@@ -97,7 +97,7 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.deleteById(id);
     }
 
-    private Customer mapToCustomer(CustomerRequest customer) {
+    private Customer mapToCustomer(CustomerUpdateRequest customer) {
         return modelMapperRequest
                 .map(customer, Customer.class);
     }
