@@ -4,6 +4,7 @@ import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.ChangePasswordRequest;
 import com.infina.corso.dto.request.RegisterUserRequest;
 import com.infina.corso.dto.response.GetAllUserResponse;
+import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.Transaction;
 import com.infina.corso.model.User;
 import com.infina.corso.model.enums.Role;
@@ -100,5 +101,15 @@ public class UserServiceImpl implements UserService {
     public List<Transaction> getAllTransactionsById(int id){
         Optional<User> user = userRepository.findById(id);
         return user.get().getTransactions();
+    }
+    @Override
+    public void deleteUser(int id){
+      User userInDB = userRepository.findById(id).orElseThrow(() -> {
+          logger.error("User not found with id: {}", id);
+          throw new UserNotFoundException("User not found with id: " + id);
+      });
+      userInDB.setDeleted(true);
+        userRepository.save(userInDB);
+        logger.info("User deleted: {}", userInDB.getUsername());
     }
 }
