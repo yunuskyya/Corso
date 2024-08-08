@@ -4,25 +4,24 @@ package com.infina.corso.controller;
 
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
-import com.infina.corso.service.impl.TransactionServiceImp;
+import com.infina.corso.service.impl.TransactionServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/transaction")
 public class TransactionController {
 
-    public TransactionController(TransactionServiceImp transactionServiceImp) {
-        this.transactionServiceImp = transactionServiceImp;
+    public TransactionController(TransactionServiceImpl transactionServiceImpl) {
+        this.transactionServiceImpl = transactionServiceImpl;
     }
 
-    private final TransactionServiceImp transactionServiceImp;
+    private final TransactionServiceImpl transactionServiceImpl;
 
     @PostMapping("/create")
     public void create (@RequestBody TransactionRequest transactionRequest){
-        transactionServiceImp.transactionSave(transactionRequest);
+        transactionServiceImpl.transactionSave(transactionRequest);
     }
 
     @DeleteMapping("/delete")
@@ -37,13 +36,13 @@ public class TransactionController {
     //Sadece admin ve yönetici erişebilecek
     @GetMapping("/get/all")
     public List<TransactionResponse> getAll(){
-        return transactionServiceImp.collectAllTransactions();
+        return transactionServiceImpl.collectAllTransactions();
 
     }
 
     @GetMapping("/get/all/user/{userId}")
     public List<TransactionResponse> getTransactionsSelectedUser(@PathVariable int userId){
-        return transactionServiceImp.collectTransactionsForSelectedUser(userId);
+        return transactionServiceImpl.collectTransactionsForSelectedUser(userId);
 
     }
 

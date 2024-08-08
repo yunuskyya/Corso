@@ -22,7 +22,7 @@ public class PdfReportService {
 
         document.add(new Paragraph("Transactions"));
 
-        Table table = new Table(new float[]{1, 1, 2, 2, 2, 3});
+        Table table = new Table(new float[]{1, 1, 2, 2, 2});
         table.setWidth(UnitValue.createPercentValue(100));
 
         table.addHeaderCell("User ID");
