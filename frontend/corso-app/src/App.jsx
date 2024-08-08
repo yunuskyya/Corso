@@ -7,10 +7,12 @@ import PrivateRoute from './components/PrivateRoute.jsx';
 import HomePage from './pages/HomePage.jsx';
 import Login from './pages/Login.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
-import AddCustomerPage from './pages/AddCustomerPage.jsx'
+import AddCustomerPage from './pages/AddCustomerPage.jsx';
+import AccountsPage from './pages/AccountsPage.jsx';
 import { Modal } from 'react-bootstrap';
 import { useTheme } from './context/ThemeProvider';
 import './App.css';
+
 
 const App = () => {
   return (
@@ -58,6 +60,7 @@ const AppContent = () => {
           <Route exact path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/addCustomer" element={<AddCustomerPage/>} />
+          <Route path="/accounts" element={<AccountsPage/>} />
           <Route path="/dashboard" element={
             <PrivateRoute>
               <DashboardPage/>
