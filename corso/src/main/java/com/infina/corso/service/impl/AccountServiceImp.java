@@ -17,6 +17,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Random;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,27 +34,23 @@ public class AccountServiceImp implements AccountService {
         this.mapper = mapper;
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
-
         this.customerServiceImpl = customerServiceImpl;
     }
 
 
     @Override
-    public Account createAccount(CreateAccountRequest createAccountRequest) {
-        // Hesabı buluyoruz
-        Account existingAccount = accountRepository.findByAccountNumber(createAccountRequest.getAccountNumber());
+    public Account createAccount(CreateAccountRequest createAccountRequest, Long customerId) {
+        Account newAccount = mapper.modelMapperForRequest().map(createAccountRequest, Account.class);
 
-        if (existingAccount != null) {
-            logger.warn("Account with account number {} already exists.", createAccountRequest.getAccountNumber());
-            throw new AccountAlreadyExistsException("Account with this account number already exists.");
+        if (accountRepository.findByCurrencyAndCustomerId(createAccountRequest.getCurrency(), customerId) != null) {
+            throw new AccountAlreadyExistsException("Account already exists with currency " + createAccountRequest.getCurrency());
         }
-
-        Account account = mapper.modelMapperForResponse().map(createAccountRequest, Account.class);
-        logger.info("Account created: {}", account.getAccountNumber());
-        return accountRepository.save(account);
-
+        newAccount.setAccountNumber("ACC" + new Random().nextInt(1000000));
+        newAccount.setBalance(BigDecimal.valueOf(0.0));
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
+        newAccount.setCustomer(customer);        return accountRepository.save(newAccount);
     }
-
     @Override
     public GetAccountByIdResponse updateAccount(Long customerId, Long accountId, UpdateAccountRequest updateAccountRequest) {
 
