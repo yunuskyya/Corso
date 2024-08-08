@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -41,12 +42,14 @@ public class AccountController {
 
     @GetMapping("/customer/{customerId}")
     @Operation(summary = "Get accounts by customer ID", description = "Retrieve a list of accounts by customer ID.")
-    public ResponseEntity<List<GetAllAccountResponse>> getAccountsByCustomerId(@PathVariable Long customerId) {
-        return ResponseEntity.ok(accountService.getAccountsByCustomerId(customerId));}
-
+    public GenericMessage getAccountsByCustomerId(@PathVariable Long customerId) {
+        return new GenericMessage(Messages.getMessageForLocale("corso.get.accounts.by.customer.id.success.message.successfully",
+                LocaleContextHolder.getLocale()));
+    }
 
     @PostMapping
     @Operation(summary = "Create a new account", description = "Create a new account with the given details.")
+    @PreAuthorize("hasRole('ROLE_BROKER') OR hasRole('ROLE_MANAGER')")
     public GenericMessage createAccount(@RequestParam Long customerId, @RequestBody CreateAccountRequest createAccountRequest) {
         accountService.createAccount(createAccountRequest, customerId);
         return new GenericMessage(Messages.getMessageForLocale("corso.create.account.success.message.successfully",
@@ -55,18 +58,20 @@ public class AccountController {
 
     @PutMapping("/update/{customerId}/{accountId}")
     @Operation(summary = "Update an account", description = "Update an account by ID.")
-    public ResponseEntity<GetAccountByIdResponse> updateAccount(
+    public GenericMessage updateAccount(
             @PathVariable Long customerId,
             @PathVariable Long accountId,
             @RequestBody UpdateAccountRequest updateAccountRequest) {
         GetAccountByIdResponse updatedAccount = accountService.updateAccount(customerId, accountId, updateAccountRequest);
-        return ResponseEntity.ok(updatedAccount);
+        return new GenericMessage(Messages.getMessageForLocale("corso.update.account.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an account", description = "Delete an account by ID.")
-    public ResponseEntity<Void> deleteAccount(@PathVariable Long id) {
+    public GenericMessage deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
-        return ResponseEntity.noContent().build();
+        return new GenericMessage(Messages.getMessageForLocale("corso.delete.account.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 }
