@@ -2,7 +2,6 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.config.UserNotFoundException;
-import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.model.*;
@@ -10,15 +9,16 @@ import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.repository.TransactionRepository;
 import com.infina.corso.repository.UserRepository;
-import com.infina.corso.service.CurrencyService;
 import com.infina.corso.service.TransactionService;
 import com.infina.corso.service.UserService;
+import org.modelmapper.PropertyMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,50 +28,43 @@ public class TransactionServiceImp implements TransactionService {
     private final CurrencyRepository currencyRepository;
     private final UserRepository userRepository;
 
-    public TransactionServiceImp(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserService userService, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyService, CustomerServiceImpl customerServiceImpl, AccountRepository accountRepository, CurrencyRepository currencyRepository, UserRepository userRepository, AccountServiceImp accountService) {
+    public TransactionServiceImp(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserService userService, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyServiceImp, CustomerServiceImpl customerServiceImpl, AccountRepository accountRepository, CurrencyRepository currencyRepository, UserRepository userRepository) {
         this.transactionRepository = transactionRepository;
         this.modelMapperConfig = modelMapperConfig;
-        this.userService = userServiceImpl;
-        this.currencyService = currencyService;
+        this.userServiceImpl = userServiceImpl;
+        this.currencyServiceImp = currencyServiceImp;
         this.customerServiceImpl = customerServiceImpl;
         this.accountRepository = accountRepository;
         this.currencyRepository = currencyRepository;
         this.userRepository = userRepository;
-        this.accountService = accountService;
     }
 
     private final ModelMapperConfig modelMapperConfig;
 
     private final TransactionRepository transactionRepository;
 
-    private final UserServiceImpl userService;
+    private final UserServiceImpl userServiceImpl;
 
-    private final CurrencyService currencyService;
+    private final CurrencyServiceImp currencyServiceImp;
 
     private final AccountRepository accountRepository; //AccountService sınıfı oluşturulduğunda oradan çekilecek
 
-    private final AccountServiceImp accountService;
-
 
     @Transactional
-    public void transactionSave(TransactionRequest transactionRequest) throws AccountNotFoundException {
-
-        AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
-
-        if(accountRequestTransaction.getAccountNo() != null){
+    public void transactionSave(TransactionRequest transactionRequest) {
         Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
-        //Transaction'un türü belirlenip set edilir. **Gerekli mi belirsiz?
+        //Transaction'un türü belirlenip set edilir.
         if (transaction.getSoldCurrency().equals("TL")) {
             transaction.setTransactionType('A');
         } else transaction.setTransactionType('S');
+        //Gelen request içindeki account no ile ilgli Account sınıfı bulunur
         Account account = accountRepository.findByAccountNumber(transactionRequest.getAccountNumber());
+        //Yapılan transaction ilgili account sınıfı içindeki Transaction listesine eklenir
         account.getTransactions().add(transaction);
+        //İlgili account içindeki bakiye değişikliği yapılır
         BigDecimal newBalance = calculateNewBalance(account,transaction.getAmount() ,transaction.getPurchasedCurrency(),transaction.getTransactionType());
         account.setBalance(newBalance);
-        Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
-        BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
-        BigDecimal updatedBalancePurchasedCurrency = accountPurchasedCurrency.getBalance().add(amountToAdd);
-        accountPurchasedCurrency.setBalance(updatedBalancePurchasedCurrency);
+        //Transaction'u yapan user bulunur ve transaction user içine yerleştirilir
         User user = userRepository.findById(transactionRequest.getUser_id())
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
         transaction.setUser(user);
@@ -79,18 +72,41 @@ public class TransactionServiceImp implements TransactionService {
         transactionRepository.save(transaction);
         user.getTransactions().add(transaction);
         accountRepository.save(account);
-        accountRepository.save(accountPurchasedCurrency);
-        userRepository.save(user);}
-        else throw new AccountNotFoundException("Customer does not have an account in the desired currency. Please open an account first");
+        userRepository.save(user);
     }
 
-    private Double calculateCurrencyRate(TransactionRequest transactionRequest){
+        public Double calculateCurrencyRate(TransactionRequest transactionRequest){
         String soldCurrency = transactionRequest.getSoldCurrency();
         String purchasedCurrency = transactionRequest.getPurchasedCurrency();
         Currency soldCurrencyEntity = currencyRepository.findByCode(soldCurrency);
         Currency purchasedCurrencyEntity = currencyRepository.findByCode(purchasedCurrency);
+
         return null;
-        //todo tl dışında döviz çapraz oran hesaplama yapılacak
+    }
+
+    @Override
+    public Double rateCalculate(String soldCurrency, String purchasedCurrency) {
+        return 0.0;
+    }
+
+    @Override
+    public BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate) {
+        return null;
+    }
+
+    @Override
+    public BigDecimal calculateNewBalanceForCross(double amount, double rate) {
+        return null;
+    }
+
+    @Override
+    public BigDecimal calculateTransactionCostForTRY(char transactionType, double amount, String currencyCode) {
+        return null;
+    }
+
+    @Override
+    public BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType) {
+        return null;
     }
 
     private BigDecimal calculateNewBalance(Account account, int amount, String purchasedCurrency, char transactionType) {
@@ -114,7 +130,7 @@ public class TransactionServiceImp implements TransactionService {
     //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
     @Transactional
     public List<TransactionResponse> collectTransactionsForSelectedUser(int id) {
-        return convertTractionListAsDto(userService.getAllTransactionsById(id));
+        return convertTractionListAsDto(userServiceImpl.getAllTransactionsById(id));
     }
 
     //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
@@ -124,7 +140,7 @@ public class TransactionServiceImp implements TransactionService {
     }
 
     //Entity listesinin Dto listesine çevrimi
-    private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
+    public List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
                 .map(transaction -> modelMapperConfig.modelMapperForTransaction()
                         .map(transaction, TransactionResponse.class))

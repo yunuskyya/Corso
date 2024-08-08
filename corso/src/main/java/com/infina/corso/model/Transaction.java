@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Table(name = "transactions")
 public class Transaction {
 
-    public Transaction (char transactionType, String purchasedCurrency, String soldCurrency, int amount){
+    public Transaction(char transactionType, String purchasedCurrency, String soldCurrency, int amount) {
 
     }
 
@@ -37,6 +37,9 @@ public class Transaction {
 
     @Column
     private int amount;
+
+   /* @Column
+    private double cost; */
 
     @CreationTimestamp
     private LocalDateTime transactionDate;

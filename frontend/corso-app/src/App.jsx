@@ -8,6 +8,8 @@ import HomePage from './pages/HomePage.jsx';
 import Login from './components/Auth/Login.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import { Modal } from 'react-bootstrap';
+import { useTheme } from './context/ThemeProvider';
+import './App.css';
 
 const App = () => {
   return (
@@ -22,13 +24,14 @@ const AppContent = () => {
   const isLoginSuccess = useAppSelector((state) => state.auth.isLoginSuccess);
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     dispatch(fetchCurrentUser());
   }, []);
 
   useEffect(() => {
-    if(isLoginSuccess) {
+    if (isLoginSuccess) {
       dispatch(fetchCurrentUser()).catch(() => {
         setShowModal(true);
         setTimeout(() => {
@@ -47,9 +50,9 @@ const AppContent = () => {
   };
 
   return (
-    <>
+    <div className={`app ${theme === 'dark' ? 'bg-dark text-white' : 'bg-light text-dark'}`}>
       <Navbar onLogout={handleLogout} />
-      <div className="container mt-4">
+      <div className="container mt-4 main">
         <Routes>
           <Route exact path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
@@ -67,7 +70,7 @@ const AppContent = () => {
         </Modal.Header>
         <Modal.Body>Your session has expired. You will be logged out.</Modal.Body>
       </Modal>
-    </>
+    </div>
   );
 };
 

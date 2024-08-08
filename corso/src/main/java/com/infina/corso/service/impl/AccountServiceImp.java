@@ -12,7 +12,6 @@ import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AccountService;
 
-import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -21,13 +20,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
 public class AccountServiceImp implements AccountService {
     private ModelMapperConfig mapper;
     private AccountRepository accountRepository;
     private CustomerRepository customerRepository;
     private CustomerServiceImpl customerServiceImpl;
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
+
+    public AccountServiceImp(ModelMapperConfig mapper, AccountRepository accountRepository, CustomerRepository customerRepository, CustomerServiceImpl customerServiceImpl) {
+        this.mapper = mapper;
+        this.accountRepository = accountRepository;
+        this.customerRepository = customerRepository;
+        this.customerServiceImpl = customerServiceImpl;
+    }
+
 
     @Override
     public Account createAccount(CreateAccountRequest createAccountRequest) {
@@ -78,10 +84,7 @@ public class AccountServiceImp implements AccountService {
     public Account getByAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber);
     }
-    public AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode) {
-        Account account = accountRepository.findByAccountNumber(accountNumber);
-        return customerServiceImpl.checkAccountsForPurchasedCurrency(account, currencyCode);
-    }
+
 
     @Override
     public List<GetAllAccountResponse> getAccountsByCustomerId(Long customerId) {
@@ -89,6 +92,6 @@ public class AccountServiceImp implements AccountService {
         return accounts.stream()
                 .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
                 .collect(Collectors.toList());
-        }
-
+    }
 }
+

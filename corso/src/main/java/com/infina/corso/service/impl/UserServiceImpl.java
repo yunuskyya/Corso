@@ -63,7 +63,6 @@ public class UserServiceImpl implements UserService {
             add(Role.ROLE_MANAGER);
         }});
         newUser.setActive(true);
-        newUser.setActive(true);
         userRepository.save(newUser);
         logger.info("Manager registered: {}", newUser.getEmail());
         emailHelper.sendRegistrationEmail(newUser, rawPassword);

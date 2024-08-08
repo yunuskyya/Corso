@@ -20,7 +20,7 @@ const Login = () => {
     }, [error]);
 
     useEffect(() => {
-        
+
         return () => {
             dispatch(resetLoginStatus());
         };
