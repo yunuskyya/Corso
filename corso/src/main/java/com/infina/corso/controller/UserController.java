@@ -111,4 +111,12 @@ public class UserController {
                     LocaleContextHolder.getLocale()));
         }
     }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Delete a user", description = "Delete a user by ID.")
+    public GenericMessage deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
+        return new GenericMessage(Messages.getMessageForLocale("corso.delete.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
+    }
 }
