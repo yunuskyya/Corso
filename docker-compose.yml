@@ -1,0 +1,21 @@
+services:
+  backend:
+    build:
+      context: ./corso
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    volumes:
+      - ./corso/data:/app/data
+    networks:
+      - app-network
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+networks:
+  app-network:
+    driver: bridge
