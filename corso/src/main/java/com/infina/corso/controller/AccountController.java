@@ -31,14 +31,18 @@ public class AccountController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @Operation(summary = "Get all accounts", description = "Retrieve a list of all accounts.")
-    public ResponseEntity<List<GetAllAccountResponse>> getAllAccounts() {
-        return ResponseEntity.ok(accountService.getAllAccounts());
+    public GenericMessage getAllAccounts() {
+        accountService.getAllAccounts();
+        return new GenericMessage(Messages.getMessageForLocale("corso.get.all.accounts.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get account by ID", description = "Retrieve an account by ID.")
-    public GetAccountByIdResponse getAccountById(@PathVariable Long id) {
-        return accountService.getAccountById(id);
+    public GenericMessage getAccountById(@PathVariable Long id) {
+       accountService.getAccountById(id);
+        return new GenericMessage(Messages.getMessageForLocale("corso.get.account.by.id.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @GetMapping("/customer/{customerId}")

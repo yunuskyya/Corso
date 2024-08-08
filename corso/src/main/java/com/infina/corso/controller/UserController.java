@@ -12,8 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,9 +36,10 @@ public class UserController {
     @GetMapping("/brokers")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @Operation(summary = "Get all brokers", description = "Retrieve a list of all brokers.")
-    public ResponseEntity<List<GetAllUserResponse>> getAllBrokers() {
+    public GenericMessage getAllBrokers() {
         List<GetAllUserResponse> brokers = userService.getAllUser();
-        return ResponseEntity.ok(brokers);
+        return new GenericMessage(Messages.getMessageForLocale("corso.get.all.brokers.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @PostMapping("/register/broker")
@@ -63,16 +62,17 @@ public class UserController {
 
     @GetMapping("/role")
     @Operation(summary = "Get user role", description = "Retrieve the role of the currently authenticated user.")
-    public ResponseEntity<?> getUserRole(Authentication authentication) {
+    public GenericMessage getUserRole(Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required");
+            return new GenericMessage(Messages.getMessageForLocale("corso.get.user.role.error.message.unauthorized",
+                    LocaleContextHolder.getLocale()));
         }
-
         CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
         Map<String, Object> response = new HashMap<>();
         response.put("id", currentUser.getId());
         response.put("authorities", currentUser.getAuthorities());
-        return ResponseEntity.ok(response);
+        return new GenericMessage(Messages.getMessageForLocale("corso.get.user.role.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 
     @GetMapping("/send")
