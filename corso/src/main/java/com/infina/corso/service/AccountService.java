@@ -10,7 +10,7 @@ import com.infina.corso.model.Account;
 import java.util.List;
 
 public interface AccountService {
-    Account createAccount(CreateAccountRequest createAccountRequest);
+    Account createAccount(CreateAccountRequest createAccountRequest, Long customerId);
     GetAccountByIdResponse updateAccount(Long customerId, Long accountId, UpdateAccountRequest updateAccountRequest); // Güncelleme metodu
     void deleteAccount(Long id);
     GetAccountByIdResponse getAccountById(Long id);
