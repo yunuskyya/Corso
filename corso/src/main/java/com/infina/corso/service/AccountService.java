@@ -1,5 +1,6 @@
 package com.infina.corso.service;
 
+import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.enums.CustomerType;
 
@@ -16,4 +17,5 @@ public interface AccountService {
     List<Account> getAccountsByCustomerId(Long customerId);
     /*List<Account> getAccountsByCurrencyAndCustomerType(String currency, CustomerType customerType); */
     List<Account> getAccountsByDateRange(LocalDateTime startDate, LocalDateTime endDate);
+    AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode);
 }

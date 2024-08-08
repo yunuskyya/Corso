@@ -9,7 +9,6 @@ import com.infina.corso.model.User;
 import com.infina.corso.model.enums.Role;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.MailService;
-import com.infina.corso.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -24,13 +23,13 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserService implements com.infina.corso.service.UserService {
 
     private UserRepository userRepository;
     private ModelMapperConfig mapper;
     private PasswordEncoder passwordEncoder;
     private MailService emailService;
-    private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(UserService.class);
 
     @Override
     public List<GetAllUserResponse> getAllUser() {
