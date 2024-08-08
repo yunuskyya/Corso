@@ -6,13 +6,13 @@ import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
+import com.infina.corso.exception.AccountAlreadyExistsException;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AccountService;
 
-import com.infina.corso.service.CustomerService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -39,6 +39,14 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public Account createAccount(CreateAccountRequest createAccountRequest) {
+        // Hesabı buluyoruz
+        Account existingAccount = accountRepository.findByAccountNumber(createAccountRequest.getAccountNumber());
+
+        if (existingAccount != null) {
+            logger.warn("Account with account number {} already exists.", createAccountRequest.getAccountNumber());
+            throw new AccountAlreadyExistsException("Account with this account number already exists.");
+        }
+
         Account account = mapper.modelMapperForResponse().map(createAccountRequest, Account.class);
         logger.info("Account created: {}", account.getAccountNumber());
         return accountRepository.save(account);
