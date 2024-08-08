@@ -12,6 +12,7 @@ import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AccountService;
 
+import com.infina.corso.service.CustomerService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -21,16 +22,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class AccountServiceImp implements AccountService {
+    private final CustomerServiceImpl customerServiceImpl;
     private ModelMapperConfig mapper;
     private AccountRepository accountRepository;
     private CustomerRepository customerRepository;
-    private CustomerServiceImpl customerServiceImpl;
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
-    public AccountServiceImp(ModelMapperConfig mapper, AccountRepository accountRepository, CustomerRepository customerRepository, CustomerServiceImpl customerServiceImpl) {
+    public AccountServiceImp(ModelMapperConfig mapper, AccountRepository accountRepository, CustomerRepository customerRepository , CustomerServiceImpl customerServiceImpl) {
         this.mapper = mapper;
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
+
         this.customerServiceImpl = customerServiceImpl;
     }
 
@@ -83,6 +85,12 @@ public class AccountServiceImp implements AccountService {
     @Override
     public Account getByAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber);
+    }
+
+    @Override
+    public AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode) {
+        Account account = accountRepository.findByAccountNumber(accountNumber);
+        return customerServiceImpl.checkAccountsForPurchasedCurrency(account, currencyCode);
     }
 
 
