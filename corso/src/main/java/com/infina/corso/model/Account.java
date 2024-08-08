@@ -21,9 +21,9 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String accountNumber;
-    private String bankName;
     private String currency;
     private BigDecimal balance;
+    private boolean isActive;
     private boolean isDeleted;
 
     @ManyToOne

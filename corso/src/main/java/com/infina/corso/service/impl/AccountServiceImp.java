@@ -6,17 +6,19 @@ import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
+import com.infina.corso.exception.AccountAlreadyExistsException;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AccountService;
 
-import com.infina.corso.service.CustomerService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.Random;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,19 +34,23 @@ public class AccountServiceImp implements AccountService {
         this.mapper = mapper;
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
-
         this.customerServiceImpl = customerServiceImpl;
     }
 
 
     @Override
-    public Account createAccount(CreateAccountRequest createAccountRequest) {
-        Account account = mapper.modelMapperForResponse().map(createAccountRequest, Account.class);
-        logger.info("Account created: {}", account.getAccountNumber());
-        return accountRepository.save(account);
+    public Account createAccount(CreateAccountRequest createAccountRequest, Long customerId) {
+        Account newAccount = mapper.modelMapperForRequest().map(createAccountRequest, Account.class);
 
+        if (accountRepository.findByCurrencyAndCustomerId(createAccountRequest.getCurrency(), customerId) != null) {
+            throw new AccountAlreadyExistsException("Account already exists with currency " + createAccountRequest.getCurrency());
+        }
+        newAccount.setAccountNumber("ACC" + new Random().nextInt(1000000));
+        newAccount.setBalance(BigDecimal.valueOf(0.0));
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with id " + customerId));
+        newAccount.setCustomer(customer);        return accountRepository.save(newAccount);
     }
-
     @Override
     public GetAccountByIdResponse updateAccount(Long customerId, Long accountId, UpdateAccountRequest updateAccountRequest) {
 

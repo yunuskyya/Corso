@@ -1,9 +1,12 @@
 package com.infina.corso.dto.response;
 
-public class GetAccountByIdResponse {
+import lombok.Data;
 
+@Data
+public class GetAccountByIdResponse {
     private String accountNumber;
-    private String bankName;
     private String currency;
     private String balance;
+    private boolean isActive;
+    private boolean isDeleted;
 }
