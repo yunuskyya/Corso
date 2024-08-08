@@ -36,6 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/brokers")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @Operation(summary = "Get all brokers", description = "Retrieve a list of all brokers.")
     public ResponseEntity<List<GetAllUserResponse>> getAllBrokers() {
         List<GetAllUserResponse> brokers = userService.getAllUser();
@@ -86,25 +87,28 @@ public class UserController {
 
     @PutMapping("/change-password")
     @Operation(summary = "Change user password", description = "Change the password of a user.")
-    public ResponseEntity<String> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+    public GenericMessage changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
             userService.changePassword(changePasswordRequest);
-            return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
+            return  new GenericMessage(Messages.getMessageForLocale("corso.change.password.success.message.successfully",
+                    LocaleContextHolder.getLocale()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return new GenericMessage(Messages.getMessageForLocale("corso.change.password.error.message.error",
+                    LocaleContextHolder.getLocale()));
         }
     }
-
 
     @PutMapping("/activate")
     @PreAuthorize("hasRole('ROLE_MANAGER') OR hasRole('ROLE_ADMIN')")
     @Operation(summary = "Activate a user account by email", description = "Activate a user account that is currently locked using their email.")
-    public ResponseEntity<String> activateUserByEmail(@RequestParam String email) {
+    public GenericMessage activateUserByEmail(@RequestParam String email) {
         try {
             userService.activateUserByEmail(email);
-            return ResponseEntity.ok("Kullanıcı başarıyla aktifleştirildi.");
+            return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.success.message.successfully",
+                    LocaleContextHolder.getLocale()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.error.message.error",
+                    LocaleContextHolder.getLocale()));
         }
     }
 }

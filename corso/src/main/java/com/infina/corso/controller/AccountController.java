@@ -29,6 +29,7 @@ public class AccountController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @Operation(summary = "Get all accounts", description = "Retrieve a list of all accounts.")
     public ResponseEntity<List<GetAllAccountResponse>> getAllAccounts() {
         return ResponseEntity.ok(accountService.getAllAccounts());
@@ -42,9 +43,8 @@ public class AccountController {
 
     @GetMapping("/customer/{customerId}")
     @Operation(summary = "Get accounts by customer ID", description = "Retrieve a list of accounts by customer ID.")
-    public GenericMessage getAccountsByCustomerId(@PathVariable Long customerId) {
-        return new GenericMessage(Messages.getMessageForLocale("corso.get.accounts.by.customer.id.success.message.successfully",
-                LocaleContextHolder.getLocale()));
+    public ResponseEntity<List<GetAllAccountResponse>> getAccountsByCustomerId(@PathVariable Long customerId) {
+        return ResponseEntity.ok(accountService.getAccountsByCustomerId(customerId));
     }
 
     @PostMapping
@@ -68,6 +68,7 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @Operation(summary = "Delete an account", description = "Delete an account by ID.")
     public GenericMessage deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);

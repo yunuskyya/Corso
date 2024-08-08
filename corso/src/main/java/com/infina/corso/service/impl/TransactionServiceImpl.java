@@ -1,10 +1,10 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
-import com.infina.corso.config.UserNotFoundException;
 import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
+import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.*;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CurrencyRepository;
