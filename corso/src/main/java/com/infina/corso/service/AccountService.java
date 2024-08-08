@@ -17,4 +17,5 @@ public interface AccountService {
     List<GetAllAccountResponse> getAllAccounts();
     Account getByAccountNumber(String accountNumber);
     List<GetAllAccountResponse> getAccountsByCustomerId(Long customerId);
+    AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode);
 }
