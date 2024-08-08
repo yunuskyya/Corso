@@ -27,15 +27,10 @@ public class TokenServiceImpl implements TokenService {
     private final ObjectMapper objectmapper;
 
     @Override
-    public Token generateToken(GetUserByEmailResponse user, CredentialsRequest credentials) {
-        User inDb = userRepository.findById(user.getId()).orElseThrow(() -> {
-            logger.error("User not found: " + user.getId());
-            throw new IllegalArgumentException("User with ID " + user.getId() + " not found");
-
-        });
+    public Token generateToken(User user) {
         Token token = new Token();
         token.setTokenId(UUID.randomUUID().toString());
-        token.setUser(inDb);
+        token.setUser(user);
         token.setExpirationDate(System.currentTimeMillis() + (3 * 60 * 60 * 1000));
         redisTemplate.opsForValue().set(token.getTokenId(), token);
         logger.info("Token generated: {}", token.getTokenId());

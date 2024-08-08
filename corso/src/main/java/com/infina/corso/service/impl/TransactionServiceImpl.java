@@ -10,8 +10,7 @@ import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.repository.TransactionRepository;
 import com.infina.corso.repository.UserRepository;
-import com.infina.corso.service.CurrencyService;
-import com.infina.corso.service.TransactionService;
+import com.infina.corso.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +30,10 @@ public class TransactionServiceImpl implements TransactionService {
     private final CurrencyService currencyService;
     private final CurrencyRepository currencyRepository;
     private final AccountRepository accountRepository;
-    private final AccountServiceImpl accountServiceImpl;
+    private final AccountService accountService;
+    private final UserServiceImpl userServiceImpl;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, com.infina.corso.service.UserService userService, UserService userServiceImpl, CurrencyServiceImp currencyService, CustomerService customerService, AccountRepository accountRepository, CurrencyRepository currencyRepository, UserRepository userRepository, AccountServiceImpl accountServiceImpl) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyService, CustomerService customerService, AccountRepository accountRepository, CurrencyRepository currencyRepository, UserRepository userRepository, AccountService accountService) {
         this.transactionRepository = transactionRepository;
         this.modelMapperConfig = modelMapperConfig;
         this.userService = userServiceImpl;
@@ -42,13 +42,14 @@ public class TransactionServiceImpl implements TransactionService {
         this.accountRepository = accountRepository;
         this.currencyRepository = currencyRepository;
         this.userRepository = userRepository;
-        this.accountServiceImpl = accountServiceImpl;
+        this.accountService = accountService;
+        this.userServiceImpl = userServiceImpl;
     }
 
     @Transactional
     public void transactionSave(TransactionRequest transactionRequest) {
         try {
-            AccountRequestTransaction accountRequestTransaction = accountServiceImpl.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
+            AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
             if (accountRequestTransaction.getAccountNo() != null) {
                 Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
                 Account account = accountRepository.findByAccountNumber(transactionRequest.getAccountNumber());
@@ -166,7 +167,7 @@ public class TransactionServiceImpl implements TransactionService {
     //UserId ile brokera ait olan tüm müşteilerinin hesaplarındaki işlemleri getiren method
     @Transactional
     public List<TransactionResponse> collectTransactionsForSelectedUser(int id) {
-        return convertTractionListAsDto(userService.getAllTransactionsById(id));
+        return convertTractionListAsDto(userServiceImpl.getAllTransactionsById(id));
     }
 
     //Adminin veya Yönetici kullanıcısının brokerların yaptığı tüm işlemleri getiren method
