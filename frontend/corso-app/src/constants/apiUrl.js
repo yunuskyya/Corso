@@ -16,4 +16,4 @@ export const CUSTOMER_URL = BASE_URL + 'customer';
 // account urls:
 
 export const ACCOUNT_URL = BASE_URL + 'accounts';
-export const ACCOUNT_URL_CUSTOMER = BASE_URL + 'accounts/customer';
+export const ACCOUNT_URL_CUSTOMER = BASE_URL + 'accounts/faketest';

@@ -16,8 +16,12 @@ import java.util.List;
 @Tag(name = "Account Management", description = "Operations related to account management")
 public class AccountController {
 
-    @Autowired
-    private AccountService accountService;
+
+    private final AccountService accountService;
+
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
     @GetMapping
     @Operation(summary = "Get all accounts", description = "Retrieve a list of all accounts.")
