@@ -23,6 +23,7 @@ public class ErrorHandler {
             UserNotFoundException.class,
             AuthenticationException.class,
             GeneralErrorException.class,
+            AccountAlreadyExistsException.class,
             AccessDeniedException.class
     })
     ResponseEntity<ApiError> handleCustomException(Exception exception, HttpServletRequest request) {
@@ -46,6 +47,8 @@ public class ErrorHandler {
             error.setStatus(401);
         } else if (exception instanceof AccessDeniedException) {
             error.setStatus(403);
+        } else if (exception instanceof AccountAlreadyExistsException) {
+            error.setStatus(409);
         }
         return ResponseEntity.status(error.getStatus()).body(error);
     }
