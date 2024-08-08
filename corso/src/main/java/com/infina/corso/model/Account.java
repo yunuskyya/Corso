@@ -23,6 +23,7 @@ public class Account {
     private String accountNumber;
     private String currency;
     private BigDecimal balance;
+    private boolean isActive;
     private boolean isDeleted;
 
     @ManyToOne
