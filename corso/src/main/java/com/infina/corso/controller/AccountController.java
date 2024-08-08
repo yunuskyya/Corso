@@ -6,9 +6,11 @@ import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.service.AccountService;
+import com.infina.corso.shared.GenericMessage;
+import com.infina.corso.shared.Messages;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,12 +44,14 @@ public class AccountController {
     public ResponseEntity<List<GetAllAccountResponse>> getAccountsByCustomerId(@PathVariable Long customerId) {
         return ResponseEntity.ok(accountService.getAccountsByCustomerId(customerId));}
 
+
     @PostMapping
     @Operation(summary = "Create a new account", description = "Create a new account with the given details.")
-    public ResponseEntity<Account> createAccount(@RequestBody CreateAccountRequest createAccountRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(accountService.createAccount(createAccountRequest));
+    public GenericMessage createAccount(@RequestParam Long customerId, @RequestBody CreateAccountRequest createAccountRequest) {
+        accountService.createAccount(createAccountRequest, customerId);
+        return new GenericMessage(Messages.getMessageForLocale("corso.create.account.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
-
 
     @PutMapping("/update/{customerId}/{accountId}")
     @Operation(summary = "Update an account", description = "Update an account by ID.")
