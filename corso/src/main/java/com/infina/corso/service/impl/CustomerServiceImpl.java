@@ -2,8 +2,10 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.AccountRequestTransaction;
+import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerByBrokerResponse;
+import com.infina.corso.dto.response.CustomerFilterResponse;
 import com.infina.corso.dto.response.CustomerGetByIdResponse;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Account;
@@ -15,10 +17,14 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
+
+import static com.infina.corso.specifications.CustomerSpecification.*;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -108,6 +114,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomer(Long id) {
         customerRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<CustomerFilterResponse> filterCustomers(CustomerFilterRequest filterRequest, Pageable pageable) {
+        Specification<Customer> filters = Specification.where(StringUtils.hasText(filterRequest.getName())? null : likeName(filterRequest.getName()))
+                .or(StringUtils.hasText(filterRequest.getName())? null : likeSurname(filterRequest.getName()))
+                .or(StringUtils.hasText(filterRequest.getName())? null : likeCompanyName(filterRequest.getName()))
+                .and(StringUtils.hasText(filterRequest.getTcKimlikNo())? null : hasTcKimlikNo(filterRequest.getTcKimlikNo()));
+        return null;
     }
 
 }
