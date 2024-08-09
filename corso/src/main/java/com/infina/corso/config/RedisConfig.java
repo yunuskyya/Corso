@@ -1,6 +1,7 @@
 package com.infina.corso.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.infina.corso.model.Currency;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -20,6 +21,24 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectmapper);
+
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(serializer);
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.setHashValueSerializer(serializer);
+
+        template.setDefaultSerializer(serializer);
+        template.afterPropertiesSet();
+        return template;
+    }
+
+
+    @Bean
+    public RedisTemplate<String, Currency> currencyRedisTemplate(RedisConnectionFactory connectionFactory) {
+        RedisTemplate<String, Currency> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
 
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectmapper);
