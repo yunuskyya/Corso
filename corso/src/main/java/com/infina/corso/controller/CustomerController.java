@@ -1,7 +1,9 @@
 package com.infina.corso.controller;
 
+import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerByBrokerResponse;
+import com.infina.corso.dto.response.CustomerFilterResponse;
 import com.infina.corso.dto.response.CustomerGetByIdResponse;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.service.CustomerService;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //@RestController
 //@RequestMapping("/api/v1/user/{userId}/customer/{customerId}/account")
@@ -72,5 +76,21 @@ public class CustomerController {
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Filter customers paged
+    @GetMapping("/filter")
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
+    public ResponseEntity<Page<CustomerFilterResponse>> filterCustomersPaged(@RequestBody @Validated CustomerFilterRequest filterRequest, Pageable pageable) {
+        Page<CustomerFilterResponse> customers = customerService.filterCustomersPaged(filterRequest, pageable);
+        return ResponseEntity.ok(customers);
+    }
+
+    // Filter customers
+    @GetMapping("/filter/all")
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
+    public ResponseEntity<List<CustomerFilterResponse>> filterCustomers(@RequestBody @Validated CustomerFilterRequest filterRequest) {
+        List<CustomerFilterResponse> customers = customerService.filterCustomers(filterRequest);
+        return ResponseEntity.ok(customers);
     }
 }
