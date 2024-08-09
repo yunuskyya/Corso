@@ -1,5 +1,6 @@
-package com.infina.corso.validation;
+package com.infina.corso.validation.annotations;
 
+import com.infina.corso.validation.validators.UniqueEmailValidator;
 import jakarta.validation.Constraint;
 
 import java.lang.annotation.ElementType;
