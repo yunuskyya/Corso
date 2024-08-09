@@ -3,20 +3,14 @@ import { BrowserRouter as Router, Route, useNavigate, Routes } from 'react-route
 import { useAppDispatch, useAppSelector } from './redux/hooks'; // Import the custom hook
 import { fetchCurrentUser, logout } from './features/authSlice';
 import Navbar from './components/Common/Navbar.jsx';
-import PrivateRoute from './components/PrivateRoute.jsx';
-import HomePage from './pages/HomePage.jsx';
-import Login from './pages/Login.jsx';
-import DashboardPage from './pages/DashboardPage.jsx';
-import AddCustomerPage from './pages/AddCustomerPage.jsx';
-import AccountsPage from './pages/AccountsPage.jsx';
 import { Modal } from 'react-bootstrap';
 import { useTheme } from './context/ThemeProvider';
+import AppRoutes from './AppRoutes';
 import './App.css';
-
 
 const App = () => {
   return (
-    <Router>  
+    <Router>
       <AppContent />
     </Router>
   );
@@ -56,18 +50,7 @@ const AppContent = () => {
     <div className={`app ${theme === 'dark' ? 'bg-dark text-white' : 'bg-light text-dark'}`}>
       <Navbar onLogout={handleLogout} />
       <div className="container mt-4 main">
-        <Routes>
-          <Route exact path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/addCustomer" element={<AddCustomerPage/>} />
-          <Route path="/accounts" element={<AccountsPage/>} />
-          <Route path="/dashboard" element={
-            <PrivateRoute>
-              <DashboardPage/>
-            </PrivateRoute>
-          } />
-          <Route path="*" element={<HomePage />} />
-        </Routes>
+        <AppRoutes />
       </div>
       <Modal show={showModal} onHide={() => setShowModal(false)}>
         <Modal.Header closeButton>

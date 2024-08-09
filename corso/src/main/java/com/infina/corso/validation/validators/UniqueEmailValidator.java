@@ -1,6 +1,7 @@
-package com.infina.corso.validation;
+package com.infina.corso.validation.validators;
 
 import com.infina.corso.repository.UserRepository;
+import com.infina.corso.validation.annotations.UniqueEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,6 @@
 package com.infina.corso.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.infina.corso.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
