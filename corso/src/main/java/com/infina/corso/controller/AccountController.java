@@ -31,18 +31,14 @@ public class AccountController {
     @GetMapping
     @PreAuthorize("hasRole('ROLE_MANAGER')")
     @Operation(summary = "Get all accounts", description = "Retrieve a list of all accounts.")
-    public GenericMessage getAllAccounts() {
-        accountService.getAllAccounts();
-        return new GenericMessage(Messages.getMessageForLocale("corso.get.all.accounts.success.message.successfully",
-                LocaleContextHolder.getLocale()));
+    public ResponseEntity<List<GetAllAccountResponse>> getAllAccounts() {
+        return ResponseEntity.ok(accountService.getAllAccounts());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Get account by ID", description = "Retrieve an account by ID.")
-    public GenericMessage getAccountById(@PathVariable Long id) {
-       accountService.getAccountById(id);
-        return new GenericMessage(Messages.getMessageForLocale("corso.get.account.by.id.success.message.successfully",
-                LocaleContextHolder.getLocale()));
+    public ResponseEntity<GetAccountByIdResponse> getAccountById(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.getAccountById(id));
     }
 
     @GetMapping("/customer/{customerId}")
@@ -60,16 +56,6 @@ public class AccountController {
                 LocaleContextHolder.getLocale()));
     }
 
-    @PutMapping("/update/{customerId}/{accountId}")
-    @Operation(summary = "Update an account", description = "Update an account by ID.")
-    public GenericMessage updateAccount(
-            @PathVariable Long customerId,
-            @PathVariable Long accountId,
-            @RequestBody UpdateAccountRequest updateAccountRequest) {
-        GetAccountByIdResponse updatedAccount = accountService.updateAccount(customerId, accountId, updateAccountRequest);
-        return new GenericMessage(Messages.getMessageForLocale("corso.update.account.success.message.successfully",
-                LocaleContextHolder.getLocale()));
-    }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER')")

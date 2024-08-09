@@ -12,12 +12,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,11 +39,10 @@ public class UserController {
 
     @GetMapping("/brokers")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
-    @Operation(summary = "Get all brokers", description = "Retrieve a list of all brokers.")
-    public GenericMessage getAllBrokers() {
-        List<GetAllUserResponse> brokers = userService.getAllUser();
-        return new GenericMessage(Messages.getMessageForLocale("corso.get.all.brokers.success.message.successfully",
-                LocaleContextHolder.getLocale()));
+    @Operation(summary = "Get all brokers", description = "Retrieve a paginated list of all brokers.")
+    public ResponseEntity<Page<GetAllUserResponse>> getAllBrokers(Pageable pageable) {
+        Page<GetAllUserResponse> brokers = userService.getAllUser(pageable);
+        return ResponseEntity.ok(brokers);
     }
 
     @PostMapping("/register/broker")
@@ -62,17 +65,22 @@ public class UserController {
 
     @GetMapping("/role")
     @Operation(summary = "Get user role", description = "Retrieve the role of the currently authenticated user.")
-    public GenericMessage getUserRole(Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> getUserRole(Authentication authentication) {
         if (authentication == null) {
-            return new GenericMessage(Messages.getMessageForLocale("corso.get.user.role.error.message.unauthorized",
-                    LocaleContextHolder.getLocale()));
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+
         CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
         Map<String, Object> response = new HashMap<>();
         response.put("id", currentUser.getId());
-        response.put("authorities", currentUser.getAuthorities());
-        return new GenericMessage(Messages.getMessageForLocale("corso.get.user.role.success.message.successfully",
-                LocaleContextHolder.getLocale()));
+
+        String role = currentUser.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow(() -> new RuntimeException("Not found role for the user"));
+        response.put("role", role);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/send")
