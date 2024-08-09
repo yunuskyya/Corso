@@ -1,5 +1,7 @@
 package com.infina.corso.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.infina.corso.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -32,12 +34,14 @@ public class User {
     private boolean accountLocked;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    @JsonIgnore
     private List<Customer> customerList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Token> tokens;
 
     @OneToMany(mappedBy = "user" , fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<Transaction> transactions;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
