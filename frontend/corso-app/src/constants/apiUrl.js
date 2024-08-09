@@ -9,4 +9,11 @@ export const LOGOUT_URL = AUTH_URL;
 export const USER_URL = BASE_URL + '/user';
 export const CURRENT_USER_URL = USER_URL + '/role';
 
-// custo
+// customer urls:
+
+export const CUSTOMER_URL = BASE_URL + 'customer';
+
+// account urls:
+
+export const ACCOUNT_URL = BASE_URL + 'accounts';
+export const ACCOUNT_URL_CUSTOMER = BASE_URL + 'accounts/faketest';
