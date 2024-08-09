@@ -5,15 +5,18 @@ import { fetchCurrentUser, logout } from './features/authSlice';
 import Navbar from './components/Common/Navbar.jsx';
 import PrivateRoute from './components/PrivateRoute.jsx';
 import HomePage from './pages/HomePage.jsx';
-import Login from './components/Auth/Login.jsx';
+import Login from './pages/Login.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
+import AddCustomerPage from './pages/AddCustomerPage.jsx';
+import AccountsPage from './pages/AccountsPage.jsx';
 import { Modal } from 'react-bootstrap';
 import { useTheme } from './context/ThemeProvider';
 import './App.css';
 
+
 const App = () => {
   return (
-    <Router>
+    <Router>  
       <AppContent />
     </Router>
   );
@@ -56,9 +59,11 @@ const AppContent = () => {
         <Routes>
           <Route exact path="/" element={<HomePage />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/addCustomer" element={<AddCustomerPage/>} />
+          <Route path="/accounts" element={<AccountsPage/>} />
           <Route path="/dashboard" element={
             <PrivateRoute>
-              <DashboardPage />
+              <DashboardPage/>
             </PrivateRoute>
           } />
           <Route path="*" element={<HomePage />} />
