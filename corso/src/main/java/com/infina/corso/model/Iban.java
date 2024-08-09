@@ -1,6 +1,5 @@
 package com.infina.corso.model;
 
-import com.infina.corso.model.enums.CurrencyName;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,9 +16,6 @@ public class Iban {
     private Long id;
 
     private String iban;
-
-    @Enumerated(EnumType.STRING)
-    private CurrencyName currencyType;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
