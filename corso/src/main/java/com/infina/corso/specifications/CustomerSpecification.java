@@ -1,8 +1,8 @@
 package com.infina.corso.specifications;
 
-import com.infina.corso.model.enums.CustomerType;
+import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.model.Customer;
-import jakarta.persistence.criteria.Path;
+import com.infina.corso.model.enums.CustomerType;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDateTime;
@@ -139,16 +139,48 @@ public class CustomerSpecification {
 
     public static Specification<Customer> hasCurrencyCode(String currencyCode) {
         return (root, query, cb) -> {
-            Path<Customer> accounts = root.get("accounts");
-            return cb.equal(accounts.get("currency"), currencyCode);
+            if (currencyCode == null || currencyCode.isEmpty()) {
+                return cb.conjunction();
+            }
+
+            return cb.equal(root.get("currencyCode"), currencyCode);
         };
     }
 
     public static Specification<Customer> hasCreatedAt(LocalDateTime createdAt) {
-        return (root, query, cb) -> cb.equal(root.get("createdAt"), createdAt);
+        return (root, query, cb) -> {
+            if (createdAt == null) {
+                return cb.conjunction();
+            }
+
+            return cb.equal(root.get("createdAt"), createdAt);
+        };
     }
 
     public static Specification<Customer> hasCreatedBetween(LocalDateTime start, LocalDateTime end) {
-        return (root, query, cb) -> cb.between(root.get("updatedAt"), start, end);
+        return (root, query, cb) -> {
+            if (start == null || end == null) {
+                return cb.conjunction();
+            }
+
+            return cb.between(root.get("createdAt"), start, end);
+        };
     }
+
+    public static Specification<Customer> filterByAllGivenFieldsWithAnd(CustomerFilterRequest filterRequest) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.and(
+                hasUser(filterRequest.getUserId()).toPredicate(root, query, criteriaBuilder),
+                likeNameOrSurname(filterRequest.getName()).toPredicate(root, query, criteriaBuilder),
+                likeCompanyName(filterRequest.getName()).toPredicate(root, query, criteriaBuilder),
+                hasVkn(filterRequest.getVkn()).toPredicate(root, query, criteriaBuilder),
+                hasTcKimlikNo(filterRequest.getTcKimlikNo()).toPredicate(root, query, criteriaBuilder),
+                hasCustomerType(filterRequest.getCustomerType()).toPredicate(root, query, criteriaBuilder),
+                hasAccountId(filterRequest.getAccountId()).toPredicate(root, query, criteriaBuilder),
+                hasPhone(filterRequest.getPhone()).toPredicate(root, query, criteriaBuilder),
+                hasEmail(filterRequest.getEmail()).toPredicate(root, query, criteriaBuilder),
+                hasCreatedBetween(filterRequest.getDateStart(), filterRequest.getDateEnd()).toPredicate(root, query, criteriaBuilder),
+                hasStatus(filterRequest.getStatus().name()).toPredicate(root, query, criteriaBuilder),
+                hasCurrencyCode(filterRequest.getCurrencyCode()).toPredicate(root, query, criteriaBuilder));
+    }
+
 }
