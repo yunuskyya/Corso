@@ -9,5 +9,5 @@ import java.util.List;
 public class CustomerResponseForAccounts {
     private String name;
     private String surname;
-    private List<AccountResponse> accounts;
+    //private List<AccountResponse> accounts;
 }
