@@ -1,6 +1,10 @@
 package com.infina.corso.controller;
 
-import com.infina.corso.dto.request.CustomerRequest;
+import com.infina.corso.dto.request.CustomerFilterRequest;
+import com.infina.corso.dto.request.CustomerUpdateRequest;
+import com.infina.corso.dto.response.CustomerByBrokerResponse;
+import com.infina.corso.dto.response.CustomerFilterResponse;
+import com.infina.corso.dto.response.CustomerGetByIdResponse;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.service.CustomerService;
 import org.springframework.data.domain.Page;
@@ -10,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 //@RestController
 //@RequestMapping("/api/v1/user/{userId}/customer/{customerId}/account")
@@ -27,8 +33,8 @@ public class CustomerController {
     // Get a customer by ID
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
-        CustomerResponse customerResponse = customerService.getCustomerById(id);
+    public ResponseEntity<CustomerGetByIdResponse> getCustomerById(@PathVariable Long id) {
+        CustomerGetByIdResponse customerResponse = customerService.getCustomerById(id);
         return ResponseEntity.ok(customerResponse);
     }
 
@@ -43,15 +49,15 @@ public class CustomerController {
     // Get all customers by broker ID
     @GetMapping("/broker/{brokerId}")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<Page<CustomerResponse>> getAllCustomersByBrokerId(@PathVariable Long brokerId, Pageable pageable) {
-        Page<CustomerResponse> customers = customerService.getAllCustomersByBrokerId(brokerId, pageable);
+    public ResponseEntity<Page<CustomerByBrokerResponse>> getAllCustomersByBrokerId(@PathVariable Long brokerId, Pageable pageable) {
+        Page<CustomerByBrokerResponse> customers = customerService.getAllCustomersByBrokerId(brokerId, pageable);
         return ResponseEntity.ok(customers);
     }
 
     // Create a new customer
     @PostMapping
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CustomerRequest customerRequest) {
+    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CustomerUpdateRequest customerRequest) {
         customerService.createCustomer(customerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
@@ -59,7 +65,7 @@ public class CustomerController {
     // Update a customer
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @RequestBody @Validated CustomerRequest customerRequest) {
+    public ResponseEntity<CustomerResponse> updateCustomer(@PathVariable Long id, @RequestBody @Validated CustomerUpdateRequest customerRequest) {
         CustomerResponse updatedCustomer = customerService.updateCustomer(id, customerRequest);
         return ResponseEntity.ok(updatedCustomer);
     }
@@ -70,5 +76,21 @@ public class CustomerController {
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Filter customers paged
+    @GetMapping("/filter")
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
+    public ResponseEntity<Page<CustomerFilterResponse>> filterCustomersPaged(@RequestBody @Validated CustomerFilterRequest filterRequest, Pageable pageable) {
+        Page<CustomerFilterResponse> customers = customerService.filterCustomersPaged(filterRequest, pageable);
+        return ResponseEntity.ok(customers);
+    }
+
+    // Filter customers
+    @GetMapping("/filter/all")
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
+    public ResponseEntity<List<CustomerFilterResponse>> filterCustomers(@RequestBody @Validated CustomerFilterRequest filterRequest) {
+        List<CustomerFilterResponse> customers = customerService.filterCustomers(filterRequest);
+        return ResponseEntity.ok(customers);
     }
 }

@@ -1,7 +1,6 @@
 package com.infina.corso.dto.response;
 
 import com.infina.corso.model.Account;
-import com.infina.corso.model.User;
 import com.infina.corso.model.enums.CustomerStatus;
 import com.infina.corso.model.enums.CustomerType;
 import lombok.AllArgsConstructor;
@@ -16,19 +15,15 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CustomerResponse {
+public class CustomerFilterResponse {
     private Long id;
-    private String name;
-    private String surname;
+    private String name; // name + surname or companyName
     private String tcKimlikNo;
-    private String companyName;
     private String vkn;
     private CustomerType customerType;
     private CustomerStatus status;
     private String phone;
     private String email;
-    private User user;
-    private List<Account> accounts;
+    private List<AccountResponse> accounts;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }

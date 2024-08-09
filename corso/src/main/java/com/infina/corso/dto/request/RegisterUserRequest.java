@@ -1,6 +1,6 @@
 package com.infina.corso.dto.request;
 
-import com.infina.corso.validation.UniqueEmail;
+import com.infina.corso.validation.annotations.UniqueEmail;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

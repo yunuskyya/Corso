@@ -1,6 +1,5 @@
 package com.infina.corso.dto.response;
 
-import com.infina.corso.model.Account;
 import lombok.Data;
 
 import java.util.List;

@@ -5,7 +5,6 @@ import com.infina.corso.model.enums.Role;
 import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.CurrencyService;
-import com.infina.corso.service.impl.CurrencyServiceImp;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
