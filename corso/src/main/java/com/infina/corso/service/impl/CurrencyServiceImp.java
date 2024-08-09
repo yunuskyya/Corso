@@ -37,18 +37,18 @@ public class CurrencyServiceImp implements CurrencyService {
     }
 
 
-    public Currency findByCode(TransactionRequest transactionRequest) {
+    /* public Currency findByCode(TransactionRequest transactionRequest) {
         String code = transactionRequest.getPurchasedCurrency();
         return currencyRepository.findByCode(code);
-    }
+    } */
 
     public Currency findByCode(String code) {
         ListOperations<String, Currency> listOps = currencyRedisTemplate.opsForList();
         List<Currency> currencyList = listOps.range("currencyList", 0, -1);
-        // Kod ile arama yap
         if (currencyList != null) {
             for (Currency currency : currencyList) {
-                if (currency.getCode().equals(code)) {
+                String currencyCode = currency.getCode();
+                if (currencyCode.equals(code)) {
                     return currency;
                 }
             }
@@ -69,8 +69,6 @@ public class CurrencyServiceImp implements CurrencyService {
             // İsteği gönderme ve yanıtı alma
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             String responseBody = response.body();
-
-
             if (response.statusCode() == 200) {
                 //Daha önceden rediste bir liste varsa o listeyi siler o şekilde işleme devam edilir
                 if (Boolean.TRUE.equals(currencyRedisTemplate.hasKey("currencyList"))) {
