@@ -77,7 +77,7 @@ public class AccountServiceImp implements AccountService {
                     throw new UserNotFoundException("Account not found with id " + id);
                 });
         if (accountInDB.getBalance().compareTo(BigDecimal.ZERO) > 0) {
-            logger.error("Attempt to delete account with balance: {}", accountInDB.getAccountNumber());
+            logger.error("Attempt to delete account with balance: {}", accountInDB.getBalance());
             throw new IllegalStateException("Account with id " + id + " has a balance and cannot be deleted.");
         }
         logger.info("Account deleted: {}", accountInDB.getAccountNumber());
@@ -118,6 +118,20 @@ public class AccountServiceImp implements AccountService {
                 .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
                 .collect(Collectors.toList());
     }
+    @Override
+    public void reactivateAccount(Long id) {
+        Account accountInDB = accountRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Account not found with id {}", id);
+                    throw new UserNotFoundException("Account not found with id " + id);
+                });
+        if (!accountInDB.isDeleted()) {
+            logger.warn("Attempt to reactivate an already active account: {}", accountInDB.getAccountNumber());
+            throw new RuntimeException("Account with id " + id + " is already active.");
+        }
+        accountInDB.setDeleted(false);
+        accountRepository.save(accountInDB);
+        logger.info("Account reactivated: {}", accountInDB.getAccountNumber());
+    }
 
 }
-
