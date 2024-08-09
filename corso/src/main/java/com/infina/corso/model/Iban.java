@@ -17,6 +17,8 @@ public class Iban {
 
     private String iban;
 
+    private String currencyType;
+
     @ManyToOne
     @JoinColumn(name = "customer_id")
     private  Customer customer;
