@@ -50,12 +50,15 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
+
     public void logout(String authorizationHeader) {
         var tokenInDb = extractToken(authorizationHeader);
-        if (!tokenInDb.isPresent())
-            return;
-        tokenInDb.get().setActive(false);
-        redisTemplate.opsForValue().set(tokenInDb.get().getTokenId(), tokenInDb.get());
+        if (tokenInDb.isPresent()) {
+            redisTemplate.delete(tokenInDb.get().getTokenId());
+            logger.info("Token deleted from Redis: " + tokenInDb.get().getTokenId());
+        } else {
+            logger.error("Token not found in Redis: " + authorizationHeader);
+        }
     }
 
     private Optional<Token> extractToken(String authorizationHeader) {
