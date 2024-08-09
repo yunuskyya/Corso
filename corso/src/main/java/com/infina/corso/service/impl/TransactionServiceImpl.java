@@ -125,9 +125,9 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     public Double rateCalculate(String soldCurrency, String purchasedCurrency) {
-        Currency soldCurrencyEntity = currencyRepository.findByCode(soldCurrency);
+        Currency soldCurrencyEntity = currencyService.findByCode(soldCurrency);
         Double a = Double.parseDouble(soldCurrencyEntity.getSelling());
-        Currency purchasedCurrencyEntity = currencyRepository.findByCode(purchasedCurrency);
+        Currency purchasedCurrencyEntity = currencyService.findByCode(purchasedCurrency);
         Double b = Double.parseDouble(purchasedCurrencyEntity.getBuying());
         Double rate = a / b;
         return rate;
@@ -150,7 +150,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     //TRY ile yapılan işlemler için hesaplar ***********************************
     public BigDecimal calculateTransactionCostForTRY(char transactionType, double amount, String currencyCode) {
-        Currency currency = currencyRepository.findByCode(currencyCode);
+        Currency currency = currencyService.findByCode(currencyCode);
         double currencyPrice;
         if (transactionType == 'S') {
             currencyPrice = Double.parseDouble(currency.getBuying());

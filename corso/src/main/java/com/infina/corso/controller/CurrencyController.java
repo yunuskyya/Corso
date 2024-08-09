@@ -24,6 +24,6 @@ public class CurrencyController {
 
     @PostMapping("update")
     public CurrencyResponse updateCurrencies() {
-        return currencyServiceImp.updateCurrencyRates();
+        return currencyServiceImp.getCurrencyRates();
     }
 }
