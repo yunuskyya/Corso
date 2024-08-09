@@ -12,14 +12,16 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -36,16 +38,17 @@ public class UserController {
     }
 
     @GetMapping("/brokers")
-    @Operation(summary = "Get all brokers", description = "Retrieve a list of all brokers.")
-    public ResponseEntity<List<GetAllUserResponse>> getAllBrokers() {
-        List<GetAllUserResponse> brokers = userService.getAllUser();
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
+    @Operation(summary = "Get all brokers", description = "Retrieve a paginated list of all brokers.")
+    public ResponseEntity<Page<GetAllUserResponse>> getAllBrokers(Pageable pageable) {
+        Page<GetAllUserResponse> brokers = userService.getAllUser(pageable);
         return ResponseEntity.ok(brokers);
     }
 
     @PostMapping("/register/broker")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @Operation(summary = "Register a new broker", description = "Register a new broker with the given details.")
-   public GenericMessage registerUser(@Valid @RequestBody RegisterUserRequest request) {
+    public GenericMessage registerUser(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerBroker(request);
         return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
@@ -54,7 +57,7 @@ public class UserController {
     @PostMapping("/register/manager")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Register a new manager", description = "Register a new manager with the given details.")
-    public GenericMessage registerManager(@RequestBody RegisterUserRequest request) {
+    public GenericMessage registerManager(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerManager(request);
         return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
@@ -62,15 +65,21 @@ public class UserController {
 
     @GetMapping("/role")
     @Operation(summary = "Get user role", description = "Retrieve the role of the currently authenticated user.")
-    public ResponseEntity<?> getUserRole(Authentication authentication) {
+    public ResponseEntity<Map<String, Object>> getUserRole(Authentication authentication) {
         if (authentication == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication is required");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
         Map<String, Object> response = new HashMap<>();
         response.put("id", currentUser.getId());
-        response.put("authorities", currentUser.getAuthorities());
+
+        String role = currentUser.getAuthorities().stream()
+                .findFirst()
+                .map(GrantedAuthority::getAuthority)
+                .orElseThrow(() -> new RuntimeException("Not found role for the user"));
+        response.put("role", role);
+
         return ResponseEntity.ok(response);
     }
 
@@ -86,25 +95,36 @@ public class UserController {
 
     @PutMapping("/change-password")
     @Operation(summary = "Change user password", description = "Change the password of a user.")
-    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public GenericMessage changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
             userService.changePassword(changePasswordRequest);
-            return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
+            return  new GenericMessage(Messages.getMessageForLocale("corso.change.password.success.message.successfully",
+                    LocaleContextHolder.getLocale()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return new GenericMessage(Messages.getMessageForLocale("corso.change.password.error.message.error",
+                    LocaleContextHolder.getLocale()));
         }
     }
-
 
     @PutMapping("/activate")
     @PreAuthorize("hasRole('ROLE_MANAGER') OR hasRole('ROLE_ADMIN')")
     @Operation(summary = "Activate a user account by email", description = "Activate a user account that is currently locked using their email.")
-    public ResponseEntity<String> activateUserByEmail(@RequestParam String email) {
+    public GenericMessage activateUserByEmail(@RequestParam String email) {
         try {
             userService.activateUserByEmail(email);
-            return ResponseEntity.ok("Kullanıcı başarıyla aktifleştirildi.");
+            return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.success.message.successfully",
+                    LocaleContextHolder.getLocale()));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.error.message.error",
+                    LocaleContextHolder.getLocale()));
         }
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Delete a user", description = "Delete a user by ID.")
+    public GenericMessage deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
+        return new GenericMessage(Messages.getMessageForLocale("corso.delete.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
     }
 }

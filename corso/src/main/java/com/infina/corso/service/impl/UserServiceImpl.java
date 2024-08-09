@@ -4,15 +4,20 @@ import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.ChangePasswordRequest;
 import com.infina.corso.dto.request.RegisterUserRequest;
 import com.infina.corso.dto.response.GetAllUserResponse;
+import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.Transaction;
 import com.infina.corso.model.User;
 import com.infina.corso.model.enums.Role;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.MailService;
+import com.infina.corso.service.UserService;
+import com.infina.corso.util.EmailHelper;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,20 +28,19 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class UserService implements com.infina.corso.service.UserService {
+public class UserServiceImpl implements UserService {
 
+    private final EmailHelper emailHelper;
     private UserRepository userRepository;
     private ModelMapperConfig mapper;
     private PasswordEncoder passwordEncoder;
     private MailService emailService;
-    private static final Logger logger = LogManager.getLogger(UserService.class);
+    private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
     @Override
-    public List<GetAllUserResponse> getAllUser() {
-        List<User> brokers = userRepository.findByAuthoritiesContaining(Role.ROLE_BROKER);
-        return brokers.stream()
-                .map(user -> mapper.modelMapperForResponse().map(user, GetAllUserResponse.class))
-                .collect(Collectors.toList());
+    public Page<GetAllUserResponse> getAllUser(Pageable pageable) {
+        Page<User> brokers = userRepository.findByAuthoritiesContaining(Role.ROLE_BROKER, pageable);
+        return brokers.map(user -> mapper.modelMapperForResponse().map(user, GetAllUserResponse.class));
     }
     @Override
     public void registerBroker(@Valid RegisterUserRequest registerUserRequest) {
@@ -49,49 +53,21 @@ public class UserService implements com.infina.corso.service.UserService {
         newUser.setActive(true);
         userRepository.save(newUser);
         logger.info("Broker registered: {}", newUser.getUsername());
-        String subject = "Kayıt Onayı";
-        String text = String.format(
-                "Merhaba %s %s,\n\n" +
-                        "Sistemimize başarıyla kayıt oldunuz.\n\n" +
-                        "Kullanıcı Adınız: %s\n" +
-                        "Geçici Şifreniz: %s\n\n" +
-                        "Güvenliğiniz için lütfen şifrenizi değiştirmek için sisteme giriş yapın veya aşağıdaki bağlantıyı kullanın:\n" +
-                        "http://localhost:8080/change-password\n\n" +
-                        "Teşekkürler,\n" +
-                        "Infina Corso Ekibi",
-                newUser.getFirstName(),
-                newUser.getLastName(),
-                newUser.getUsername(),
-                rawPassword
-        );
-        emailService.sendSimpleMessage(newUser.getEmail(), subject, text);
+        emailHelper.sendRegistrationEmail(newUser, rawPassword);
     }
     @Override
     public void registerManager(@Valid RegisterUserRequest registerUserRequest) {
         User newUser = mapper.modelMapperForRequest().map(registerUserRequest, User.class);
-        newUser.setPassword(passwordEncoder.encode(registerUserRequest.getPassword()));
+        String rawPassword = registerUserRequest.getPassword();  // Ham şifreyi saklayın
+        newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setAuthorities(new HashSet<>() {{
             add(Role.ROLE_MANAGER);
         }});
         newUser.setActive(true);
         userRepository.save(newUser);
         logger.info("Manager registered: {}", newUser.getEmail());
-        String subject = "Kayıt Onayı";
-        String text = String.format(
-                "Merhaba %s %s,\n\n" +
-                        "Sistemimize başarıyla kayıt oldunuz.\n\n" +
-                        "Kullanıcı Adınız: %s\n" +
-                        "Geçici Şifreniz: %s\n\n" +
-                        "Güvenliğiniz için lütfen şifrenizi değiştirmek için sisteme giriş yapın veya aşağıdaki bağlantıyı kullanın:\n" +
-                        "http://localhost:8080/change-password\n\n" +
-                        "Teşekkürler,\n" +
-                        "Infina Corso Ekibi",
-                newUser.getFirstName(),
-                newUser.getLastName(),
-                newUser.getUsername(),
-                registerUserRequest.getPassword()
-        );
-        emailService.sendSimpleMessage(newUser.getEmail(), subject, text);
+        emailHelper.sendRegistrationEmail(newUser, rawPassword);
+
     }
     @Override
     public void changePassword(ChangePasswordRequest changePasswordRequest) {
@@ -118,22 +94,22 @@ public class UserService implements com.infina.corso.service.UserService {
         user.setAccountLocked(false);
         userRepository.save(user);
         logger.info("Kullanıcı aktifleştirildi: {}", user.getUsername());
-
-        String subject = "Hesap Aktifleştirildi";
-        String text = String.format(
-                "Merhaba %s %s,\n\n" +
-                        "Hesabınız başarıyla aktifleştirildi.\n\n" +
-                        "Teşekkürler,\n" +
-                        "Infina Corso Ekibi",
-                user.getFirstName(),
-                user.getLastName()
-        );
-        emailService.sendSimpleMessage(user.getEmail(), subject, text);
+        emailHelper.sendActivationEmail(user);
     }
 
 
     public List<Transaction> getAllTransactionsById(int id){
         Optional<User> user = userRepository.findById(id);
         return user.get().getTransactions();
+    }
+    @Override
+    public void deleteUser(int id){
+      User userInDB = userRepository.findById(id).orElseThrow(() -> {
+          logger.error("User not found with id: {}", id);
+          throw new UserNotFoundException("User not found with id: " + id);
+      });
+      userInDB.setDeleted(true);
+        userRepository.save(userInDB);
+        logger.info("User deleted: {}", userInDB.getUsername());
     }
 }

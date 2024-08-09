@@ -17,15 +17,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class CustomerService implements com.infina.corso.service.CustomerService {
+public class CustomerServiceImpl implements com.infina.corso.service.CustomerService {
 
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapperResponse;
     private final ModelMapper modelMapperRequest;
     private final ModelMapperConfig modelMapperConfig;
 
-    public CustomerService(CustomerRepository customerRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperResponse,
-                           @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest, ModelMapperConfig modelMapperConfig) {
+    public CustomerServiceImpl(CustomerRepository customerRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperResponse,
+                               @Qualifier("modelMapperForRequest") ModelMapper modelMapperRequest, ModelMapperConfig modelMapperConfig) {
         this.customerRepository = customerRepository;
         this.modelMapperResponse = modelMapperResponse;
         this.modelMapperRequest = modelMapperRequest;

@@ -46,27 +46,6 @@ public class DataLoader implements CommandLineRunner {
                 .isDeleted(false)
                 .active(true)
                 .build();
-
-        // manager:
-        User manager = User.builder()
-                .username("manager")
-                .email("manager@corso.com")
-                .password(passwordEncoder.encode("manager"))
-                .authorities(Set.of(Role.ROLE_MANAGER))
-                .isDeleted(false)
-                .active(true)
-                .build();
-
-        // broker:
-        User broker = User.builder()
-                .username("broker")
-                .email("broker@corso.com")
-                .password(passwordEncoder.encode("broker"))
-                .authorities(Set.of(Role.ROLE_BROKER))
-                .isDeleted(false)
-                .active(true)
-                .build();
-
-        userRepository.saveAll(Arrays.asList(admin, manager, broker));
+        userRepository.saveAll(Arrays.asList(admin));
     }
 }

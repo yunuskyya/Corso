@@ -4,6 +4,7 @@ import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.CredentialsRequest;
 import com.infina.corso.dto.response.AuthResponse;
 import com.infina.corso.dto.response.GetUserByEmailResponse;
+import com.infina.corso.exception.AuthenticationException;
 import com.infina.corso.model.Token;
 import com.infina.corso.model.User;
 import com.infina.corso.repository.UserRepository;
@@ -16,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -42,7 +43,6 @@ public class AuthServiceImp implements AuthService {
     private static final Logger logger = LogManager.getLogger(AuthServiceImp.class);
 
     @Override
-    @Transactional
     public AuthResponse authenticate(CredentialsRequest credentials) {
         User inDB = userRepository.findByEmail(credentials.email())
                 .orElseThrow(() -> {
@@ -58,6 +58,7 @@ public class AuthServiceImp implements AuthService {
         if (!passwordEncoder.matches(credentials.password(), inDB.getPassword())) {
             logger.error("Invalid credentials for user: {}", credentials.email());
             inDB.setLoginAttempts(inDB.getLoginAttempts() + 1);
+            logger.info("Login attempts: {}", inDB.getLoginAttempts());
 
             if (inDB.getLoginAttempts() >= MAX_ATTEMPTS) {
                 inDB.setAccountLocked(true);
@@ -67,7 +68,7 @@ public class AuthServiceImp implements AuthService {
             }
 
             userRepository.save(inDB);
-            throw new RuntimeException("Invalid credentials for user: " + credentials.email());
+            throw new AuthenticationException();
         }
 
         inDB.setLoginAttempts(0);
@@ -75,7 +76,7 @@ public class AuthServiceImp implements AuthService {
 
         logger.info("User authenticated: {}", inDB.getEmail());
         GetUserByEmailResponse userResp = modelMapperConfig.modelMapperForResponse().map(inDB, GetUserByEmailResponse.class);
-        Token token = tokenService.generateToken(userResp, credentials);
+        Token token = tokenService.generateToken(inDB);
         return new AuthResponse(userResp, token);
     }
 
