@@ -7,6 +7,7 @@ import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.exception.AccountAlreadyExistsException;
+import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.repository.AccountRepository;
@@ -27,7 +28,7 @@ public class AccountServiceImp implements AccountService {
     private ModelMapperConfig mapper;
     private AccountRepository accountRepository;
     private CustomerRepository customerRepository;
-    private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
+    private static final Logger logger = LogManager.getLogger(AccountServiceImp.class);
 
     public AccountServiceImp(ModelMapperConfig mapper, AccountRepository accountRepository, CustomerRepository customerRepository , CustomerServiceImpl customerServiceImpl) {
         this.mapper = mapper;
@@ -70,7 +71,18 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public void deleteAccount(Long id) {
-        accountRepository.deleteById(id);
+        Account accountInDB = accountRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Account not found with id {}", id);
+                    throw new UserNotFoundException("Account not found with id " + id);
+                });
+        if (accountInDB.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+            logger.error("Attempt to delete account with balance: {}", accountInDB.getAccountNumber());
+            throw new IllegalStateException("Account with id " + id + " has a balance and cannot be deleted.");
+        }
+        logger.info("Account deleted: {}", accountInDB.getAccountNumber());
+        accountInDB.setDeleted(true);
+        accountRepository.save(accountInDB);
     }
 
     @Override
@@ -106,5 +118,6 @@ public class AccountServiceImp implements AccountService {
                 .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
                 .collect(Collectors.toList());
     }
+
 }
 

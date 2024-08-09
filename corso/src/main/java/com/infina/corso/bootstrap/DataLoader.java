@@ -5,7 +5,6 @@ import com.infina.corso.model.enums.Role;
 import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.CurrencyService;
-import com.infina.corso.service.impl.CurrencyServiceImp;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -46,27 +45,6 @@ public class DataLoader implements CommandLineRunner {
                 .isDeleted(false)
                 .active(true)
                 .build();
-
-        // manager:
-        User manager = User.builder()
-                .username("manager")
-                .email("manager@corso.com")
-                .password(passwordEncoder.encode("manager"))
-                .authorities(Set.of(Role.ROLE_MANAGER))
-                .isDeleted(false)
-                .active(true)
-                .build();
-
-        // broker:
-        User broker = User.builder()
-                .username("broker")
-                .email("broker@corso.com")
-                .password(passwordEncoder.encode("broker"))
-                .authorities(Set.of(Role.ROLE_BROKER))
-                .isDeleted(false)
-                .active(true)
-                .build();
-
-        userRepository.saveAll(Arrays.asList(admin, manager, broker));
+        userRepository.saveAll(Arrays.asList(admin));
     }
 }

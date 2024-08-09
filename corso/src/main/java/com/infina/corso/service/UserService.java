@@ -3,11 +3,11 @@ package com.infina.corso.service;
 import com.infina.corso.dto.request.ChangePasswordRequest;
 import com.infina.corso.dto.request.RegisterUserRequest;
 import com.infina.corso.dto.response.GetAllUserResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface UserService {
-    List<GetAllUserResponse> getAllUser();
+    Page<GetAllUserResponse> getAllUser(Pageable pageable);
     void registerBroker(RegisterUserRequest registerUserRequest);
     void registerManager(RegisterUserRequest registerUserRequest);
     void changePassword(ChangePasswordRequest changePasswordRequest);

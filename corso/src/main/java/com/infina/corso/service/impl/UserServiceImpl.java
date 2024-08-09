@@ -16,13 +16,14 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -36,11 +37,9 @@ public class UserServiceImpl implements UserService {
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
 
     @Override
-    public List<GetAllUserResponse> getAllUser() {
-        List<User> brokers = userRepository.findByAuthoritiesContaining(Role.ROLE_BROKER);
-        return brokers.stream()
-                .map(user -> mapper.modelMapperForResponse().map(user, GetAllUserResponse.class))
-                .collect(Collectors.toList());
+    public Page<GetAllUserResponse> getAllUser(Pageable pageable) {
+        Page<User> brokers = userRepository.findByAuthoritiesContaining(Role.ROLE_BROKER, pageable);
+        return brokers.map(user -> mapper.modelMapperForResponse().map(user, GetAllUserResponse.class));
     }
     @Override
     public void registerBroker(@Valid RegisterUserRequest registerUserRequest) {
