@@ -13,18 +13,16 @@ import com.infina.corso.model.Customer;
 import com.infina.corso.model.enums.CustomerType;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.CustomerService;
+import com.infina.corso.specifications.CustomerSpecification;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
-
-import static com.infina.corso.specifications.CustomerSpecification.*;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -117,12 +115,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Page<CustomerFilterResponse> filterCustomers(CustomerFilterRequest filterRequest, Pageable pageable) {
-        Specification<Customer> filters = Specification.where(StringUtils.hasText(filterRequest.getName())? null : likeName(filterRequest.getName()))
-                .or(StringUtils.hasText(filterRequest.getName())? null : likeSurname(filterRequest.getName()))
-                .or(StringUtils.hasText(filterRequest.getName())? null : likeCompanyName(filterRequest.getName()))
-                .and(StringUtils.hasText(filterRequest.getTcKimlikNo())? null : hasTcKimlikNo(filterRequest.getTcKimlikNo()));
-        return null;
+    public Page<CustomerFilterResponse> filterCustomersPaged(CustomerFilterRequest filterRequest, Pageable pageable) {
+        Specification<Customer> specification = CustomerSpecification.filterByAllGivenFieldsWithAnd(filterRequest);
+        return customerRepository.findAll(specification, pageable)
+                .map(customer -> modelMapperResponse.map(customer, CustomerFilterResponse.class));
+    }
+
+    @Override
+    public List<CustomerFilterResponse> filterCustomers(CustomerFilterRequest filterRequest) {
+        Specification<Customer> specification = CustomerSpecification.filterByAllGivenFieldsWithAnd(filterRequest);
+        return customerRepository.findAll(specification)
+                .stream()
+                .map(customer -> modelMapperResponse.map(customer, CustomerFilterResponse.class))
+                .toList();
     }
 
 }
