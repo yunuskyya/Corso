@@ -1,5 +1,6 @@
 package com.infina.corso.dto.request;
 
+import com.infina.corso.validation.UniqueEmail;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -27,6 +28,7 @@ public class RegisterUserRequest {
     @Size(min = 3, max = 50)
     @NotBlank(message = "{corso.validation.notBlank.email}")
     @Email(message = "{corso.validation.email}")
+    @UniqueEmail
     private String email;
 
     @Size(min = 5, max = 50, message = "{corso.validation.size.password}")

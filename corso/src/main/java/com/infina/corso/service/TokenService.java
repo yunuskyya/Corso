@@ -1,12 +1,10 @@
 package com.infina.corso.service;
 
-import com.infina.corso.dto.request.CredentialsRequest;
-import com.infina.corso.dto.response.GetUserByEmailResponse;
 import com.infina.corso.model.Token;
 import com.infina.corso.model.User;
 
 public interface TokenService {
-    public Token generateToken(GetUserByEmailResponse user, CredentialsRequest credentials);
+    public Token generateToken(User userInDB);
     public User verifyToken(String authorizationHeader);
 
     public void logout(String authorizationHeader);

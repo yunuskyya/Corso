@@ -27,20 +27,13 @@ public class AuthController {
     }
 
     @PostMapping
-    @Operation(summary = "Authenticate user", description = "Authenticate a user with the given credentials.")
-    public ResponseEntity<Void> handleAuthentication(@Valid @RequestBody CredentialsRequest credentials) {
-        try {
-            AuthResponse authResponse = authService.authenticate(credentials);
-            ResponseCookie cookie = ResponseCookie.from("corso-token", authResponse.getToken().getTokenId())
-                    .path("/").sameSite("None").secure(true).httpOnly(true).build();
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                    .build();
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+    public ResponseEntity<AuthResponse> handleAuthentication(@Valid @RequestBody CredentialsRequest credentials) {
+        AuthResponse authResponse = authService.authenticate(credentials);
+        ResponseCookie cookie = ResponseCookie.from("corso-token", authResponse.getToken().getTokenId())
+                .path("/").sameSite("None").secure(true).httpOnly(true).build();
+        authResponse.setToken(null);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(authResponse);
     }
-
     @DeleteMapping
     @Operation(summary = "Logout user", description = "Logout the currently authenticated user.")
     public ResponseEntity<Void> logout(

@@ -1,17 +1,18 @@
 package com.infina.corso.config;
 
-import java.io.IOException;
-
+import com.infina.corso.shared.Messages;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /*
  * Bu sınıf, kullanıcının kimlik doğrulaması başarısız olduğunda çalışır ve kullanıcıya kimlik doğrulaması hatası mesajını gönderir.
@@ -21,7 +22,6 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class AuthEntryPoint implements AuthenticationEntryPoint {
     private static final Logger logger = LogManager.getLogger(AuthEntryPoint.class);
-    private static final String AUTHENTICATION_ERROR_MESSAGE = "Kimlik doğrulama hatası: Lütfen tekrar deneyin.";
 
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver resolver;
@@ -33,7 +33,8 @@ public class AuthEntryPoint implements AuthenticationEntryPoint {
             logger.debug("commence running...");
             logger.debug("Authentication error: {}", authException.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(AUTHENTICATION_ERROR_MESSAGE);
+            response.getWriter().write(Messages.getMessageForLocale("corso.error.authentication",
+                    LocaleContextHolder.getLocale()));
             response.getWriter().flush();
             response.getWriter().close();
         } catch (Exception e) {
@@ -42,4 +43,3 @@ public class AuthEntryPoint implements AuthenticationEntryPoint {
         }
     }
 }
-

@@ -1,8 +1,7 @@
 package com.infina.corso.exception;
 
-import java.util.stream.Collectors;
-
 import com.infina.corso.shared.Messages;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import jakarta.servlet.http.HttpServletRequest;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ErrorHandler {
@@ -23,6 +22,7 @@ public class ErrorHandler {
             UserNotFoundException.class,
             AuthenticationException.class,
             GeneralErrorException.class,
+            AccountAlreadyExistsException.class,
             AccessDeniedException.class
     })
     ResponseEntity<ApiError> handleCustomException(Exception exception, HttpServletRequest request) {
@@ -46,6 +46,8 @@ public class ErrorHandler {
             error.setStatus(401);
         } else if (exception instanceof AccessDeniedException) {
             error.setStatus(403);
+        } else if (exception instanceof AccountAlreadyExistsException) {
+            error.setStatus(409);
         }
         return ResponseEntity.status(error.getStatus()).body(error);
     }
