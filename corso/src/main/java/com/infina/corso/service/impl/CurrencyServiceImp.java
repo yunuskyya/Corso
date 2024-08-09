@@ -28,13 +28,11 @@ public class CurrencyServiceImp implements CurrencyService {
 
     private final CurrencyRepository currencyRepository;
     private final ObjectMapper objectMapper;
-    private final RedisConfig redisConfig;
     private final RedisTemplate<String, Currency> currencyRedisTemplate;
 
-    public CurrencyServiceImp(ObjectMapper objectMapper, CurrencyRepository currencyRepository, RedisConfig redisConfig, RedisTemplate<String, Currency> currencyRedisTemplate) {
+    public CurrencyServiceImp(ObjectMapper objectMapper, CurrencyRepository currencyRepository, RedisTemplate<String, Currency> currencyRedisTemplate) {
         this.objectMapper = objectMapper;
         this.currencyRepository = currencyRepository;
-        this.redisConfig = redisConfig;
         this.currencyRedisTemplate = currencyRedisTemplate;
     }
 
