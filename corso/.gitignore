@@ -38,3 +38,5 @@ build/
 ##
 data/
 logs/
+
+../logs/

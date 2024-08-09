@@ -1,8 +1,11 @@
 package com.infina.corso.service.impl;
+
 import com.infina.corso.dto.response.TransactionResponse;
-import com.itextpdf.kernel.pdf.*;
-import com.itextpdf.layout.*;
-import com.itextpdf.layout.element.*;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
 import org.springframework.stereotype.Service;
 

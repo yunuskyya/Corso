@@ -1,7 +1,5 @@
 package com.infina.corso.service;
 
-import com.infina.corso.dto.request.CredentialsRequest;
-import com.infina.corso.dto.response.GetUserByEmailResponse;
 import com.infina.corso.model.Token;
 import com.infina.corso.model.User;
 

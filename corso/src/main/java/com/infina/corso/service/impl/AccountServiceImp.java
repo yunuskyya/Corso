@@ -10,18 +10,16 @@ import com.infina.corso.exception.AccountAlreadyExistsException;
 import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
-import com.infina.corso.model.User;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AccountService;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Random;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service

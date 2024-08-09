@@ -1,10 +1,8 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.dto.request.CreateAccountRequest;
-import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
-import com.infina.corso.model.Account;
 import com.infina.corso.service.AccountService;
 import com.infina.corso.shared.GenericMessage;
 import com.infina.corso.shared.Messages;

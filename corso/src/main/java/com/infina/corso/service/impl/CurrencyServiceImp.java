@@ -55,15 +55,6 @@ public class CurrencyServiceImp implements CurrencyService {
                 CurrencyResponse currencyResponse = objectMapper.readValue(responseBody, CurrencyResponse.class);
                 List<Currency> currencies = currencyResponse.getResult();
                 currencyRepository.saveAllAndFlush(currencies);
-
-                for (Currency currency : currencies) {
-                    System.out.println("Name: " + currency.getName());
-                    System.out.println("Code: " + currency.getCode());
-                    System.out.println("Selling Price: " + currency.getSelling());
-                    System.out.println("Buying Price: " + currency.getBuying());
-                    System.out.println("/n");
-                }
-
                 return currencyResponse;
             } else {
                 throw new RuntimeException("API çağrısında bir hata oluştu: " + response.statusCode());

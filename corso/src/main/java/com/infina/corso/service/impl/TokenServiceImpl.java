@@ -1,22 +1,19 @@
 package com.infina.corso.service.impl;
 
-import java.util.LinkedHashMap;
-import java.util.Optional;
-import java.util.UUID;
-
-import com.infina.corso.dto.request.CredentialsRequest;
-import com.infina.corso.dto.response.GetUserByEmailResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infina.corso.model.Token;
 import com.infina.corso.model.User;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.TokenService;
+import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
+import java.util.LinkedHashMap;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
