@@ -56,11 +56,19 @@ public class AccountController {
 
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_BROKER')")
     @Operation(summary = "Delete an account", description = "Delete an account by ID.")
     public GenericMessage deleteAccount(@PathVariable Long id) {
         accountService.deleteAccount(id);
         return new GenericMessage(Messages.getMessageForLocale("corso.delete.account.success.message.successfully",
+                LocaleContextHolder.getLocale()));
+    }
+    @PutMapping("/reactivate/{id}")
+    @PreAuthorize("hasRole('ROLE_BROKER')")
+    @Operation(summary = "Reactivate a deleted account", description = "Reactivate an account by ID.")
+    public GenericMessage reactivateAccount(@PathVariable Long id) {
+        accountService.reactivateAccount(id);
+        return new GenericMessage(Messages.getMessageForLocale("corso.reactivate.account.success.message",
                 LocaleContextHolder.getLocale()));
     }
 }
