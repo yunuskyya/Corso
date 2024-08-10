@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterUserRequest {
+public class RegisterManagerRequest {
     @Size(min = 3, max = 50)
     @NotBlank(message = "{corso.validation.notBlank.firstName}")
     private String firstName;
@@ -22,12 +22,12 @@ public class RegisterUserRequest {
     private String lastName;
 
     @Size(min = 3, max = 50)
-    @NotBlank(message = "{corso.validation.notBlank.username}")
-    private String username;
-
-    @Size(min = 8, max = 50)
     @NotBlank(message = "{corso.validation.notBlank.email}")
     @Email(message = "{corso.validation.email}")
     @UniqueEmail
     private String email;
+
+    @Size(min = 5, max = 50, message = "{corso.validation.size.password}")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+\\.]).{8,}$", message = "{corso.validation.pattern.password}")
+    private String password;
 }
