@@ -46,7 +46,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
             accountRepository.save(account.get());
             customerRepository.save(customer.get());
             transfer.setSystemDate(systemDate.get().getDate());
-            transferRepository.save(transfer); // burada id null gidiyor ve hata atıyor ??
+            transferRepository.save(transfer);
 
         } catch (Exception e) {
             System.out.println("Unexpected exception: " + e.getMessage());
