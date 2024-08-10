@@ -48,23 +48,6 @@ public class IbanServiceImpl implements IbanService {
         return ibanRepository.findAll();
     }
 
-    /*
-    @Override
-    public Iban updateIban(Long id, Iban iban) {
-        Optional<Iban> existingIban = ibanRepository.findById(id);
-        if (existingIban.isPresent()) {
-            Iban updatedIban = existingIban.get();
-            updatedIban.setIban(iban.getIban());
-            updatedIban.setCurrencyType(iban.getCurrencyType());
-            updatedIban.setCustomer(iban.getCustomer());
-            return ibanRepository.save(updatedIban);
-        } else {
-            throw new RuntimeException("Iban not found with id: " + id);
-        }
-    }
-
-     */
-
     @Override
     public void deleteIban(Long id) {
         ibanRepository.deleteById(id);
