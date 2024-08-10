@@ -5,7 +5,6 @@ import com.infina.corso.dto.request.*;
 import com.infina.corso.dto.response.GetAllUserResponse;
 import com.infina.corso.exception.AccessDeniedException;
 import com.infina.corso.exception.UserNotFoundException;
-import com.infina.corso.model.Token;
 import com.infina.corso.model.Transaction;
 import com.infina.corso.model.User;
 import com.infina.corso.model.enums.Role;
@@ -116,6 +115,23 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userInDb);
         emailHelper.sendTokenEmail(passwordResetRequest.getEmail(), userInDb.getResetPasswordToken());
     }
+    @Override
+    public void activateUser(UserActivateRequest userActivateRequest) {
+
+        User userInDb = userRepository.findByEmail(userActivateRequest.getEmail()).orElseThrow(() -> {
+            logger.error("User not found with email: {}", userActivateRequest.getEmail());
+            return new UserNotFoundException("User not found with email: " + userActivateRequest.getEmail());
+        });
+
+        if (!userInDb.isDeleted()) {
+            logger.debug("User is already active: {}", userActivateRequest.getEmail());
+            throw new RuntimeException("User is already active: " + userActivateRequest.getEmail());
+        }
+
+        userInDb.setDeleted(false);
+        userRepository.save(userInDb);
+        logger.info("User activated: {}", userActivateRequest.getEmail());
+    }
 
     @Override
     public void userUnblock(UserUnblockRequest userUnblockRequest) {
@@ -124,14 +140,13 @@ public class UserServiceImpl implements UserService {
             logger.error("User not found with email: {}", userUnblockRequest.getEmail());
             return new UserNotFoundException("User not found with email: " + userUnblockRequest.getEmail());
         });
-        if (!userInDb.isDeleted()) {
+        if (userInDb.getLoginAttempts() < 5) {
             logger.debug("User is not blocked: {}", userUnblockRequest.getEmail());
             throw new RuntimeException("User is not blocked: " + userUnblockRequest.getEmail());
         }
-        userInDb.setDeleted(false);
+        userInDb.setLoginAttempts(0);
         userRepository.save(userInDb);
         logger.info("User unblocked: {}", userUnblockRequest.getEmail());
-
     }
 
     @Override
