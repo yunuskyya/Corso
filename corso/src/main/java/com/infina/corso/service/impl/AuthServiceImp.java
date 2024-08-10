@@ -57,6 +57,10 @@ public class AuthServiceImp implements AuthService {
             logger.error("User account is locked: {}", credentials.email());
             throw new RuntimeException("User account is locked: " + credentials.email());
         }
+        if (!inDB.isDeleted()) {
+            logger.error("User account is not active: {}", credentials.email());
+            throw new RuntimeException("User account is not active: " + credentials.email());
+        }
 
         if (!passwordEncoder.matches(credentials.password(), inDB.getPassword())) {
             logger.error("Invalid credentials for user: {}", credentials.email());
