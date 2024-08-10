@@ -37,8 +37,11 @@ public class Customer {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL /* fetch = FetchType.EAGER*/)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Account> accounts;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<Iban> ibans;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
