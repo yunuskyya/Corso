@@ -1,5 +1,6 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.config.CurrentUser;
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.CredentialsRequest;
 import com.infina.corso.dto.response.AuthResponse;
@@ -14,9 +15,10 @@ import com.infina.corso.service.TokenService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -30,8 +32,8 @@ public class AuthServiceImp implements AuthService {
 
     @Autowired
     public AuthServiceImp(TokenService tokenService, PasswordEncoder passwordEncoder,
-                          ModelMapperConfig modelMapperConfig, UserRepository userRepository,
-                          MailService emailService) {
+            ModelMapperConfig modelMapperConfig, UserRepository userRepository,
+            MailService emailService) {
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.modelMapperConfig = modelMapperConfig;
@@ -74,7 +76,8 @@ public class AuthServiceImp implements AuthService {
         userRepository.save(inDB);
 
         logger.info("User authenticated: {}", inDB.getEmail());
-        GetUserByEmailResponse userResp = modelMapperConfig.modelMapperForResponse().map(inDB, GetUserByEmailResponse.class);
+        GetUserByEmailResponse userResp = modelMapperConfig.modelMapperForResponse().map(inDB,
+                GetUserByEmailResponse.class);
         Token token = tokenService.generateToken(inDB);
         return new AuthResponse(userResp, token);
     }
@@ -92,5 +95,13 @@ public class AuthServiceImp implements AuthService {
                 "Saygılarımızla,\n" +
                 "Infina Corso Ekibi";
         emailService.sendSimpleMessage(to, subject, text);
+    }
+
+    @Override
+    public int getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int id = ((CurrentUser) authentication.getPrincipal()).getId();
+        logger.info("Current user id: {}", id);
+        return id;
     }
 }
