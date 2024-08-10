@@ -33,7 +33,7 @@ public class ExcelReportService {
             row.createCell(1).setCellValue(transaction.getPurchasedCurrency());
             row.createCell(2).setCellValue(transaction.getSoldCurrency());
             row.createCell(3).setCellValue(transaction.getAmount());
-            row.createCell(4).setCellValue(transaction.getTransactionDate().toString());
+            row.createCell(4).setCellValue(transaction.getTransactionSystemDate().toString());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

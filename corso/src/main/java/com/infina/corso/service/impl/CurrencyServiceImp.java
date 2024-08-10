@@ -1,12 +1,8 @@
 package com.infina.corso.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.infina.corso.config.RedisConfig;
-import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.CurrencyResponse;
 import com.infina.corso.model.Currency;
-import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.service.CurrencyService;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,13 +22,11 @@ public class CurrencyServiceImp implements CurrencyService {
     private static final String API_URL = "https://api.collectapi.com/economy/allCurrency";
     private static final String API_KEY = "apikey 4lsKq5b8POPVmTb8nmK8zT:0GfAzShp6bNHJ93JGlyYKT";
 
-    private final CurrencyRepository currencyRepository;
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Currency> currencyRedisTemplate;
 
-    public CurrencyServiceImp(ObjectMapper objectMapper, CurrencyRepository currencyRepository, RedisTemplate<String, Currency> currencyRedisTemplate) {
+    public CurrencyServiceImp(ObjectMapper objectMapper, RedisTemplate<String, Currency> currencyRedisTemplate) {
         this.objectMapper = objectMapper;
-        this.currencyRepository = currencyRepository;
         this.currencyRedisTemplate = currencyRedisTemplate;
     }
 
