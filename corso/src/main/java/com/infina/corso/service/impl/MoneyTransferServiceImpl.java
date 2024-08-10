@@ -12,8 +12,11 @@ import com.infina.corso.repository.SystemDateRepository;
 import com.infina.corso.service.MoneyTransferService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.support.CustomSQLExceptionTranslatorRegistrar;
 import org.springframework.stereotype.Service;
 
+import javax.security.auth.login.AccountNotFoundException;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -35,28 +38,46 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
 
 
     public void saveMoneyTransfer(MoneyTransferRequest moneyTransfer) {
-        Optional<SystemDate> systemDate = systemDateRepository.findById(1);
-        MoneyTransfer transfer = modelMapperForRequest.map(moneyTransfer, MoneyTransfer.class);
-        if(moneyTransfer.getReceiver() != null && moneyTransfer.getReceiver().startsWith("TR")){
-            transfer.setDirection('Ç');
-        }else transfer.setDirection('G');
-
-        Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomerId());
-        Optional<Account> account;
-        if(transfer.getDirection() == 'G') {
-            account = customer.get().getAccounts().stream()
-                    .filter(acc -> acc.getCurrency().equals(moneyTransfer.getCurrencyCode()))
-                    .findFirst();
-            account.get().getBalance().add(moneyTransfer.getAmount());
-        }else {
-            account = customer.get().getAccounts().stream()
-                    .filter(acc -> acc.getCurrency().equals(moneyTransfer.getCurrencyCode()))
-                    .findFirst();
-            account.get().getBalance().subtract(moneyTransfer.getAmount());
+        try {
+            Optional<SystemDate> systemDate = systemDateRepository.findById(1);
+            MoneyTransfer transfer = modelMapperForRequest.map(moneyTransfer, MoneyTransfer.class);
+            setTransferDirection(moneyTransfer, transfer);
+            Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomerId());
+            Optional<Account> account = findAccountForTransfer(moneyTransfer, transfer, customerRepository);
+            updateAccountBalance(account, moneyTransfer, transfer.getDirection());
+            accountRepository.save(account.get());
+            transfer.setSystemDate(systemDate.get().getDate());
+            transferRepository.save(transfer);
+        } catch (Exception e) {
+            System.out.println("Unexpected exception: " + e.getMessage());
         }
-        accountRepository.save(account.get());
-        transfer.setSystemDate(systemDate.get().getDate());
-        transferRepository.save(transfer);
+    }
+
+    private MoneyTransfer setTransferDirection(MoneyTransferRequest moneyTransfer, MoneyTransfer transfer) {
+        if (moneyTransfer.getReceiver() != null && moneyTransfer.getReceiver().startsWith("TR")) {
+            transfer.setDirection('Ç');
+        } else {
+            transfer.setDirection('G');
+        }
+        return transfer;
+    }
+
+    private Optional<Account> findAccountForTransfer(MoneyTransferRequest moneyTransfer, MoneyTransfer
+            transfer, CustomerRepository customerRepository) {
+        Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomerId());
+        return customer.get().getAccounts().stream()
+                .filter(acc -> acc.getCurrency().equals(moneyTransfer.getCurrencyCode()))
+                .findFirst();
+    }
+
+    private void updateAccountBalance(Optional<Account> account, MoneyTransferRequest moneyTransfer,
+                                      char direction) {
+        BigDecimal amount = moneyTransfer.getAmount();
+        if (direction == 'G') {
+            account.get().setBalance(account.get().getBalance().add(amount));
+        } else {
+            account.get().setBalance(account.get().getBalance().subtract(amount));
+        }
     }
 
 }
