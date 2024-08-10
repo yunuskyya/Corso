@@ -10,6 +10,7 @@ import com.infina.corso.dto.response.CustomerGetByIdResponse;
 import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
+import com.infina.corso.model.User;
 import com.infina.corso.model.enums.CustomerType;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AuthService;
@@ -95,13 +96,24 @@ public class CustomerServiceImpl implements CustomerService {
     // only manager or broker
     @Override
     public void createCustomer(CustomerUpdateRequest customerDto) {
+        int currentUserId = authService.getCurrentUserId();
+        User user = new User();
+        user.setId(currentUserId);
         Customer customerEntity = modelMapperRequest.map(customerDto, Customer.class);
+        customerEntity.setUser(user);
         customerRepository.save(customerEntity);
     }
 
     // only manager or broker
     @Override
     public CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customerDto) {
+        Customer customerInDb = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        int currentUserId = authService.getCurrentUserId();
+
+        if (customerInDb.getUser().getId() != currentUserId) {
+            throw new RuntimeException("You are not authorized to see this customer");
+        }
         Optional<Customer> foundCustomer = customerRepository.findById(id);
 
         if (foundCustomer.isPresent()) {
@@ -127,6 +139,14 @@ public class CustomerServiceImpl implements CustomerService {
     // only manager or broker
     @Override
     public void deleteCustomer(Long id) {
+        Customer customerInDb = customerRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
+        int currentUserId = authService.getCurrentUserId();
+
+        if (customerInDb.getUser().getId() != currentUserId) {
+            throw new RuntimeException("You are not authorized to see this customer");
+        }
+
         customerRepository.deleteById(id);
     }
 
