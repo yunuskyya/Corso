@@ -7,7 +7,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Currency {
     @Id
