@@ -21,16 +21,12 @@ public class IbanServiceImpl implements IbanService {
     private final IbanRepository ibanRepository;
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapperForRequest;
-    private final ModelMapper modelMapperForResponse;
-    private final ModelMapper modelMapperForIban;
 
     @Autowired
     public IbanServiceImpl(IbanRepository ibanRepository, CustomerRepository customerRepository, ModelMapper modelMapperForRequest, @Qualifier("modelMapperForResponse") ModelMapper modelMapperForResponse, @Qualifier("modelMapperForIban") ModelMapper modelMapperForIban) {
         this.ibanRepository = ibanRepository;
         this.customerRepository = customerRepository;
         this.modelMapperForRequest = modelMapperForRequest;
-        this.modelMapperForResponse = modelMapperForResponse;
-        this.modelMapperForIban = modelMapperForIban;
     }
 
     @Override
