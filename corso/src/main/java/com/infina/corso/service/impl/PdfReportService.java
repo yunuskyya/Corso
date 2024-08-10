@@ -39,7 +39,7 @@ public class PdfReportService {
             table.addCell(transaction.getPurchasedCurrency());
             table.addCell(transaction.getSoldCurrency());
             table.addCell(String.valueOf(transaction.getAmount()));
-            table.addCell(transaction.getTransactionDate().toString());
+            table.addCell(transaction.getTransactionSystemDate().toString());
         }
 
         document.add(table);

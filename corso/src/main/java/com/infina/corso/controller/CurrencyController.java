@@ -17,13 +17,9 @@ public class CurrencyController {
     public CurrencyController(CurrencyServiceImp currencyServiceImp) {
         this.currencyServiceImp = currencyServiceImp;
     }
-    @GetMapping("get-all")
+    @GetMapping()
     public CurrencyResponse getCurrencies() {
         return currencyServiceImp.getCurrencyRates();
     }
 
-    @PostMapping("update")
-    public CurrencyResponse updateCurrencies() {
-        return currencyServiceImp.updateCurrencyRates();
-    }
 }
