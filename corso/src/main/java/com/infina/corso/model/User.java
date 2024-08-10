@@ -28,6 +28,7 @@ public class User {
     private String password;
     private boolean active;
     private boolean isDeleted;
+    private String resetPasswordToken;
     private String activationToken;
     private int loginAttempts;
     private boolean accountLocked;
