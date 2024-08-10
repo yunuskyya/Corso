@@ -1,10 +1,8 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.dto.request.MoneyTransferRequest;
-import com.infina.corso.model.Account;
-import com.infina.corso.model.Customer;
-import com.infina.corso.model.MoneyTransfer;
-import com.infina.corso.model.SystemDate;
+import com.infina.corso.dto.response.MoneyTransferResponse;
+import com.infina.corso.model.*;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.repository.MoneyTransferRepository;
@@ -15,20 +13,24 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MoneyTransferServiceImpl implements MoneyTransferService {
 
-    private final MoneyTransferRepository transferRepository;
+    private final MoneyTransferRepository moneyTransferRepository;
     private final ModelMapper modelMapperForRequest;
+    private final ModelMapper modelMapperForResponse;
     private final SystemDateRepository systemDateRepository;
     private final CustomerRepository customerRepository;
     private final AccountRepository accountRepository;
 
-    public MoneyTransferServiceImpl(MoneyTransferRepository transferRepository, @Qualifier("modelMapperForRequest") ModelMapper modelMapperForRequest, SystemDateRepository systemDateRepository, CustomerRepository customerRepository, AccountRepository accountRepository) {
-        this.transferRepository = transferRepository;
+    public MoneyTransferServiceImpl(MoneyTransferRepository moneyTransferRepository, @Qualifier("modelMapperForRequest") ModelMapper modelMapperForRequest, ModelMapper modelMapperForResponse, SystemDateRepository systemDateRepository, CustomerRepository customerRepository, AccountRepository accountRepository) {
+        this.moneyTransferRepository = moneyTransferRepository;
         this.modelMapperForRequest = modelMapperForRequest;
+        this.modelMapperForResponse = modelMapperForResponse;
         this.systemDateRepository = systemDateRepository;
         this.customerRepository = customerRepository;
         this.accountRepository = accountRepository;
@@ -46,13 +48,23 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
             accountRepository.save(account.get());
             customerRepository.save(customer.get());
             transfer.setSystemDate(systemDate.get().getDate());
-            transferRepository.save(transfer);
+            moneyTransferRepository.save(transfer);
 
         } catch (Exception e) {
             System.out.println("Unexpected exception: " + e.getMessage());
         }
     }
 
+    public List<MoneyTransferResponse> collectAllMoneyTransfers() {
+        List<MoneyTransfer> moneyTransferList = moneyTransferRepository.findAll();
+        return convertMoneyTransferListToDto(moneyTransferList);
+    }
+
+    private List<MoneyTransferResponse> convertMoneyTransferListToDto(List<MoneyTransfer> moneyTransferList) {
+        return moneyTransferList.stream()
+                .map(moneyTransfer -> modelMapperForResponse.map(moneyTransfer, MoneyTransferResponse.class))
+                .collect(Collectors.toList());
+    }
 
     private MoneyTransfer setTransferDirection(MoneyTransferRequest moneyTransfer, MoneyTransfer transfer) {
         if (moneyTransfer.getReceiver() != null && moneyTransfer.getReceiver().startsWith("TR")) {
