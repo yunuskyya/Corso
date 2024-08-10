@@ -12,10 +12,8 @@ import com.infina.corso.repository.SystemDateRepository;
 import com.infina.corso.service.MoneyTransferService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.support.CustomSQLExceptionTranslatorRegistrar;
 import org.springframework.stereotype.Service;
-
-import javax.security.auth.login.AccountNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.Optional;
 
@@ -36,22 +34,25 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         this.accountRepository = accountRepository;
     }
 
-
+    @Transactional
     public void saveMoneyTransfer(MoneyTransferRequest moneyTransfer) {
         try {
             Optional<SystemDate> systemDate = systemDateRepository.findById(1);
             MoneyTransfer transfer = modelMapperForRequest.map(moneyTransfer, MoneyTransfer.class);
             setTransferDirection(moneyTransfer, transfer);
-            Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomerId());
+            Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomer_id());
             Optional<Account> account = findAccountForTransfer(moneyTransfer, transfer, customerRepository);
             updateAccountBalance(account, moneyTransfer, transfer.getDirection());
             accountRepository.save(account.get());
+            customerRepository.save(customer.get());
             transfer.setSystemDate(systemDate.get().getDate());
-            transferRepository.save(transfer);
+            transferRepository.save(transfer); // burada id null gidiyor ve hata atıyor ??
+
         } catch (Exception e) {
             System.out.println("Unexpected exception: " + e.getMessage());
         }
     }
+
 
     private MoneyTransfer setTransferDirection(MoneyTransferRequest moneyTransfer, MoneyTransfer transfer) {
         if (moneyTransfer.getReceiver() != null && moneyTransfer.getReceiver().startsWith("TR")) {
@@ -64,7 +65,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
 
     private Optional<Account> findAccountForTransfer(MoneyTransferRequest moneyTransfer, MoneyTransfer
             transfer, CustomerRepository customerRepository) {
-        Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomerId());
+        Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomer_id());
         return customer.get().getAccounts().stream()
                 .filter(acc -> acc.getCurrency().equals(moneyTransfer.getCurrencyCode()))
                 .findFirst();
