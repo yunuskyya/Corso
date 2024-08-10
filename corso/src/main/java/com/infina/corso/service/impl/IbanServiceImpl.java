@@ -5,12 +5,12 @@ import com.infina.corso.model.Customer;
 import com.infina.corso.model.Iban;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.repository.IbanRepository;
-import com.infina.corso.service.CustomerService;
 import com.infina.corso.service.IbanService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,22 +21,36 @@ public class IbanServiceImpl implements IbanService {
     private final IbanRepository ibanRepository;
     private final CustomerRepository customerRepository;
     private final ModelMapper modelMapperForRequest;
+    private final ModelMapper modelMapperForResponse;
+    private final ModelMapper modelMapperForIban;
 
     @Autowired
-    public IbanServiceImpl(IbanRepository ibanRepository, CustomerRepository customerRepository, @Qualifier("modelMapperForRequest") ModelMapper modelMapperForRequest) {
+    public IbanServiceImpl(IbanRepository ibanRepository, CustomerRepository customerRepository, ModelMapper modelMapperForRequest, @Qualifier("modelMapperForResponse") ModelMapper modelMapperForResponse, @Qualifier("modelMapperForIban") ModelMapper modelMapperForIban) {
         this.ibanRepository = ibanRepository;
         this.customerRepository = customerRepository;
         this.modelMapperForRequest = modelMapperForRequest;
+        this.modelMapperForResponse = modelMapperForResponse;
+        this.modelMapperForIban = modelMapperForIban;
     }
 
     @Override
-    public Iban saveIban(IbanRegisterRequest ibanRegisterRequest, Long customerId) {
-        Optional<Customer> customer = customerRepository.findById(customerId);
+    @Transactional
+    public void saveIban(IbanRegisterRequest ibanRegisterRequest) {
+        Optional<Customer> customer = customerRepository.findById(ibanRegisterRequest.getCustomer_id());
         Iban iban = modelMapperForRequest.map(ibanRegisterRequest, Iban.class);
-        customer.get().getIbans().add(iban);
-        customerRepository.save(customer.get());
-        return ibanRepository.save(iban);
+        if (!checkIbanForDuplicate(iban,customer)) {
+            customer.get().getIbans().add(iban);
+            iban.setCustomer(customer.get());
+            customerRepository.save(customer.get());
+        }else System.out.println("Böyle bir iban bulunmaktadır");
     }
+
+    private boolean checkIbanForDuplicate(Iban iban, Optional<Customer> customer) {
+        List<Iban> ibans = customer.get().getIbans();
+        return ibans.stream()
+                .anyMatch(existingIban -> existingIban.getIban().equals(iban.getIban()));
+    }
+
 
     @Override
     public Optional<Iban> getIbanById(Long id) {
