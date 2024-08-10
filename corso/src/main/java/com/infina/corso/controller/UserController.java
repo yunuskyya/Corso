@@ -1,10 +1,7 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.config.CurrentUser;
-import com.infina.corso.dto.request.ChangePasswordRequest;
-import com.infina.corso.dto.request.RegisterManagerRequest;
-import com.infina.corso.dto.request.RegisterUserRequest;
-import com.infina.corso.dto.request.UpdatePasswordRequest;
+import com.infina.corso.dto.request.*;
 import com.infina.corso.dto.response.GetAllUserResponse;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.UserService;
@@ -126,6 +123,12 @@ public class UserController {
             return new GenericMessage("Şifre oluşturulurken bir hata oluştu: " + e.getMessage());
         }
     }
-
-
+    @PutMapping("/unBlock")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
+    @Operation(summary = "Unblock a user", description = "Unblock a user by email.")
+    public GenericMessage unBlockUser(@Valid @RequestBody UserUnblockRequest userUnblockRequest) {
+        userService.userUnblock(userUnblockRequest);
+        return new GenericMessage(Messages.getMessageForLocale("corso.unblock.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
+    }
 }
