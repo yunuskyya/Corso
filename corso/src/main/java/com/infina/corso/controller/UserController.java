@@ -131,4 +131,12 @@ public class UserController {
         return new GenericMessage(Messages.getMessageForLocale("corso.unblock.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
     }
+    @PutMapping("/activate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Activate a user", description = "Activate a user by email.")
+    public GenericMessage activateUser(@Valid @RequestBody UserActivateRequest userActivateRequest) {
+        userService.activateUser(userActivateRequest);
+        return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
+    }
 }
