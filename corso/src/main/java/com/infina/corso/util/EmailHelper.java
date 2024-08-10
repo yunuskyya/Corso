@@ -29,4 +29,13 @@ public class EmailHelper {
                 resetPasswordUrl, user.getResetPasswordToken());
         mailService.sendSimpleMessage(user.getEmail(), subject, text);
     }
+    public void sendAccountLockedEmail(User user) {
+        String to = user.getEmail();
+        String subject = "Hesabınız bloke edildi";
+        String text = "Merhaba " + user.getFirstName() + ",\n\n" +
+                "Hesabınız 5 başarısız giriş denemesi nedeniyle bloke edilmiştir. Lütfen daha sonra tekrar deneyiniz veya destek ekibimizle iletişime geçiniz.\n\n" +
+                "Saygılarımızla,\n" +
+                "Infina Corso Ekibi";
+        mailService.sendSimpleMessage(to, subject, text);
+    }
 }

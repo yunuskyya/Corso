@@ -12,6 +12,7 @@ import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.AuthService;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.TokenService;
+import com.infina.corso.util.EmailHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +28,19 @@ public class AuthServiceImp implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapperConfig modelMapperConfig;
     private final UserRepository userRepository;
-    private final MailService emailService;
+    private final EmailHelper emailHelper;
     private static final int MAX_ATTEMPTS = 5;
 
     @Autowired
     public AuthServiceImp(TokenService tokenService, PasswordEncoder passwordEncoder,
-            ModelMapperConfig modelMapperConfig, UserRepository userRepository,
-            MailService emailService) {
+                          ModelMapperConfig modelMapperConfig, UserRepository userRepository,
+                          EmailHelper emailHelper) {
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.modelMapperConfig = modelMapperConfig;
         this.userRepository = userRepository;
-        this.emailService = emailService;
+        this.emailHelper = emailHelper;
+
     }
 
     private static final Logger logger = LogManager.getLogger(AuthServiceImp.class);
@@ -65,9 +67,8 @@ public class AuthServiceImp implements AuthService {
                 inDB.setAccountLocked(true);
                 logger.error("User account locked due to too many failed attempts: {}", credentials.email());
                 // Send email notification
-                sendAccountLockedEmail(inDB);
+                emailHelper.sendAccountLockedEmail(inDB);
             }
-
             userRepository.save(inDB);
             throw new AuthenticationException();
         }
@@ -87,15 +88,7 @@ public class AuthServiceImp implements AuthService {
         tokenService.logout(authorizationHeader);
     }
 
-    private void sendAccountLockedEmail(User user) {
-        String to = user.getEmail();
-        String subject = "Hesabınız bloke edildi";
-        String text = "Merhaba " + user.getFirstName() + ",\n\n" +
-                "Hesabınız 5 başarısız giriş denemesi nedeniyle bloke edilmiştir. Lütfen daha sonra tekrar deneyiniz veya destek ekibimizle iletişime geçiniz.\n\n" +
-                "Saygılarımızla,\n" +
-                "Infina Corso Ekibi";
-        emailService.sendSimpleMessage(to, subject, text);
-    }
+
 
     @Override
     public int getCurrentUserId() {
