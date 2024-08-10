@@ -22,9 +22,9 @@ public class IbanController {
     }
 
     @PostMapping
-    public ResponseEntity<Iban> createIban(@RequestBody IbanRegisterRequest ibanRegisterRequest, @PathVariable long id) {
-        Iban savedIban = ibanService.saveIban(ibanRegisterRequest, id);
-        return ResponseEntity.ok(savedIban);
+    public ResponseEntity<?> createIban(@RequestBody IbanRegisterRequest ibanRegisterRequest) {
+        ibanService.saveIban(ibanRegisterRequest);
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/{id}")
@@ -39,15 +39,6 @@ public class IbanController {
         List<Iban> ibans = ibanService.getAllIbans();
         return ResponseEntity.ok(ibans);
     }
-
-    /*
-    @PutMapping("/{id}")
-    public ResponseEntity<Iban> updateIban(@PathVariable Long id, @RequestBody Iban iban) {
-        Iban updatedIban = ibanService.updateIban(id, iban);
-        return ResponseEntity.ok(updatedIban);
-    }
-
-     */
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIban(@PathVariable Long id) {
