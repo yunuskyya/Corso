@@ -118,6 +118,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void userUnblock(UserUnblockRequest userUnblockRequest) {
+
+        User userInDb = userRepository.findByEmail(userUnblockRequest.getEmail()).orElseThrow(() -> {
+            logger.error("User not found with email: {}", userUnblockRequest.getEmail());
+            return new UserNotFoundException("User not found with email: " + userUnblockRequest.getEmail());
+        });
+        if (!userInDb.isDeleted()) {
+            logger.debug("User is not blocked: {}", userUnblockRequest.getEmail());
+            throw new RuntimeException("User is not blocked: " + userUnblockRequest.getEmail());
+        }
+        userInDb.setDeleted(false);
+        userRepository.save(userInDb);
+        logger.info("User unblocked: {}", userUnblockRequest.getEmail());
+
+    }
+
+    @Override
     public void updatePassword(String token, UpdatePasswordRequest request) {
         User userInDb = userRepository.findByResetPasswordToken(token).orElseThrow(() -> {
             logger.error("Invalid password reset token: {}", token);

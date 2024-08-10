@@ -13,4 +13,5 @@ public interface UserService {
     void deleteUser(int id);
     void updatePassword(String token, UpdatePasswordRequest request);
     void resetPassword(PasswordResetRequest passwordResetRequest);
+    void userUnblock(UserUnblockRequest userUnblockRequest);
 }
