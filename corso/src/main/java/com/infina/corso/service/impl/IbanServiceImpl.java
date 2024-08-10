@@ -23,7 +23,7 @@ public class IbanServiceImpl implements IbanService {
     private final ModelMapper modelMapperForRequest;
 
     @Autowired
-    public IbanServiceImpl(IbanRepository ibanRepository, CustomerRepository customerRepository, ModelMapper modelMapperForRequest, @Qualifier("modelMapperForResponse") ModelMapper modelMapperForResponse, @Qualifier("modelMapperForIban") ModelMapper modelMapperForIban) {
+    public IbanServiceImpl(IbanRepository ibanRepository, CustomerRepository customerRepository, ModelMapper modelMapperForRequest) {
         this.ibanRepository = ibanRepository;
         this.customerRepository = customerRepository;
         this.modelMapperForRequest = modelMapperForRequest;
