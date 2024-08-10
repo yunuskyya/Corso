@@ -1,6 +1,8 @@
 package com.infina.corso.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 @Data
 public class MoneyTransfer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String ibanNo;
@@ -25,6 +28,8 @@ public class MoneyTransfer {
     private String sender;
 
     private LocalDate systemDate;
+
+    private Long customer_id;
 
     @CreationTimestamp
     private LocalDateTime creationTime;

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Getter
 public class MoneyTransferRequest {
 
-    private Long customerId;
+    private Long customer_id;
 
     private String currencyCode;
 

@@ -34,13 +34,13 @@ public class TransactionController {
 
     }
     //Sadece admin ve yönetici erişebilecek
-    @GetMapping("/get/all")
+    @GetMapping("/get-all")
     public List<TransactionResponse> getAll(){
         return transactionServiceImpl.collectAllTransactions();
 
     }
 
-    @GetMapping("/get/all/user/{userId}")
+    @GetMapping("/get-all/{userId}")
     public List<TransactionResponse> getTransactionsSelectedUser(@PathVariable int userId){
         return transactionServiceImpl.collectTransactionsForSelectedUser(userId);
 
