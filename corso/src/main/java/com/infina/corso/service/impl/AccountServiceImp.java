@@ -13,6 +13,7 @@ import com.infina.corso.model.Customer;
 import com.infina.corso.repository.AccountRepository;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AccountService;
+import com.infina.corso.service.AuthService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
@@ -25,16 +26,19 @@ import java.util.stream.Collectors;
 @Service
 public class AccountServiceImp implements AccountService {
     private final CustomerServiceImpl customerServiceImpl;
-    private ModelMapperConfig mapper;
-    private AccountRepository accountRepository;
-    private CustomerRepository customerRepository;
+    private final ModelMapperConfig mapper;
+    private final  AccountRepository accountRepository;
+    private final  CustomerRepository customerRepository;
+    private final AuthService authService;
+
     private static final Logger logger = LogManager.getLogger(AccountServiceImp.class);
 
-    public AccountServiceImp(ModelMapperConfig mapper, AccountRepository accountRepository, CustomerRepository customerRepository , CustomerServiceImpl customerServiceImpl) {
+    public AccountServiceImp(ModelMapperConfig mapper, AccountRepository accountRepository, CustomerRepository customerRepository , CustomerServiceImpl customerServiceImpl, AuthService authService) {
         this.mapper = mapper;
         this.accountRepository = accountRepository;
         this.customerRepository = customerRepository;
         this.customerServiceImpl = customerServiceImpl;
+        this.authService = authService;
     }
 
 
@@ -87,7 +91,16 @@ public class AccountServiceImp implements AccountService {
 
     @Override
     public GetAccountByIdResponse getAccountById(Long id) {
-        Account account = accountRepository.findById(id).orElse(null);
+        Account account = accountRepository.findById(id)
+                .orElseThrow(() -> {
+                    logger.error("Account not found with id {}", id);
+                    throw new UserNotFoundException("Account not found with id " + id);
+                });
+        int currentUserId = authService.getCurrentUserId();
+        if (account.getCustomer().getUser().getId() != currentUserId) {
+            logger.error("Attempt to access unauthorized account: {}", account.getAccountNumber());
+            throw new RuntimeException("You are not authorized to see this account");
+        }
         return mapper.modelMapperForResponse().map(account, GetAccountByIdResponse.class);
     }
 
