@@ -1,5 +1,6 @@
 package com.infina.corso.controller;
 
+import com.infina.corso.dto.request.IbanRegisterRequest;
 import com.infina.corso.model.Iban;
 import com.infina.corso.service.IbanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class IbanController {
     }
 
     @PostMapping
-    public ResponseEntity<Iban> createIban(@RequestBody Iban iban) {
-        Iban savedIban = ibanService.saveIban(iban);
+    public ResponseEntity<Iban> createIban(@RequestBody IbanRegisterRequest ibanRegisterRequest, @PathVariable long id) {
+        Iban savedIban = ibanService.saveIban(ibanRegisterRequest, id);
         return ResponseEntity.ok(savedIban);
     }
 
