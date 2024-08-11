@@ -1,5 +1,5 @@
 import {axiosInstance} from './interceptor'
-import { CUSTOMER_URL_LIST_FOR_BROKER, CURRENCY_URL_COST, ACCOUNT_URL_LIST_FOR_BROKER } from '../constants/apiUrl';
+import { CUSTOMER_URL_LIST_FOR_BROKER, CURRENCY_URL_COST, ACCOUNT_URL_LIST_FOR_BROKER, TRANSACTION_URL_CREATE } from '../constants/apiUrl';
 
 
 export const fetchCustomerList = async (userId) => {
@@ -37,6 +37,26 @@ export const fetchCurrencyCost = async (purchasedCurrencyCode, soldCurrencyCode,
         return response.data;
     } catch (error) {
         console.error('Error fetching currency cost:', error);
+        throw error;
+    }
+};
+
+export const createTransaction = async (account_id, purchasedCurrency, soldCurrency, amount, user_id) => {
+    try {
+        const response = await axiosInstance.post(TRANSACTION_URL_CREATE, {
+            account_id,
+            soldCurrency,
+            purchasedCurrency,
+            amount,
+            user_id
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error creating transaction:', error);
         throw error;
     }
 };

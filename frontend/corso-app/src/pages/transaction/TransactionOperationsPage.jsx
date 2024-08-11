@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk } from '../../features/transactionSlice'; // Doğru importlar
+import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk, createTransactionThunk } from '../../features/transactionSlice'; // Doğru importlar
 import { currencies } from '../../constants/currencies';
 import useAuth from '../../hooks/useAuth';
 
@@ -14,12 +14,13 @@ const TransactionOperationsPage = () => {
   const [isAmountInputDisabled, setAmountInputDisabled] = useState(true);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
   const { user } = useAuth();
-
   const dispatch = useAppDispatch();
+
   const customers = useAppSelector((state) => state.transaction.customers);
   const accounts = useAppSelector((state) => state.transaction.accounts);
-  const currencyCost = useAppSelector((state) => state.transaction.currencyCost); // API'den gelen maliyet
+  const currencyCost = useAppSelector((state) => state.transaction.currencyCost);
   const currencyStatus = useAppSelector((state) => state.transaction.currencyStatus);
+  const transactionStatus = useAppSelector((state) => state.transaction.transactionStatus);
 
   useEffect(() => {
     dispatch(fetchCustomerListThunk(user.id));
@@ -53,7 +54,6 @@ const TransactionOperationsPage = () => {
     setAmountInputDisabled(false);
   };
 
-  // "Alınacak Döviz Tipi" listesini filtrele
   const filteredCurrencies = currencies.filter(
     (currency) => currency.code !== selectedSellCurrency
   );
@@ -67,7 +67,6 @@ const TransactionOperationsPage = () => {
     setAmount(amountValue);
     setConfirmDisabled(false);
 
-    // Sadece miktar girildiğinde API çağrısını yapın
     if (amountValue && selectedSellCurrency && selectedBuyCurrency) {
         dispatch(fetchCurrencyCostThunk({
             purchasedCurrencyCode: selectedBuyCurrency,
@@ -75,7 +74,30 @@ const TransactionOperationsPage = () => {
             amount: parseFloat(amountValue) 
         }));
     }
-};
+  };
+
+  const handleConfirmClick = () => {
+    if (selectedCustomer && selectedSellCurrency && selectedBuyCurrency && amount) {
+      // Seçilen döviz türüne göre hesabı bul
+      const selectedAccount = accounts.find(account => account.currency === selectedSellCurrency);
+      console.log(selectedAccount);
+
+      if (selectedAccount) {
+        const account_id = selectedAccount.id;
+        dispatch(createTransactionThunk({
+          account_id,
+          purchasedCurrency: selectedBuyCurrency,
+          soldCurrency: selectedSellCurrency,
+          amount: parseFloat(amount),
+          user_id: user.id
+        }));
+      } else {
+        console.error('Hesap bulunamadı!');
+      }
+    } else {
+      console.error('Tüm alanları doldurmanız gerekiyor!');
+    }
+  };
 
   return (
     <div style={styles.container}>
@@ -123,7 +145,9 @@ const TransactionOperationsPage = () => {
         <div style={styles.previewContent}>
           <h5 style={styles.previewTitle}>Maliyet</h5>
           <p style={styles.previewText}>{currencyStatus === 'loading' ? 'Hesaplanıyor...' : `Maliyet: ${currencyCost ? currencyCost.toFixed(2) : 'Bilgi Yok'}`}</p>
-          <button className="btn btn-primary" disabled={isConfirmDisabled}>İşlemi Onayla</button>
+          <button className="btn btn-primary" disabled={isConfirmDisabled || transactionStatus === 'loading'} onClick={handleConfirmClick}>
+            {transactionStatus === 'loading' ? 'İşlem Yapılıyor...' : 'İşlemi Onayla'}
+          </button>
         </div>
       </div>
     </div>

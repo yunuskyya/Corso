@@ -7,6 +7,7 @@ import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.*;
 import com.infina.corso.repository.AccountRepository;
+import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.repository.TransactionRepository;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.*;
@@ -17,6 +18,7 @@ import javax.security.auth.login.AccountNotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,8 +34,9 @@ public class TransactionServiceImpl implements TransactionService {
     private final AccountService accountService;
     private final UserServiceImpl userServiceImpl;
     private final SystemDateService systemDateService;
+    private final CustomerRepository customerRepository;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyService, CustomerService customerService, AccountRepository accountRepository, UserRepository userRepository, AccountService accountService, SystemDateService systemDateService) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyService, CustomerService customerService, AccountRepository accountRepository, UserRepository userRepository, AccountService accountService, SystemDateService systemDateService, CustomerRepository customerRepository) {
         this.transactionRepository = transactionRepository;
         this.modelMapperConfig = modelMapperConfig;
         this.userService = userServiceImpl;
@@ -44,6 +47,7 @@ public class TransactionServiceImpl implements TransactionService {
         this.accountService = accountService;
         this.userServiceImpl = userServiceImpl;
         this.systemDateService = systemDateService;
+        this.customerRepository = customerRepository;
     }
 
     @Transactional
@@ -51,40 +55,32 @@ public class TransactionServiceImpl implements TransactionService {
         if(!systemDateService.isDayClosed()) {
             try {
                 LocalDate systemDate = systemDateService.getSystemDate();
-                AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccountNumber(), transactionRequest.getPurchasedCurrency());
+                AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccount_id(), transactionRequest.getPurchasedCurrency());
                 if (accountRequestTransaction.getAccountNo() != null) {
                     Transaction transaction = modelMapperConfig.modelMapperForRequest().map(transactionRequest, Transaction.class);
                     transaction.setSystemDate(systemDate);
-                    Account account = accountRepository.findByAccountNumber(transactionRequest.getAccountNumber());
-                    account.getTransactions().add(transaction);
+                    Optional<Account> account = accountRepository.findById(transactionRequest.getAccount_id());
+                    account.get().getTransactions().add(transaction);
                     // Çapraz kur işlemi olup olmadığını kontrol et
                     boolean isCrossRate = !transactionRequest.getSoldCurrency().equals("TL") && !transactionRequest.getPurchasedCurrency().equals("TL");
                     if (isCrossRate) {
                         Double rate = calculateCurrencyRate(transactionRequest.getSoldCurrency(), transactionRequest.getPurchasedCurrency());
                         double transactionAmountInSoldCurrency = transactionRequest.getAmount();
-                        BigDecimal newBalance = calculateTransactionCostForCross(account, transactionRequest.getAmount(), rate);
+                        BigDecimal newBalance = calculateTransactionCostForCross(account.get(), transactionRequest.getAmount(), rate);
                         //hesap bakiye yeterlilik kontrolü
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-                            throw new RuntimeException("Insufficient funds for account number:  " + account.getAccountNumber());
+                            throw new RuntimeException("Insufficient funds for account number:  " + account.get().getAccountNumber());
                         }
-                        //maliyeti transaction içine set edilmesi
-                 /* BigDecimal costBigDecimal = calculateNewBalanceForCross(transaction.getAmount(), rate);
-                    double cost = costBigDecimal.doubleValue();
-                    transaction.setCost(cost); */
-                        account.setBalance(newBalance);
+                        account.get().setBalance(newBalance);
                     } else {
                         if (transaction.getSoldCurrency().equals("TL")) {
                             transaction.setTransactionType('A');
                         } else transaction.setTransactionType('S');
-                        BigDecimal newBalance = calculateNewBalanceForTRY(account, transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                        BigDecimal newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-                            throw new RuntimeException("Insufficient funds for account number: " + account.getAccountNumber());
+                            throw new RuntimeException("Insufficient funds for account number: " + account.get().getAccountNumber());
                         }
-                        //maliyeti transaction içine set edilmesi
-                 /* BigDecimal costDecimal = calculateTransactionCostForTRY(transaction.getTransactionType(), transactionRequest.getAmount(), transactionRequest.getPurchasedCurrency());
-                    double cost = costDecimal.doubleValue();
-                    transaction.setCost(cost); */
-                        account.setBalance(newBalance);
+                        account.get().setBalance(newBalance);
                     }
                     //satın alınan döviz türündeki hesabın bakiyesinin güncellenmesi
                     Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
@@ -95,10 +91,10 @@ public class TransactionServiceImpl implements TransactionService {
                     User user = userRepository.findById(transactionRequest.getUser_id())
                             .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
                     transaction.setUser(user);
-                    transaction.setAccount(account);
+                    transaction.setAccount(account.get());
                     transactionRepository.save(transaction);
                     user.getTransactions().add(transaction);
-                    accountRepository.save(account);
+                    accountRepository.save(account.get());
                     accountRepository.save(accountPurchasedCurrency);
                     userRepository.save(user);
                 } else

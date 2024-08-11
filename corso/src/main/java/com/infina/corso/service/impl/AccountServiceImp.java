@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -120,9 +121,9 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
-    public AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode) {
-        Account account = accountRepository.findByAccountNumber(accountNumber);
-        return customerServiceImpl.checkAccountsForPurchasedCurrency(account, currencyCode);
+    public AccountRequestTransaction checkIfAccountExists(Long accountId, String currencyCode) {
+        Optional<Account> account = accountRepository.findById(accountId);
+        return customerServiceImpl.checkAccountsForPurchasedCurrency(account.get(), currencyCode);
     }
 
 

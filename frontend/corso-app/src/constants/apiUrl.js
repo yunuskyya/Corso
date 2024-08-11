@@ -23,3 +23,7 @@ export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transa
 // currency urls:
 
 export const CURRENCY_URL_COST = BASE_URL + '/currencies/cost';
+
+//transaction urls:
+
+export const TRANSACTION_URL_CREATE = BASE_URL + '/transaction/create';

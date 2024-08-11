@@ -20,6 +20,6 @@ public interface AccountService {
     List<GetAllAccountResponse> getAllAccounts();
     Account getByAccountNumber(String accountNumber);
     List<GetAllAccountResponse> getAccountsByCustomerId(Long customerId);
-    AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode);
+    AccountRequestTransaction checkIfAccountExists(Long accountId, String currencyCode);
     void reactivateAccount(Long id);
 }
