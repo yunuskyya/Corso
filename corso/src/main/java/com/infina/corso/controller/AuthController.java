@@ -27,6 +27,7 @@ public class AuthController {
     }
 
     @PostMapping
+    @Operation(summary = "Authenticate user", description = "Authenticate a user with the given credentials.")
     public ResponseEntity<AuthResponse> handleAuthentication(@Valid @RequestBody CredentialsRequest credentials) {
         AuthResponse authResponse = authService.authenticate(credentials);
         ResponseCookie cookie = ResponseCookie.from("corso-token", authResponse.getToken().getTokenId())

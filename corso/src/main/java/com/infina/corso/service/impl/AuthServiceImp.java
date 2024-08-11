@@ -1,5 +1,6 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.config.CurrentUser;
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.CredentialsRequest;
 import com.infina.corso.dto.response.AuthResponse;
@@ -11,12 +12,14 @@ import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.AuthService;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.TokenService;
+import com.infina.corso.util.EmailHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 
 @Service
 public class AuthServiceImp implements AuthService {
@@ -25,18 +28,19 @@ public class AuthServiceImp implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final ModelMapperConfig modelMapperConfig;
     private final UserRepository userRepository;
-    private final MailService emailService;
+    private final EmailHelper emailHelper;
     private static final int MAX_ATTEMPTS = 5;
 
     @Autowired
     public AuthServiceImp(TokenService tokenService, PasswordEncoder passwordEncoder,
                           ModelMapperConfig modelMapperConfig, UserRepository userRepository,
-                          MailService emailService) {
+                          EmailHelper emailHelper) {
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
         this.modelMapperConfig = modelMapperConfig;
         this.userRepository = userRepository;
-        this.emailService = emailService;
+        this.emailHelper = emailHelper;
+
     }
 
     private static final Logger logger = LogManager.getLogger(AuthServiceImp.class);
@@ -53,6 +57,10 @@ public class AuthServiceImp implements AuthService {
             logger.error("User account is locked: {}", credentials.email());
             throw new RuntimeException("User account is locked: " + credentials.email());
         }
+        if (!inDB.isDeleted()) {
+            logger.error("User account is not active: {}", credentials.email());
+            throw new RuntimeException("User account is not active: " + credentials.email());
+        }
 
         if (!passwordEncoder.matches(credentials.password(), inDB.getPassword())) {
             logger.error("Invalid credentials for user: {}", credentials.email());
@@ -63,9 +71,8 @@ public class AuthServiceImp implements AuthService {
                 inDB.setAccountLocked(true);
                 logger.error("User account locked due to too many failed attempts: {}", credentials.email());
                 // Send email notification
-                sendAccountLockedEmail(inDB);
+                emailHelper.sendAccountLockedEmail(inDB);
             }
-
             userRepository.save(inDB);
             throw new AuthenticationException();
         }
@@ -74,7 +81,8 @@ public class AuthServiceImp implements AuthService {
         userRepository.save(inDB);
 
         logger.info("User authenticated: {}", inDB.getEmail());
-        GetUserByEmailResponse userResp = modelMapperConfig.modelMapperForResponse().map(inDB, GetUserByEmailResponse.class);
+        GetUserByEmailResponse userResp = modelMapperConfig.modelMapperForResponse().map(inDB,
+                GetUserByEmailResponse.class);
         Token token = tokenService.generateToken(inDB);
         return new AuthResponse(userResp, token);
     }
@@ -84,13 +92,13 @@ public class AuthServiceImp implements AuthService {
         tokenService.logout(authorizationHeader);
     }
 
-    private void sendAccountLockedEmail(User user) {
-        String to = user.getEmail();
-        String subject = "Hesabınız bloke edildi";
-        String text = "Merhaba " + user.getFirstName() + ",\n\n" +
-                "Hesabınız 5 başarısız giriş denemesi nedeniyle bloke edilmiştir. Lütfen daha sonra tekrar deneyiniz veya destek ekibimizle iletişime geçiniz.\n\n" +
-                "Saygılarımızla,\n" +
-                "Infina Corso Ekibi";
-        emailService.sendSimpleMessage(to, subject, text);
+
+
+    @Override
+    public int getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        int id = ((CurrentUser) authentication.getPrincipal()).getId();
+        logger.info("Current user id: {}", id);
+        return id;
     }
 }

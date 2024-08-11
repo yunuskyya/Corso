@@ -7,6 +7,7 @@ import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.model.Account;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface AccountService {
@@ -18,4 +19,5 @@ public interface AccountService {
     Account getByAccountNumber(String accountNumber);
     List<GetAllAccountResponse> getAccountsByCustomerId(Long customerId);
     AccountRequestTransaction checkIfAccountExists(String accountNumber, String currencyCode);
+    void reactivateAccount(Long id);
 }
