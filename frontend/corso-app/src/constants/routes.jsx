@@ -11,6 +11,7 @@ import IbanPage from '../pages/iban/IbanPage';
 import AddAccountPage from '../pages/account/AddAccountPage';
 import AddCashPage from '../pages/cashflow/AddCashPage';
 import SendCashPage from '../pages/cashflow/SendCashPage';
+import AddUser from '../pages/user/AddUser';
 
 // -------------- ADMIN --------------
 export const ADMIN = '/admin';
@@ -40,7 +41,7 @@ export const ADMIN_OPERATIONS = [
             },
             {
                 title: 'Kullanıcı Yetkilendir',
-                link: ADMIN_UPDATE_USER,
+                link: ADMIN_ACTVATE_USER,
                 page: <ActivateUser />,
             }
         ]
@@ -92,7 +93,7 @@ export const MANAGER_OPERATIONS = [
             {
                 title: 'Gemiş İşlemler',
                 link: MANAGER_TRANSACTION_HISTORY,
-                page: <ListTransactionPage />,
+                page: <ListTransactionHistoryPage />,
             },
         ]
 
