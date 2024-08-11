@@ -37,9 +37,9 @@ public class UserController {
     }
 
     @GetMapping("/brokers")
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
-    @Operation(summary = "Get all brokers", description = "Retrieve a paginated list of all brokers.")
-    public ResponseEntity<Page<GetAllUserResponse>> getAllBrokers(Pageable pageable) {
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Get all users", description = "Retrieve a paginated list of all brokers.")
+    public ResponseEntity<Page<GetAllUserResponse>> getAllUsers(Pageable pageable) {
         Page<GetAllUserResponse> brokers = userService.getAllUser(pageable);
         return ResponseEntity.ok(brokers);
     }
