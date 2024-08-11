@@ -3,7 +3,7 @@ package com.infina.corso.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -14,5 +14,5 @@ public class TransactionResponse {
     private String purchasedCurrency;
     private String soldCurrency;
     private int amount;
-    private LocalDateTime transactionDate;
+    private LocalDate transactionSystemDate;
 }

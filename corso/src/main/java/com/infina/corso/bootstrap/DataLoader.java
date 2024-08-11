@@ -2,7 +2,6 @@ package com.infina.corso.bootstrap;
 
 import com.infina.corso.model.User;
 import com.infina.corso.model.enums.Role;
-import com.infina.corso.repository.CurrencyRepository;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.CurrencyService;
 import org.springframework.boot.CommandLineRunner;
@@ -16,14 +15,12 @@ import java.util.Set;
 public class DataLoader implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final CurrencyRepository currencyRepository;
     private final CurrencyService currencyService;
 
 
-    public DataLoader(UserRepository userRepository, PasswordEncoder passwordEncoder, CurrencyRepository currencyRepository, CurrencyService currencyService) {
+    public DataLoader(UserRepository userRepository, PasswordEncoder passwordEncoder, CurrencyService currencyService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.currencyRepository = currencyRepository;
         this.currencyService = currencyService;
     }
 

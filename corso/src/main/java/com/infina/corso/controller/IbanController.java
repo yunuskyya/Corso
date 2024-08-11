@@ -1,5 +1,6 @@
 package com.infina.corso.controller;
 
+import com.infina.corso.dto.request.IbanRegisterRequest;
 import com.infina.corso.model.Iban;
 import com.infina.corso.service.IbanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,9 @@ public class IbanController {
     }
 
     @PostMapping
-    public ResponseEntity<Iban> createIban(@RequestBody Iban iban) {
-        Iban savedIban = ibanService.saveIban(iban);
-        return ResponseEntity.ok(savedIban);
+    public ResponseEntity<?> createIban(@RequestBody IbanRegisterRequest ibanRegisterRequest) {
+        ibanService.saveIban(ibanRegisterRequest);
+        return ResponseEntity.ok(null);
     }
 
     @GetMapping("/{id}")
@@ -38,15 +39,6 @@ public class IbanController {
         List<Iban> ibans = ibanService.getAllIbans();
         return ResponseEntity.ok(ibans);
     }
-
-    /*
-    @PutMapping("/{id}")
-    public ResponseEntity<Iban> updateIban(@PathVariable Long id, @RequestBody Iban iban) {
-        Iban updatedIban = ibanService.updateIban(id, iban);
-        return ResponseEntity.ok(updatedIban);
-    }
-
-     */
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteIban(@PathVariable Long id) {

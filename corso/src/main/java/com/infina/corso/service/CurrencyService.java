@@ -5,7 +5,7 @@ import com.infina.corso.dto.response.CurrencyResponse;
 import com.infina.corso.model.Currency;
 
 public interface CurrencyService {
-    Currency findByCode(TransactionRequest transactionRequest) ;
-
+   // Currency findByCode(TransactionRequest transactionRequest) ;
+    Currency findByCode(String code) ;
     CurrencyResponse getCurrencyRates() ;
 }

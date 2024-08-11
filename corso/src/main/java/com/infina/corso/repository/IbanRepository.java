@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface IbanRepository extends JpaRepository<Iban, Long> {
 
-
+    Iban findByIban(String iban);
 
 
 }
