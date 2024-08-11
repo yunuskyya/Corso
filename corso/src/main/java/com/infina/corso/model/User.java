@@ -7,7 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -21,16 +24,23 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
     private String username;
     private String firstName;
     private String lastName;
     private String email;
+    private String phone;
     private String password;
     private boolean active;
     private boolean isDeleted;
+    private String resetPasswordToken;
     private String activationToken;
     private int loginAttempts;
     private boolean accountLocked;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     @JsonIgnore

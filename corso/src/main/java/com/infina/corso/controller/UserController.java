@@ -1,8 +1,7 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.config.CurrentUser;
-import com.infina.corso.dto.request.ChangePasswordRequest;
-import com.infina.corso.dto.request.RegisterUserRequest;
+import com.infina.corso.dto.request.*;
 import com.infina.corso.dto.response.GetAllUserResponse;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.UserService;
@@ -48,7 +47,7 @@ public class UserController {
     @PostMapping("/register/broker")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
     @Operation(summary = "Register a new broker", description = "Register a new broker with the given details.")
-    public GenericMessage registerUser(@Valid @RequestBody RegisterUserRequest request) {
+    public GenericMessage registerBroker(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerBroker(request);
         return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
@@ -57,7 +56,7 @@ public class UserController {
     @PostMapping("/register/manager")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Register a new manager", description = "Register a new manager with the given details.")
-    public GenericMessage registerManager(@Valid @RequestBody RegisterUserRequest request) {
+    public GenericMessage registerManager(@Valid @RequestBody RegisterManagerRequest request) {
         userService.registerManager(request);
         return new GenericMessage(Messages.getMessageForLocale("corso.register.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
@@ -106,25 +105,38 @@ public class UserController {
         }
     }
 
-    @PutMapping("/activate")
-    @PreAuthorize("hasRole('ROLE_MANAGER') OR hasRole('ROLE_ADMIN')")
-    @Operation(summary = "Activate a user account by email", description = "Activate a user account that is currently locked using their email.")
-    public GenericMessage activateUserByEmail(@RequestParam String email) {
-        try {
-            userService.activateUserByEmail(email);
-            return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.success.message.successfully",
-                    LocaleContextHolder.getLocale()));
-        } catch (Exception e) {
-            return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.error.message.error",
-                    LocaleContextHolder.getLocale()));
-        }
-    }
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Delete a user", description = "Delete a user by ID.")
     public GenericMessage deleteUser(@PathVariable int id) {
         userService.deleteUser(id);
         return new GenericMessage(Messages.getMessageForLocale("corso.delete.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
+    }
+    @PutMapping("/set-password")
+    @Operation(summary = "Set user password", description = "Set the password for a user who registered but didn't set a password yet.")
+    public GenericMessage setPassword(@RequestParam("token") String token, @Valid @RequestBody UpdatePasswordRequest newPassword) {
+        try {
+            userService.updatePassword(token, newPassword);
+            return new GenericMessage("Şifre başarıyla oluşturuldu.");
+        } catch (RuntimeException e) {
+            return new GenericMessage("Şifre oluşturulurken bir hata oluştu: " + e.getMessage());
+        }
+    }
+    @PutMapping("/unBlock")
+    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
+    @Operation(summary = "Unblock a user", description = "Unblock a user by email.")
+    public GenericMessage unBlockUser(@Valid @RequestBody UserUnblockRequest userUnblockRequest) {
+        userService.userUnblock(userUnblockRequest);
+        return new GenericMessage(Messages.getMessageForLocale("corso.unblock.user.success.message.successfully",
+                LocaleContextHolder.getLocale()));
+    }
+    @PutMapping("/activate")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Activate a user", description = "Activate a user by email.")
+    public GenericMessage activateUser(@Valid @RequestBody UserActivateRequest userActivateRequest) {
+        userService.activateUser(userActivateRequest);
+        return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
     }
 }
