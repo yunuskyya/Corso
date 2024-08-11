@@ -1,5 +1,4 @@
 import { Button, Row } from "react-bootstrap";
-import { Navigate } from "react-router-dom";
 
 
 export const Unauthorized = () => {
