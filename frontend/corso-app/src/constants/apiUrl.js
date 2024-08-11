@@ -19,3 +19,7 @@ export const CUSTOMER_URL_LIST_FOR_BROKER = BASE_URL + '/customer/transaction/br
 export const ACCOUNT_URL = BASE_URL + '/accounts';
 export const ACCOUNT_URL_CUSTOMER = BASE_URL + '/accounts/faketest';
 export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transaction/{customerId}';
+
+// currency urls:
+
+export const CURRENCY_URL_COST = BASE_URL + '/currencies/cost';

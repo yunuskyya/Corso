@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchCustomerListThunk, fetchAccountsForCustomerThunk } from '../../features/transactionSlice'; // Doğru importlar
+import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk } from '../../features/transactionSlice'; // Doğru importlar
 import { currencies } from '../../constants/currencies';
 import useAuth from '../../hooks/useAuth';
 
@@ -13,23 +13,33 @@ const TransactionOperationsPage = () => {
   const [isBuyCurrencyDisabled, setBuyCurrencyDisabled] = useState(true);
   const [isAmountInputDisabled, setAmountInputDisabled] = useState(true);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
-  const {user}=useAuth();
+  const { user } = useAuth();
 
   const dispatch = useAppDispatch();
   const customers = useAppSelector((state) => state.transaction.customers);
   const accounts = useAppSelector((state) => state.transaction.accounts);
-  const status = useAppSelector((state) => state.transaction.status);
+  const currencyCost = useAppSelector((state) => state.transaction.currencyCost); // API'den gelen maliyet
+  const currencyStatus = useAppSelector((state) => state.transaction.currencyStatus);
 
   useEffect(() => {
-    // Örneğin userId'yi buraya uygun bir şekilde eklemelisiniz
     dispatch(fetchCustomerListThunk(user.id));
-  }, [dispatch]);
+  }, [dispatch, user.id]);
 
   useEffect(() => {
     if (selectedCustomer) {
       dispatch(fetchAccountsForCustomerThunk(selectedCustomer));
     }
   }, [selectedCustomer, dispatch]);
+
+  useEffect(() => {
+    if (amount && selectedSellCurrency && selectedBuyCurrency) {
+      dispatch(fetchCurrencyCostThunk({
+        purchasedCurrencyCode: selectedSellCurrency,
+        soldCurrencyCode: selectedBuyCurrency,
+        amount: parseFloat(amount),
+      }));
+    }
+  }, [amount, selectedSellCurrency, selectedBuyCurrency, dispatch]);
 
   const handleCustomerChange = (event) => {
     setSelectedCustomer(event.target.value);
@@ -43,7 +53,7 @@ const TransactionOperationsPage = () => {
     setAmountInputDisabled(false);
   };
 
-    // "Alınacak Döviz Tipi" listesini filtrele
+  // "Alınacak Döviz Tipi" listesini filtrele
   const filteredCurrencies = currencies.filter(
     (currency) => currency.code !== selectedSellCurrency
   );
@@ -53,14 +63,19 @@ const TransactionOperationsPage = () => {
   };
 
   const handleAmountChange = (event) => {
-    setAmount(event.target.value);
+    const amountValue = event.target.value;
+    setAmount(amountValue);
     setConfirmDisabled(false);
-  };
 
-  const calculateConversion = () => {
-    // Burada dönüşüm oranını ayarlayabilirsin
-    return amount ? (amount * 1.1).toFixed(2) : '';
-  };
+    // Sadece miktar girildiğinde API çağrısını yapın
+    if (amountValue && selectedSellCurrency && selectedBuyCurrency) {
+        dispatch(fetchCurrencyCostThunk({
+            purchasedCurrencyCode: selectedBuyCurrency,
+            soldCurrencyCode: selectedSellCurrency,
+            amount: parseFloat(amountValue) 
+        }));
+    }
+};
 
   return (
     <div style={styles.container}>
@@ -88,28 +103,27 @@ const TransactionOperationsPage = () => {
 
       {/* Alınacak Döviz Seçimi */}
       <div style={styles.formGroup}>
-        <label htmlFor="buyCurrencySelect" style={styles.label}>Select Currency to Buy</label>
+        <label htmlFor="buyCurrencySelect" style={styles.label}>Alınacak Döviz Tipini Seçiniz</label>
         <select className="form-select" id="buyCurrencySelect" value={selectedBuyCurrency} onChange={handleBuyCurrencyChange} disabled={isBuyCurrencyDisabled} style={styles.select}>
-         <option value="" disabled>Select a currency</option>
-           {filteredCurrencies.map((currency) => (
-         <option key={currency.code} value={currency.code}>{currency.code}</option>
-            ))}
-       </select>
+          <option value="" disabled>Döviz Tipi Seçiniz</option>
+          {filteredCurrencies.map((currency) => (
+            <option key={currency.code} value={currency.code}>{currency.code}</option>
+          ))}
+        </select>
       </div>
 
       {/* Miktar Girişi */}
       <div style={styles.formGroup}>
-        <label htmlFor="amountInput" style={styles.label}>Amount</label>
-        <input type="number" className="form-control" id="amountInput" placeholder="Enter amount" value={amount} onChange={handleAmountChange} disabled={isAmountInputDisabled} style={styles.input} />
+        <label htmlFor="amountInput" style={styles.label}>Miktar</label>
+        <input type="number" className="form-control" id="amountInput" placeholder="Miktar girin" value={amount} onChange={handleAmountChange} disabled={isAmountInputDisabled} style={styles.input} />
       </div>
 
-      {/* Önizleme Alanı */}
+      {/* Maliyet Alanı */}
       <div style={styles.transactionPreview}>
         <div style={styles.previewContent}>
-          <h5 style={styles.previewTitle}>Transaction Preview</h5>
-          <p style={styles.previewText}>Selling: {selectedSellCurrency ? `${selectedSellCurrency} ${amount}` : 'None'}</p>
-          <p style={styles.previewText}>Buying: {selectedBuyCurrency ? `${selectedBuyCurrency} ${calculateConversion()}` : 'None'}</p>
-          <button className="btn btn-primary" disabled={isConfirmDisabled}>Confirm Transaction</button>
+          <h5 style={styles.previewTitle}>Maliyet</h5>
+          <p style={styles.previewText}>{currencyStatus === 'loading' ? 'Hesaplanıyor...' : `Maliyet: ${currencyCost ? currencyCost.toFixed(2) : 'Bilgi Yok'}`}</p>
+          <button className="btn btn-primary" disabled={isConfirmDisabled}>İşlemi Onayla</button>
         </div>
       </div>
     </div>

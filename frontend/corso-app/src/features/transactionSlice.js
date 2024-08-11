@@ -1,11 +1,15 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { fetchCustomerList as fetchCustomerListApi, fetchAccountsForCustomerBalanceHigherThanZero as fetchAccountsForCustomerBalanceHigherThanZeroApi } from '../api/transactionApi';
+import { fetchCustomerList as fetchCustomerListApi, 
+         fetchAccountsForCustomerBalanceHigherThanZero as fetchAccountsForCustomerBalanceHigherThanZeroApi,
+         fetchCurrencyCost as fetchCurrencyCostApi } from '../api/transactionApi'; // API çağrısını farklı isimle import ettik
 
 const initialState = {
     customers: [],
     accounts: [],
     status: 'idle',
     error: null,
+    currencyCost: null, // Döviz maliyetini saklayacak alan
+    currencyStatus: 'idle', // Döviz maliyetinin durumu
 };
 
 export const fetchCustomerListThunk = createAsyncThunk('transaction/fetchCustomerList', async (userId) => {
@@ -17,6 +21,15 @@ export const fetchAccountsForCustomerThunk = createAsyncThunk('transaction/fetch
     const response = await fetchAccountsForCustomerBalanceHigherThanZeroApi(customerId);
     return response;
 });
+
+export const fetchCurrencyCostThunk = createAsyncThunk(
+    'transaction/fetchCurrencyCost',
+    async ({ purchasedCurrencyCode, soldCurrencyCode, amount }) => {
+        // Döviz maliyetini hesaplayan API çağrısını yap
+        const response = await fetchCurrencyCostApi(purchasedCurrencyCode, soldCurrencyCode, amount);
+        return response;
+    }
+);
 
 const transactionSlice = createSlice({
     name: 'transaction',
@@ -53,6 +66,18 @@ const transactionSlice = createSlice({
             })
             .addCase(fetchAccountsForCustomerThunk.rejected, (state, action) => {
                 state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(fetchCurrencyCostThunk.pending, (state) => {
+                state.currencyStatus = 'loading';
+                state.error = null;
+            })
+            .addCase(fetchCurrencyCostThunk.fulfilled, (state, action) => {
+                state.currencyStatus = 'succeeded';
+                state.currencyCost = action.payload.cost; // API'den gelen maliyeti sakla
+            })
+            .addCase(fetchCurrencyCostThunk.rejected, (state, action) => {
+                state.currencyStatus = 'failed';
                 state.error = action.error.message;
             });
     },
