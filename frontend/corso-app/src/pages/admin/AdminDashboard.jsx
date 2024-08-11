@@ -1,3 +1,5 @@
+import Sidebar from "../../components/Common/Sidebar";
+import { Outlet } from "react-router-dom";
 
 const AdminDashboard = () => {
     return (
