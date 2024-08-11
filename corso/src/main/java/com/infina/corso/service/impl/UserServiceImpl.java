@@ -2,10 +2,9 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.*;
+import com.infina.corso.dto.response.CustomerResponse;
 import com.infina.corso.dto.response.GetAllUserResponse;
-import com.infina.corso.exception.AccessDeniedException;
-import com.infina.corso.exception.GeneralErrorException;
-import com.infina.corso.exception.UserNotFoundException;
+import com.infina.corso.exception.*;
 import com.infina.corso.model.Transaction;
 import com.infina.corso.model.User;
 import com.infina.corso.model.enums.Role;
@@ -40,8 +39,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Page<GetAllUserResponse> getAllUser(Pageable pageable) {
-        Page<User> brokers = userRepository.findByAuthoritiesContaining(Role.ROLE_BROKER, pageable);
-        return brokers.map(user -> mapper.modelMapperForResponse().map(user, GetAllUserResponse.class));
+        return userRepository.findAll(pageable)
+                .map(user -> mapper.modelMapperForResponse().map(user, GetAllUserResponse.class));
     }
     @Override
     public void registerBroker(@Valid RegisterUserRequest registerUserRequest) {
@@ -77,7 +76,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
-            throw new GeneralErrorException("user.old.password.invalid.error.message");
+            throw new PasswordMismatchException("Old password is incorrect.");
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
@@ -140,7 +139,7 @@ public class UserServiceImpl implements UserService {
         });
         if (userInDb.getLoginAttempts() < 5) {
             logger.debug("User is not blocked: {}", userUnblockRequest.getEmail());
-            throw new GeneralErrorException("user.not.blocked.error.message");
+            throw new UserNotBlockedException("User is not blocked.");
         }
         userInDb.setLoginAttempts(0);
         userRepository.save(userInDb);
@@ -149,10 +148,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(String token, UpdatePasswordRequest request) {
-        User userInDb = userRepository.findByResetPasswordToken(token).orElseThrow(() -> {
-            logger.error("Invalid password reset token: {}", token);
-            return new GeneralErrorException("user.invalid.reset.password.token.error.message");
-        });
+        User userInDb = userRepository.findByResetPasswordToken(token)
+                .orElseThrow(() -> new InvalidTokenException("Invalid password reset token."));
+
         userInDb.setPassword(passwordEncoder.encode(request.getPassword()));
         userInDb.setResetPasswordToken(null);
         userRepository.save(userInDb);
