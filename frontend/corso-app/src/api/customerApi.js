@@ -1,6 +1,7 @@
 import {axiosInstance} from './interceptor'
 import { CUSTOMER_URL } from '../constants/apiUrl'
 
+
 export const createCustomer = async (customerRequest) => {
     
     return axiosInstance.post(CUSTOMER_URL, {
@@ -19,5 +20,5 @@ export const createCustomer = async (customerRequest) => {
         console.error(error);
         throw error;
     });
-
 }
+

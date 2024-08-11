@@ -37,10 +37,16 @@ const TransactionOperationsPage = () => {
   };
 
   const handleSellCurrencyChange = (event) => {
-    setSelectedSellCurrency(event.target.value);
+    const selectedCurrency = event.target.value;
+    setSelectedSellCurrency(selectedCurrency);
     setBuyCurrencyDisabled(false);
     setAmountInputDisabled(false);
   };
+
+    // "Alınacak Döviz Tipi" listesini filtrele
+  const filteredCurrencies = currencies.filter(
+    (currency) => currency.code !== selectedSellCurrency
+  );
 
   const handleBuyCurrencyChange = (event) => {
     setSelectedBuyCurrency(event.target.value);
@@ -83,12 +89,12 @@ const TransactionOperationsPage = () => {
       {/* Alınacak Döviz Seçimi */}
       <div style={styles.formGroup}>
         <label htmlFor="buyCurrencySelect" style={styles.label}>Select Currency to Buy</label>
-        <select className="form-select" id="buyCurrencySelect" value={selectedBuyCurrency} onChange={handleBuyCurrencyChange} style={styles.select}>
-          <option value="" disabled>Select a currency</option>
-          {currencies.map((currency) => (
-            <option key={currency.code} value={currency.code}>{currency.code}</option>
-          ))}
-        </select>
+        <select className="form-select" id="buyCurrencySelect" value={selectedBuyCurrency} onChange={handleBuyCurrencyChange} disabled={isBuyCurrencyDisabled} style={styles.select}>
+         <option value="" disabled>Select a currency</option>
+           {filteredCurrencies.map((currency) => (
+         <option key={currency.code} value={currency.code}>{currency.code}</option>
+            ))}
+       </select>
       </div>
 
       {/* Miktar Girişi */}
