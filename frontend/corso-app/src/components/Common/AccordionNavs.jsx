@@ -1,6 +1,6 @@
 import useAuth from '../../hooks/useAuth';
 import { Link } from 'react-router-dom';
-import { ADMIN_OPERATIONS, MANAGER_OPERATIONS } from '../../constants/routes';
+import { ADMIN_OPERATIONS, BROKER_OPERATIONS, MANAGER_OPERATIONS } from '../../constants/routes';
 
 const AccordionNavs = ({ variant }) => {
 
@@ -12,20 +12,25 @@ const AccordionNavs = ({ variant }) => {
         switch (role) {
             case 'ROLE_ADMIN': return ADMIN_OPERATIONS;
             case 'ROLE_MANAGER': return MANAGER_OPERATIONS;
-            case 'ROLE_BROKER': return;
+            case 'ROLE_BROKER': return BROKER_OPERATIONS;
         }
     }
 
     return (
-        variant === 'sidebar' ? <AccordionSidebar /> : <AccordionNav />
+        variant === 'sidebar' ? <AccordionSidebar operations={operations()} /> : <AccordionNav operations={operations()} />
     );
 };
 
 
 function AccordionSidebar({ operations }) {
+    console.log('operations: ', operations);
     return (
         <li className={`accordion`} id="accordionExample">
-            <div className="accordion-item">
+
+            {operations.map((operation, index) => (
+                <AccordionItem key={index} operation={operation} bs_parent="#accordionExample" />
+            ))}
+            {/* <div className="accordion-item">
                 <h2 className="accordion-header">
                     <button className="accordion-button fw-bold bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                         Müşteri İşlemleri
@@ -56,7 +61,7 @@ function AccordionSidebar({ operations }) {
                 </div>
             </div>
             <Link className="nav-link bg-light fs-6" to="/addCustomer">Hesap Ekle</Link>
-            <Link className="nav-link fs-6" to="/addCustomer">Hesap Ekle</Link>
+            <Link className="nav-link fs-6" to="/addCustomer">Hesap Ekle</Link> */}
         </li>
     );
 }
@@ -99,15 +104,15 @@ function AccordionNav({ operations }) {
 }
 
 
-function AccordionItem({ title, title_link, operations, bs_parent }) {
+function AccordionItem({ operation, bs_parent }) {
     return (
-        title_link ? (
+        operation.title_link ? (
             <Link
-                className="nav-link"
-                to={title_link}
+                className="nav-link ps-3 fw-bold bg-light button"
+                to={operation.title_link}
                 role="button"
             >
-                {title}
+                {operation.title}
             </Link>
         ) : (
             <div className="accordion-item">
@@ -116,26 +121,26 @@ function AccordionItem({ title, title_link, operations, bs_parent }) {
                         className="accordion-button fw-bold bg-light"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target={`#${title}`}
+                        data-bs-target={`#${operation.title.replace(' ', '')}`}
                         aria-expanded="true"
-                        aria-controls={title}
+                        aria-controls={operation.title}
                     >
-                        {title}
+                        {operation.title}
                     </button>
                 </h2>
                 <div
-                    id={title}
+                    id={operation.title.replace(' ', '')}
                     className="accordion-collapse collapse show"
                     data-bs-parent={bs_parent}
                 >
-                    {operations.map((operation, index) => (
+                    {operation.operations.map((op, index) => (
                         <div key={index} className="accordion-body">
                             <Link
-                                className="nav-link"
-                                to={operation.link}
+                                className="nav-link ps-3"
+                                to={op.link}
                                 role="button"
                             >
-                                {operation.title}
+                                {op.title}
                             </Link>
                         </div>
                     ))}
