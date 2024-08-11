@@ -36,7 +36,7 @@ public class UserController {
         this.emailService = emailService;
     }
 
-    @GetMapping("/brokers")
+    @GetMapping("/all")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation(summary = "Get all users", description = "Retrieve a paginated list of all brokers.")
     public ResponseEntity<Page<GetAllUserResponse>> getAllUsers(Pageable pageable) {
