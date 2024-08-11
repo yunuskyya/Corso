@@ -1,4 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { fetchCustomerListThunk, fetchAccountsForCustomerThunk } from '../../features/transactionSlice'; // Doğru importlar
+import { currencies } from '../../constants/currencies';
+import useAuth from '../../hooks/useAuth';
 
 const TransactionOperationsPage = () => {
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -9,6 +13,23 @@ const TransactionOperationsPage = () => {
   const [isBuyCurrencyDisabled, setBuyCurrencyDisabled] = useState(true);
   const [isAmountInputDisabled, setAmountInputDisabled] = useState(true);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
+  const {user}=useAuth();
+
+  const dispatch = useAppDispatch();
+  const customers = useAppSelector((state) => state.transaction.customers);
+  const accounts = useAppSelector((state) => state.transaction.accounts);
+  const status = useAppSelector((state) => state.transaction.status);
+
+  useEffect(() => {
+    // Örneğin userId'yi buraya uygun bir şekilde eklemelisiniz
+    dispatch(fetchCustomerListThunk(user.id));
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (selectedCustomer) {
+      dispatch(fetchAccountsForCustomerThunk(selectedCustomer));
+    }
+  }, [selectedCustomer, dispatch]);
 
   const handleCustomerChange = (event) => {
     setSelectedCustomer(event.target.value);
@@ -30,57 +51,108 @@ const TransactionOperationsPage = () => {
     setConfirmDisabled(false);
   };
 
+  const calculateConversion = () => {
+    // Burada dönüşüm oranını ayarlayabilirsin
+    return amount ? (amount * 1.1).toFixed(2) : '';
+  };
+
   return (
-    <div className="container mt-5">
+    <div style={styles.container}>
       {/* Müşteri Seçimi */}
-      <div className="mb-4">
-        <label htmlFor="customerSelect" className="form-label">Select Customer</label>
-        <select className="form-select" id="customerSelect" value={selectedCustomer} onChange={handleCustomerChange}>
-          <option value="" disabled>Select a customer</option>
-          {/* Dinamik olarak yüklenen müşteri listesi burada olacak */}
-          <option value="CUS001">John Doe</option>
-          <option value="CUS002">Jane Smith</option>
+      <div style={styles.formGroup}>
+        <label htmlFor="customerSelect" style={styles.label}>Müşteri Seçiniz</label>
+        <select className="form-select" id="customerSelect" value={selectedCustomer} onChange={handleCustomerChange} style={styles.select}>
+          <option value="" disabled>Bir Müşteri Seçiniz</option>
+          {customers?.content?.map((customer) => (
+            <option key={customer.id} value={customer.id}>{customer.name} {customer.surname}</option>
+          ))}
         </select>
       </div>
 
       {/* Satılacak Döviz Seçimi */}
-      <div className="mb-4">
-        <label htmlFor="sellCurrencySelect" className="form-label">Select Currency to Sell</label>
-        <select className="form-select" id="sellCurrencySelect" value={selectedSellCurrency} onChange={handleSellCurrencyChange} disabled={isSellCurrencyDisabled}>
-          <option value="" disabled>Select a currency</option>
-          {/* Dinamik olarak yüklenen döviz hesapları burada olacak */}
+      <div style={styles.formGroup}>
+        <label htmlFor="sellCurrencySelect" style={styles.label}>Satılacak Döviz Tipini Seçiniz</label>
+        <select className="form-select" id="sellCurrencySelect" value={selectedSellCurrency} onChange={handleSellCurrencyChange} disabled={isSellCurrencyDisabled} style={styles.select}>
+          <option value="" disabled>Döviz Tipi Seçiniz</option>
+          {accounts.map((account) => (
+            <option key={account.id} value={account.currency}>{account.currency}</option>
+          ))}
         </select>
       </div>
 
       {/* Alınacak Döviz Seçimi */}
-      <div className="mb-4">
-        <label htmlFor="buyCurrencySelect" className="form-label">Select Currency to Buy</label>
-        <select className="form-select" id="buyCurrencySelect" value={selectedBuyCurrency} onChange={handleBuyCurrencyChange} disabled={isBuyCurrencyDisabled}>
+      <div style={styles.formGroup}>
+        <label htmlFor="buyCurrencySelect" style={styles.label}>Select Currency to Buy</label>
+        <select className="form-select" id="buyCurrencySelect" value={selectedBuyCurrency} onChange={handleBuyCurrencyChange} style={styles.select}>
           <option value="" disabled>Select a currency</option>
-          <option value="USD">USD</option>
-          <option value="EUR">EUR</option>
-          <option value="GBP">GBP</option>
+          {currencies.map((currency) => (
+            <option key={currency.code} value={currency.code}>{currency.code}</option>
+          ))}
         </select>
       </div>
 
       {/* Miktar Girişi */}
-      <div className="mb-4">
-        <label htmlFor="amountInput" className="form-label">Amount</label>
-        <input type="number" className="form-control" id="amountInput" placeholder="Enter amount" value={amount} onChange={handleAmountChange} disabled={isAmountInputDisabled} />
+      <div style={styles.formGroup}>
+        <label htmlFor="amountInput" style={styles.label}>Amount</label>
+        <input type="number" className="form-control" id="amountInput" placeholder="Enter amount" value={amount} onChange={handleAmountChange} disabled={isAmountInputDisabled} style={styles.input} />
       </div>
 
       {/* Önizleme Alanı */}
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">Transaction Preview</h5>
-          <p className="card-text">Selected Customer: {selectedCustomer ? selectedCustomer : 'None'}</p>
-          <p className="card-text">Selling: {selectedSellCurrency ? selectedSellCurrency : 'None'} {amount}</p>
-          <p className="card-text">Buying: {selectedBuyCurrency ? selectedBuyCurrency : 'None'} {amount ? (amount * 1.1).toFixed(2) : ''}</p>
+      <div style={styles.transactionPreview}>
+        <div style={styles.previewContent}>
+          <h5 style={styles.previewTitle}>Transaction Preview</h5>
+          <p style={styles.previewText}>Selling: {selectedSellCurrency ? `${selectedSellCurrency} ${amount}` : 'None'}</p>
+          <p style={styles.previewText}>Buying: {selectedBuyCurrency ? `${selectedBuyCurrency} ${calculateConversion()}` : 'None'}</p>
           <button className="btn btn-primary" disabled={isConfirmDisabled}>Confirm Transaction</button>
         </div>
       </div>
     </div>
   );
+};
+
+// CSS-in-JS stiller
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: '2rem'
+  },
+  formGroup: {
+    marginBottom: '1rem',
+    width: '100%',
+    maxWidth: '400px'
+  },
+  label: {
+    display: 'block',
+    marginBottom: '0.5rem'
+  },
+  select: {
+    width: '100%'
+  },
+  input: {
+    width: '100%'
+  },
+  transactionPreview: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: '1rem'
+  },
+  previewContent: {
+    backgroundColor: '#ffffff',
+    padding: '1rem',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    maxWidth: '400px',
+    textAlign: 'center'
+  },
+  previewTitle: {
+    marginBottom: '0.5rem'
+  },
+  previewText: {
+    margin: '0.5rem 0'
+  }
 };
 
 export default TransactionOperationsPage;

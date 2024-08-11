@@ -7,6 +7,7 @@ import AddCustomerPage from './pages/customer/AddCustomerPage';
 import IbanPage from './pages/iban/IbanPage';
 import { ADMIN_OPERATIONS, MANAGER_OPERATIONS, BROKER_OPERATIONS } from './constants/routes';
 import useAuth from './hooks/useAuth';
+import TransactionOperationsPage from './pages/transaction/TransactionOperationsPage';
 
 
 const AppRoutes = () => {

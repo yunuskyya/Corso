@@ -72,10 +72,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     // only manager or broker
     public Page<CustomerByBrokerResponseTransactionPage> getAllCustomersByBrokerIdForTransaction(Long brokerId, Pageable pageable) {
-        Customer customerInDb = customerRepository.findById(brokerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-        int currentUserId = authService.getCurrentUserId();
-
         return customerRepository.findAllByUserId(brokerId, pageable)
                 .map(customer -> modelMapperResponse.map(customer, CustomerByBrokerResponseTransactionPage.class));
     }
