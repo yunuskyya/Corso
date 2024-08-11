@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { Navigate } from 'react-router-dom';
-import { loginUser } from '../features/authSlice';
+import { loginUser } from '../../features/authSlice';
 import { useEffect } from 'react';
-import { resetLoginStatus } from '../features/authSlice';
+import { resetLoginStatus } from '../../features/authSlice';
 import './Loginstyle.css'
 
 const Login = () => {
@@ -39,7 +39,7 @@ const Login = () => {
 
     return (
         <div className="form-signin w-100 m-auto">
-            <form  onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
                 <img class="mb-4" src="../assets/LogoCorso.png" alt="" width="250px" />
                 <div className="form-group">
                     <label>Email</label>
@@ -63,7 +63,7 @@ const Login = () => {
                 {auth.status === 'loading' && <p>Loading...</p>}
                 {auth.status === 'failed' && auth.error && <p>{auth.error}</p>}
             </form>
-        
+
         </div>
     );
 };
