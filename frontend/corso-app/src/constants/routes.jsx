@@ -28,6 +28,7 @@ export const ADMIN_OPERATIONS = [
     {
         title: 'Kullanıcı İşlemleri',
         title_link: null,
+        self_page: null,
         operations: [
             {
                 title: 'Kullanıcı Eke',
@@ -146,6 +147,7 @@ export const BROKER_OPERATIONS = [
     {
         title: 'Müşteri İşlemleri',
         title_link: null,
+        self_page: null,
         operations: [
             {
                 title: 'Müşteri Ekle',
@@ -167,6 +169,7 @@ export const BROKER_OPERATIONS = [
     {
         title: 'Hesap İşlemleri',
         title_link: null,
+        self_page: null,
         operations: [
             {
                 title: 'Hesap Ekle',
@@ -183,6 +186,7 @@ export const BROKER_OPERATIONS = [
     {
         title: 'Alım-Satım İşlemleri',
         title_link: null,
+        self_page: null,
         operations: [
             {
                 title: 'Alım-Satım',
@@ -199,6 +203,7 @@ export const BROKER_OPERATIONS = [
     {
         title: 'Nakit Akışı',
         title_link: null,
+        self_page: null,
         operations: [
             {
                 title: 'Listele',
