@@ -1,6 +1,7 @@
 import {axiosInstance} from './interceptor'
 import { ACCOUNT_URL, ACCOUNT_URL_CUSTOMER } from '../constants/apiUrl'
 
+
 export const createAccount = async (accountRequest) => {
     
     return axiosInstance.post (ACCOUNT_URL, {
@@ -45,6 +46,9 @@ export const deleteAccount = async (accountRequest) => {
     });
 
 }
+
+
+
 
 
 

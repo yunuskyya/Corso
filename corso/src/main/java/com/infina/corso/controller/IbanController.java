@@ -24,7 +24,7 @@ public class IbanController {
     @PostMapping
     public ResponseEntity<?> createIban(@RequestBody IbanRegisterRequest ibanRegisterRequest) {
         ibanService.saveIban(ibanRegisterRequest);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok("Iban başarılı şekilde kaydedildi.");
     }
 
     @GetMapping("/{id}")

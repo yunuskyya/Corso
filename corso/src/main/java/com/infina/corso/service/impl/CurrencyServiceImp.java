@@ -1,7 +1,9 @@
 package com.infina.corso.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.infina.corso.dto.request.CurrencyRequestForCost;
 import com.infina.corso.dto.response.CurrencyResponse;
+import com.infina.corso.dto.response.CurrencyResponseForCost;
 import com.infina.corso.model.Currency;
 import com.infina.corso.service.CurrencyService;
 import org.springframework.data.redis.core.ListOperations;
@@ -28,6 +30,33 @@ public class CurrencyServiceImp implements CurrencyService {
     public CurrencyServiceImp(ObjectMapper objectMapper, RedisTemplate<String, Currency> currencyRedisTemplate) {
         this.objectMapper = objectMapper;
         this.currencyRedisTemplate = currencyRedisTemplate;
+    }
+
+    public CurrencyResponseForCost calculateCostCrossRate (CurrencyRequestForCost currencyRequestForCost){
+        boolean isCrossRate = !currencyRequestForCost.getSoldCurrencyCode().equals("TL") && !currencyRequestForCost.getPurchasedCurrencyCode().equals("TL");
+        CurrencyResponseForCost currencyResponseForCost = new CurrencyResponseForCost();
+        if(isCrossRate){
+           Double cost = rateCalculate(currencyRequestForCost.getSoldCurrencyCode(), currencyRequestForCost.getPurchasedCurrencyCode());
+           currencyResponseForCost.setCost(cost);
+           return currencyResponseForCost;
+        }
+        Currency currency = findByCode(currencyRequestForCost.getPurchasedCurrencyCode());
+        double currencyPrice;
+        if (currencyRequestForCost.getPurchasedCurrencyCode().equals("TL")) {
+            currencyPrice = Double.parseDouble(currency.getBuying());
+        } else currencyPrice = Double.parseDouble(currency.getSelling());
+        Double cost = currencyPrice* currencyRequestForCost.getAmount();
+        currencyResponseForCost.setCost(cost);
+        return currencyResponseForCost;
+    }
+
+    private Double rateCalculate(String soldCurrency, String purchasedCurrency) {
+        Currency soldCurrencyEntity = findByCode(soldCurrency);
+        Double a = Double.parseDouble(soldCurrencyEntity.getSelling());
+        Currency purchasedCurrencyEntity = findByCode(purchasedCurrency);
+        Double b = Double.parseDouble(purchasedCurrencyEntity.getBuying());
+        Double rate = a / b;
+        return rate;
     }
 
 
