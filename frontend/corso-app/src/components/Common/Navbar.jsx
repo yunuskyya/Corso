@@ -23,15 +23,10 @@ const Navbar = ({ onLogout }) => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav me-auto">
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <Link className="nav-link" to="/dashboard">Ana Sayfa</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/addCustomer">Müşteri Ekle</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/accounts">Hesap Listeleme</Link>
-                        </li>
+                        </li> */}
+
                     </ul>
                     <ul className="navbar-nav ms-auto">
                         <li className="nav-item dropdown">
@@ -44,9 +39,9 @@ const Navbar = ({ onLogout }) => {
                                 <li><button className="dropdown-item" onClick={() => toggleTheme('dark')}>Dark</button></li>
                             </ul>
                         </li>
-                        <div className='d-block d-lg-none'>
+                        {isLoginSuccess && (<div className='d-block d-lg-none'>
                             <AccordionNavs variant={'navs'} />
-                        </div>
+                        </div>)}
                         <li className='nav-item'>
                             <div className='mt-auto'>
                                 <Link className="nav-link" to="/profile">
