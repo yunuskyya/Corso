@@ -6,13 +6,11 @@ import com.infina.corso.dto.response.CurrencyResponse;
 import com.infina.corso.dto.response.CurrencyResponseForCost;
 import com.infina.corso.model.Currency;
 import com.infina.corso.service.CurrencyService;
-import com.infina.corso.service.TransactionService;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -28,25 +26,21 @@ public class CurrencyServiceImp implements CurrencyService {
 
     private final ObjectMapper objectMapper;
     private final RedisTemplate<String, Currency> currencyRedisTemplate;
-    private final TransactionService transactionService;
-    private final CurrencyService currencyService;
 
-    public CurrencyServiceImp(ObjectMapper objectMapper, RedisTemplate<String, Currency> currencyRedisTemplate, TransactionService transactionService, CurrencyService currencyService) {
+    public CurrencyServiceImp(ObjectMapper objectMapper, RedisTemplate<String, Currency> currencyRedisTemplate) {
         this.objectMapper = objectMapper;
         this.currencyRedisTemplate = currencyRedisTemplate;
-        this.transactionService = transactionService;
-        this.currencyService = currencyService;
     }
 
     public CurrencyResponseForCost calculateCostCrossRate (CurrencyRequestForCost currencyRequestForCost){
         boolean isCrossRate = !currencyRequestForCost.getSoldCurrencyCode().equals("TL") && !currencyRequestForCost.getPurchasedCurrencyCode().equals("TL");
         CurrencyResponseForCost currencyResponseForCost = new CurrencyResponseForCost();
         if(isCrossRate){
-           Double cost = transactionService.calculateCurrencyRate(currencyRequestForCost.getSoldCurrencyCode(), currencyRequestForCost.getPurchasedCurrencyCode());
+           Double cost = rateCalculate(currencyRequestForCost.getSoldCurrencyCode(), currencyRequestForCost.getPurchasedCurrencyCode());
            currencyResponseForCost.setCost(cost);
            return currencyResponseForCost;
         }
-        Currency currency = currencyService.findByCode(currencyRequestForCost.getPurchasedCurrencyCode());
+        Currency currency = findByCode(currencyRequestForCost.getPurchasedCurrencyCode());
         double currencyPrice;
         if (currencyRequestForCost.getPurchasedCurrencyCode().equals("TL")) {
             currencyPrice = Double.parseDouble(currency.getBuying());
@@ -54,6 +48,15 @@ public class CurrencyServiceImp implements CurrencyService {
         Double cost = currencyPrice* currencyRequestForCost.getAmount();
         currencyResponseForCost.setCost(cost);
         return currencyResponseForCost;
+    }
+
+    private Double rateCalculate(String soldCurrency, String purchasedCurrency) {
+        Currency soldCurrencyEntity = findByCode(soldCurrency);
+        Double a = Double.parseDouble(soldCurrencyEntity.getSelling());
+        Currency purchasedCurrencyEntity = findByCode(purchasedCurrency);
+        Double b = Double.parseDouble(purchasedCurrencyEntity.getBuying());
+        Double rate = a / b;
+        return rate;
     }
 
 
