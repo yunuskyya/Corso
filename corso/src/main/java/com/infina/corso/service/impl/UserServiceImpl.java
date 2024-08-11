@@ -147,11 +147,11 @@ public class UserServiceImpl implements UserService {
             logger.error("User not found with email: {}", userUnblockRequest.getEmail());
             return new UserNotFoundException("User not found with email: " + userUnblockRequest.getEmail());
         });
-        if (userInDb.getLoginAttempts() < 5) {
+        if (!userInDb.isAccountLocked()){
             logger.debug("User is not blocked: {}", userUnblockRequest.getEmail());
             throw new UserNotBlockedException("User is not blocked.");
         }
-        userInDb.setLoginAttempts(0);
+        userInDb.setAccountLocked(false);
         userRepository.save(userInDb);
         logger.info("User unblocked: {}", userUnblockRequest.getEmail());
     }
