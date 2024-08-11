@@ -6,6 +6,7 @@ import PrivateRoute from './components/PrivateRoute';
 import AddCustomerPage from './pages/customer/AddCustomerPage';
 import IbanPage from './pages/iban/IbanPage';
 import ListCustomerPage from './pages/customer/ListCustomerPage';
+import TransactionOperationsPage from './pages/transaction/TransactionOperationsPage';
 
 
 const AppRoutes = () => {
@@ -15,6 +16,7 @@ const AppRoutes = () => {
             <Route exact path="/" element={<HomePage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/iban" element={<IbanPage />} />
+            <Route path='/transaction' element={<TransactionOperationsPage/>}/>
             <Route path="/dashboard" element={
                 <PrivateRoute>
                     <DashboardPage />
