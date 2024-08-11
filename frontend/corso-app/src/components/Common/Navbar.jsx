@@ -1,14 +1,15 @@
-// src/components/Common/Navbar.jsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../redux/hooks';
 import { useTheme } from '../../context/ThemeProvider';
-import { Accordion } from 'react-bootstrap';
 import AccordionNavs from './AccordionNavs';
+import useAuth from '../../hooks/useAuth';
 
 const Navbar = ({ onLogout }) => {
     const { theme, toggleTheme } = useTheme();
     const isLoginSuccess = useAppSelector((state) => state.auth.isLoginSuccess);
+    const { user } = useAuth();
 
     const handleLogout = async () => {
         await onLogout();
@@ -39,7 +40,7 @@ const Navbar = ({ onLogout }) => {
                                 <li><button className="dropdown-item" onClick={() => toggleTheme('dark')}>Dark</button></li>
                             </ul>
                         </li>
-                        {isLoginSuccess && (<div className='d-block d-lg-none'>
+                        {user && isLoginSuccess && (<div className='d-block d-lg-none'>
                             <AccordionNavs variant={'navs'} />
                         </div>)}
                         <li className='nav-item'>
@@ -50,7 +51,7 @@ const Navbar = ({ onLogout }) => {
                                 </Link>
                             </div>
                         </li>
-                        {isLoginSuccess && (
+                        {user && isLoginSuccess && (
                             <li className="nav-item">
                                 <button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Logout</button>
                             </li>
