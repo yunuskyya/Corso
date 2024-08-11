@@ -3,9 +3,7 @@ import HomePage from './pages/HomePage';
 import Login from './pages/authentication/Login';
 import DashboardPage from './pages/DashboardPage';
 import PrivateRoute from './components/PrivateRoute';
-import AddCustomerPage from './pages/customer/AddCustomerPage';
 import IbanPage from './pages/iban/IbanPage';
-import ListCustomerPage from './pages/customer/ListCustomerPage';
 import { ADMIN_OPERATIONS, MANAGER_OPERATIONS, BROKER_OPERATIONS } from './constants/routes';
 import useAuth from './hooks/useAuth';
 
@@ -38,7 +36,7 @@ const AppRoutes = () => {
                     <DashboardPage />
                 </PrivateRoute>
             }>
-                {dashboardRoutes()}
+                {user ? dashboardRoutes() : null}
 
             </Route>
             <Route path="*" element={<HomePage />} />
