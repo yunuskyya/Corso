@@ -17,9 +17,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @ValidCustomerUpdateRequest
 public class CustomerUpdateRequest {
-    @NotNull
+
     private String name;
-    @NotNull
+
     private String surname;
     @NotNull
     private CustomerType customerType;
@@ -30,7 +30,7 @@ public class CustomerUpdateRequest {
     private String companyName;
     private String vkn;
 
-    @Pattern(regexp = "^(05)[0-9]{9}$") // 05XX XXX XX XX // arada boşluk olmadan
+    @Pattern(regexp = "^(05)[0-9]{9}$") @NotNull // 05XX XXX XX XX // arada boşluk olmadan
     private String phone;
 
     @NotNull @Email
