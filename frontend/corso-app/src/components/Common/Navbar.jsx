@@ -1,14 +1,15 @@
-// src/components/Common/Navbar.jsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../redux/hooks';
 import { useTheme } from '../../context/ThemeProvider';
-import { Accordion } from 'react-bootstrap';
 import AccordionNavs from './AccordionNavs';
+import useAuth from '../../hooks/useAuth';
 
 const Navbar = ({ onLogout }) => {
     const { theme, toggleTheme } = useTheme();
     const isLoginSuccess = useAppSelector((state) => state.auth.isLoginSuccess);
+    const { user } = useAuth();
 
     const handleLogout = async () => {
         await onLogout();
@@ -23,15 +24,10 @@ const Navbar = ({ onLogout }) => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav me-auto">
-                        <li className="nav-item">
+                        {/* <li className="nav-item">
                             <Link className="nav-link" to="/dashboard">Ana Sayfa</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/addCustomer">Müşteri Ekle</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to="/accounts">Hesap Listeleme</Link>
-                        </li>
+                        </li> */}
+
                     </ul>
                     <ul className="navbar-nav ms-auto">
                         <li className="nav-item dropdown">
@@ -44,9 +40,9 @@ const Navbar = ({ onLogout }) => {
                                 <li><button className="dropdown-item" onClick={() => toggleTheme('dark')}>Dark</button></li>
                             </ul>
                         </li>
-                        <div className='d-block d-lg-none'>
+                        {user && isLoginSuccess && (<div className='d-block d-lg-none'>
                             <AccordionNavs variant={'navs'} />
-                        </div>
+                        </div>)}
                         <li className='nav-item'>
                             <div className='mt-auto'>
                                 <Link className="nav-link" to="/profile">
@@ -55,7 +51,7 @@ const Navbar = ({ onLogout }) => {
                                 </Link>
                             </div>
                         </li>
-                        {isLoginSuccess && (
+                        {user && isLoginSuccess && (
                             <li className="nav-item">
                                 <button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Logout</button>
                             </li>
