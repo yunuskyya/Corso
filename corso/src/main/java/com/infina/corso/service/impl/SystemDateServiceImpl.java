@@ -45,8 +45,15 @@ public class SystemDateServiceImpl implements SystemDateService {
     }
 
     private SystemDate advanceDateByOneDay(SystemDate systemDate){
-        systemDate.getDate().plusDays(1);
+        LocalDate date = systemDate.getDate().plusDays(1);
+        systemDate.setDate(date);
         return systemDate;
+    }
+
+    public void startCloseDay(){
+        SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
+        systemDate.setDayClosedStarted(true);
+        systemDateRepository.save(systemDate);
     }
 
     public void closeDay() {
@@ -66,7 +73,7 @@ public class SystemDateServiceImpl implements SystemDateService {
                 systemDateRepository.save(advanceDateByOneDay(systemDate));
                 System.out.println("Gün başarıyla kapatıldı ve tarih bir gün ileri alındı.");
             } else {
-                System.out.println("Hata: Gün zaten kapatılmış.");
+                System.out.println("Hata: Gün zaten kapatılmış veya gün kapatma işlemi başlatılmadan gün kapatılmaya çalışılıyor.");
             }
         } catch (Exception e) {
             // Genel bir hata yakalama
