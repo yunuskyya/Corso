@@ -4,6 +4,7 @@ import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.*;
 import com.infina.corso.dto.response.GetAllUserResponse;
 import com.infina.corso.exception.AccessDeniedException;
+import com.infina.corso.exception.GeneralErrorException;
 import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.Transaction;
 import com.infina.corso.model.User;
@@ -76,7 +77,7 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
-            throw new RuntimeException("Eski şifre yanlış");
+            throw new GeneralErrorException("user.old.password.invalid.error.message");
         }
 
         user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
@@ -97,9 +98,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userInDB);
         logger.info("User deleted: {}", userInDB.getUsername());
     }
-
-
-
 
     @Override
     public void resetPassword(PasswordResetRequest passwordResetRequest) {
@@ -125,7 +123,7 @@ public class UserServiceImpl implements UserService {
 
         if (!userInDb.isDeleted()) {
             logger.debug("User is already active: {}", userActivateRequest.getEmail());
-            throw new RuntimeException("User is already active: " + userActivateRequest.getEmail());
+            throw new  GeneralErrorException("user.already.active.error.message");
         }
 
         userInDb.setDeleted(false);
@@ -142,7 +140,7 @@ public class UserServiceImpl implements UserService {
         });
         if (userInDb.getLoginAttempts() < 5) {
             logger.debug("User is not blocked: {}", userUnblockRequest.getEmail());
-            throw new RuntimeException("User is not blocked: " + userUnblockRequest.getEmail());
+            throw new GeneralErrorException("user.not.blocked.error.message");
         }
         userInDb.setLoginAttempts(0);
         userRepository.save(userInDb);
@@ -153,7 +151,7 @@ public class UserServiceImpl implements UserService {
     public void updatePassword(String token, UpdatePasswordRequest request) {
         User userInDb = userRepository.findByResetPasswordToken(token).orElseThrow(() -> {
             logger.error("Invalid password reset token: {}", token);
-            return new RuntimeException("Invalid password reset token: " + token);
+            return new GeneralErrorException("user.invalid.reset.password.token.error.message");
         });
         userInDb.setPassword(passwordEncoder.encode(request.getPassword()));
         userInDb.setResetPasswordToken(null);

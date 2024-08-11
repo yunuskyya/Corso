@@ -82,15 +82,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/send")
-    @Operation(summary = "Send test email", description = "Send a test email to a predefined address.")
-    public String sendEmail() {
-        String to = "nhtyl07@gmail.com";
-        String subject = "Test Email";
-        String text = "This is a test email sent from Spring Boot application.";
-        emailService.sendSimpleMessage(to, subject, text);
-        return "Email sent successfully!";
-    }
 
     @PutMapping("/change-password")
     @Operation(summary = "Change user password", description = "Change the password of a user.")
