@@ -13,9 +13,11 @@ const AccordionNavs = ({ variant }) => {
             case 'ROLE_ADMIN': return ADMIN_OPERATIONS;
             case 'ROLE_MANAGER': return MANAGER_OPERATIONS;
             case 'ROLE_BROKER': return BROKER_OPERATIONS;
+            default: return null;
         }
     }
 
+    console.log('operations: ', operations());
     return (
         variant === 'sidebar' ? <AccordionSidebar operations={operations()} /> : <AccordionNav operations={operations()} />
     );
@@ -67,9 +69,44 @@ function AccordionSidebar({ operations }) {
 }
 
 function AccordionNav({ operations }) {
+    console.log('ACCORDION NAV operations: ', operations);
     return (
         <li className="nav-item dropdown">
-            <a className="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            {operations.map((operation, index) => (
+                operation.title_link ? (
+                    <Link
+                        key={index}
+                        className="nav-link ps-3 fw-bold bg-light button"
+                        to={operation.title_link}
+                        role="button"
+                    >
+                        {operation.title}
+                    </Link>
+                ) : (
+                    <div key={index}>
+                        <a
+                            className="nav-link dropdown-toggle"
+                            href="#"
+                            id={`dropdown${index}`}
+                            role="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
+                        >
+                            {operation.title}
+                        </a>
+                        <ul className="dropdown-menu" aria-labelledby={`dropdown${index}`}>
+                            {operation.operations.map((op, subIndex) => (
+                                <li key={subIndex}>
+                                    <Link className="dropdown-item" to={op.link}>{op.title}</Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )
+            ))}
+
+
+            {/* <a className="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Müşteri İşlemleri
             </a>
             <ul className="dropdown-menu" aria-labelledby="themeDropdown">
@@ -98,7 +135,7 @@ function AccordionNav({ operations }) {
                 <li>
                     <Link className="dropdown-item" to='/updateCustomer'>Güncelle</Link>
                 </li>
-            </ul>
+            </ul> */}
         </li>
     );
 }
