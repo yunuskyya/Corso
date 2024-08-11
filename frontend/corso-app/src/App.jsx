@@ -7,6 +7,7 @@ import { Modal } from 'react-bootstrap';
 import { useTheme } from './context/ThemeProvider';
 import AppRoutes from './AppRoutes';
 import './App.css';
+import Layout from './components/Common/Layout.jsx';
 
 const App = () => {
   return (
@@ -47,17 +48,9 @@ const AppContent = () => {
   };
 
   return (
-    <div className={`app ${theme === 'dark' ? 'bg-dark text-white' : 'bg-light text-dark'}`}>
-      <Navbar onLogout={handleLogout} />
-      <div className="container mt-4 main">
-        <AppRoutes />
-      </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Session Expired</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>Your session has expired. You will be logged out.</Modal.Body>
-      </Modal>
+    // <div className={`app ${theme === 'dark' ? 'bg-dark text-white' : 'bg-light text-dark'}`}>
+    <div className={`secondary-bg text-color`}>
+      <Layout handleLogout={handleLogout} />
     </div>
   );
 };
