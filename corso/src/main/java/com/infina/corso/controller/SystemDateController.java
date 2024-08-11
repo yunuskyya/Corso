@@ -21,6 +21,11 @@ public class SystemDateController {
         systemDateService.closeDay();
     }
 
+    @GetMapping("/open-day")
+    public void openDay(){
+        systemDateService.openDay();
+    }
+
     @GetMapping("/start-close-day")
     public void startCloseDayProcess (){
         systemDateService.startCloseDay();

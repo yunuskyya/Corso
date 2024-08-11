@@ -56,6 +56,12 @@ public class SystemDateServiceImpl implements SystemDateService {
         systemDateRepository.save(systemDate);
     }
 
+    public void openDay(){
+        SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
+        systemDate.setDayClosed(false);
+        systemDateRepository.save(systemDate);
+    }
+
     public void closeDay() {
         try {
             SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
