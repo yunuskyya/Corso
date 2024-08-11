@@ -52,6 +52,13 @@ const Navbar = ({ onLogout }) => {
                             </div>
                         </li>
                         {user && isLoginSuccess && (
+                            <div className='row'>
+                                <div className='col-12 fs-6 fw-bold text-info text-center'>{user.username}</div>
+                                <div className='col-12 fs-6 fw-italic text-info text-center'>{user.role.split('_')[1].toLowerCase()}</div>
+                            </div>
+
+                        )}
+                        {user && isLoginSuccess && (
                             <li className="nav-item">
                                 <button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Logout</button>
                             </li>
