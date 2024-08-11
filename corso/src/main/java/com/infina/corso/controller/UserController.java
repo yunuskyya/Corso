@@ -72,12 +72,11 @@ public class UserController {
         CurrentUser currentUser = (CurrentUser) authentication.getPrincipal();
         Map<String, Object> response = new HashMap<>();
         response.put("id", currentUser.getId());
-
-        String role = currentUser.getAuthorities().stream()
+        response.put("username", currentUser.getUsername()); // Eklenen alan
+        response.put("role", currentUser.getAuthorities().stream()
                 .findFirst()
                 .map(GrantedAuthority::getAuthority)
-                .orElseThrow(() -> new RuntimeException("Not found role for the user"));
-        response.put("role", role);
+                .orElseThrow(() -> new RuntimeException("Not found role for the user")));
 
         return ResponseEntity.ok(response);
     }
