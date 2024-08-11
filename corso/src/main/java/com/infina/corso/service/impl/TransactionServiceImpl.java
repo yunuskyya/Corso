@@ -60,7 +60,7 @@ public class TransactionServiceImpl implements TransactionService {
                     // Çapraz kur işlemi olup olmadığını kontrol et
                     boolean isCrossRate = !transactionRequest.getSoldCurrency().equals("TL") && !transactionRequest.getPurchasedCurrency().equals("TL");
                     if (isCrossRate) {
-                        Double rate = calculateCurrencyRate(transactionRequest);
+                        Double rate = calculateCurrencyRate(transactionRequest.getSoldCurrency(), transactionRequest.getPurchasedCurrency());
                         double transactionAmountInSoldCurrency = transactionRequest.getAmount();
                         BigDecimal newBalance = calculateTransactionCostForCross(account, transactionRequest.getAmount(), rate);
                         //hesap bakiye yeterlilik kontrolü
@@ -116,9 +116,7 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     //Parite işlemleri için hesaplar **************************************************
-    private Double calculateCurrencyRate(TransactionRequest transactionRequest) {
-        String soldCurrency = transactionRequest.getSoldCurrency();
-        String purchasedCurrency = transactionRequest.getPurchasedCurrency();
+    public Double calculateCurrencyRate(String soldCurrency, String purchasedCurrency) {
         return rateCalculate(soldCurrency, purchasedCurrency);
     }
 
@@ -138,7 +136,7 @@ public class TransactionServiceImpl implements TransactionService {
         return newBalance;
     }
 
-    private BigDecimal calculateNewBalanceForCross(double amount, double rate) {
+    public BigDecimal calculateNewBalanceForCross(double amount, double rate) {
         BigDecimal amountBigDecimal = BigDecimal.valueOf(amount);
         BigDecimal rateBigDecimal = BigDecimal.valueOf(rate);
         BigDecimal cost = amountBigDecimal.multiply(rateBigDecimal);
