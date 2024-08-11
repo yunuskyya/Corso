@@ -5,6 +5,7 @@ import { loginUser } from '../../features/authSlice';
 import { useEffect } from 'react';
 import { resetLoginStatus } from '../../features/authSlice';
 import './Loginstyle.css'
+import logo from '../../assets/LogoCorso.png';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -40,7 +41,9 @@ const Login = () => {
     return (
         <div className="form-signin w-100 m-auto">
             <form onSubmit={handleSubmit}>
-                <img class="mb-4" src="../assets/LogoCorso.png" alt="" width="250px" />
+                <div class="text-center">
+                    <img className="col mb-4 w-75" src={logo} alt="logo" />
+                </div>
                 <div className="form-group">
                     <label>Email</label>
                     <input

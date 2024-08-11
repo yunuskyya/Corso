@@ -5,6 +5,7 @@ import { useAppSelector } from '../../redux/hooks';
 import { useTheme } from '../../context/ThemeProvider';
 import AccordionNavs from './AccordionNavs';
 import useAuth from '../../hooks/useAuth';
+import logo from '../../assets/LogoCorso.png';
 
 const Navbar = ({ onLogout }) => {
     const { theme, toggleTheme } = useTheme();
@@ -18,7 +19,8 @@ const Navbar = ({ onLogout }) => {
     return (
         <nav className={`navbar navbar-expand-lg border-bottom shadow`}>
             <div className="container-fluid">
-                <Link className="navbar-brand" to="/">MyApp</Link>
+                <Link className="navbar-brand" to="/">
+                    <img className="" src={logo} alt="logo" height="24" /></Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
