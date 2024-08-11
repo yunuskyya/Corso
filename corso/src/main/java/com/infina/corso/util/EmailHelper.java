@@ -2,46 +2,40 @@ package com.infina.corso.util;
 
 import com.infina.corso.model.User;
 import com.infina.corso.service.MailService;
+import com.infina.corso.service.TokenService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
 public class EmailHelper {
 
     private final MailService mailService;
+    private final TokenService tokenService;
 
-    public EmailHelper(MailService mailService) {
-        this.mailService = mailService;
+    private final String resetPasswordUrl = "http://localhost:8080/swagger-ui/index.html#/User%20Management/resetPassword";
+
+    public void sendTokenEmail(String to, String token) {
+        String subject = "CORSO Account Activation";
+        String activationUrl = resetPasswordUrl + "?token=" + token;
+        String text = "To reset your password, please use the following link:" + activationUrl;
+
+        mailService.sendSimpleMessage(to, subject, text);
     }
 
-    public void sendRegistrationEmail(User user, String rawPassword) {
-        String subject = "Kayıt Onayı";
-        String text = String.format(
-                "Merhaba %s %s,\n\n" +
-                        "Sistemimize başarıyla kayıt oldunuz.\n\n" +
-                        "Kullanıcı Adınız: %s\n" +
-                        "Geçici Şifreniz: %s\n\n" +
-                        "Güvenliğiniz için lütfen şifrenizi değiştirmek için sisteme giriş yapın veya aşağıdaki bağlantıyı kullanın:\n" +
-                        "http://localhost:8080/swagger-ui/index.html#/User%%20Management/changePassword\n\n" +
-                        "Teşekkürler,\n" +
-                        "Infina Corso Ekibi",
-                user.getFirstName(),
-                user.getLastName(),
-                user.getUsername(),
-                rawPassword
-        );
+    public void sendRegistrationEmail(User user) {
+        String subject = "Complete Your Registration";
+        String text = String.format("To complete your registration, please set your password using the following link: %s?token=%s",
+                resetPasswordUrl, user.getResetPasswordToken());
         mailService.sendSimpleMessage(user.getEmail(), subject, text);
     }
-
-    public void sendActivationEmail(User user) {
-        String subject = "Hesap Aktifleştirildi";
-        String text = String.format(
-                "Merhaba %s %s,\n\n" +
-                        "Hesabınız başarıyla aktifleştirildi.\n\n" +
-                        "Teşekkürler,\n" +
-                        "Infina Corso Ekibi",
-                user.getFirstName(),
-                user.getLastName()
-        );
-        mailService.sendSimpleMessage(user.getEmail(), subject, text);
+    public void sendAccountLockedEmail(User user) {
+        String to = user.getEmail();
+        String subject = "Hesabınız bloke edildi";
+        String text = "Merhaba " + user.getFirstName() + ",\n\n" +
+                "Hesabınız 5 başarısız giriş denemesi nedeniyle bloke edilmiştir. Lütfen daha sonra tekrar deneyiniz veya destek ekibimizle iletişime geçiniz.\n\n" +
+                "Saygılarımızla,\n" +
+                "Infina Corso Ekibi";
+        mailService.sendSimpleMessage(to, subject, text);
     }
 }

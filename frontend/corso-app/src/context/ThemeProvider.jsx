@@ -11,7 +11,7 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         // Apply the theme to the HTML element
-        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.setAttribute('data-bs-theme', theme);
         // Store the theme in localStorage
         localStorage.setItem('theme', theme);
     }, [theme]);

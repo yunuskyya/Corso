@@ -3,6 +3,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../redux/hooks';
 import { useTheme } from '../../context/ThemeProvider';
+import { Accordion } from 'react-bootstrap';
+import AccordionNavs from './AccordionNavs';
 
 const Navbar = ({ onLogout }) => {
     const { theme, toggleTheme } = useTheme();
@@ -13,7 +15,7 @@ const Navbar = ({ onLogout }) => {
     };
 
     return (
-        <nav className={`navbar navbar-expand-lg ${theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-light'} border-bottom`}>
+        <nav className={`navbar navbar-expand-lg border-bottom shadow`}>
             <div className="container-fluid">
                 <Link className="navbar-brand" to="/">MyApp</Link>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,6 +43,17 @@ const Navbar = ({ onLogout }) => {
                                 <li><button className="dropdown-item" onClick={() => toggleTheme('light')}>Light</button></li>
                                 <li><button className="dropdown-item" onClick={() => toggleTheme('dark')}>Dark</button></li>
                             </ul>
+                        </li>
+                        <div className='d-block d-lg-none'>
+                            <AccordionNavs variant={'navs'} />
+                        </div>
+                        <li className='nav-item'>
+                            <div className='mt-auto'>
+                                <Link className="nav-link" to="/profile">
+                                    <i className="bi bi-person"></i>
+                                    <span className="ms-2">Profile</span>
+                                </Link>
+                            </div>
                         </li>
                         {isLoginSuccess && (
                             <li className="nav-item">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createNewCustomer, resetCustomerStatus } from '../features/customerSlice';
+import { createNewCustomer, resetCustomerStatus } from '../../features/customerSlice';
 
 const AddCustomerPage = () => {
     const dispatch = useDispatch();
