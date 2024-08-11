@@ -1,18 +1,33 @@
 import useAuth from '../hooks/useAuth';
-import AdminDashboard from '../components/Dashboard/AdminDashboard.jsx';
-import UserDashboard from '../components/Dashboard/UserDashboard.jsx';
+import AdminDashboard from './admin/AdminDashboard';
+import BrokerDashboard from './broker/BrokerDashboard';
+import ManagerDashboard from './manager/ManagerDashboard';
+import HomePage from './HomePage';
 
 const DashboardPage = () => {
-    const { user, isAdmin } = useAuth();
+    const { user, role } = useAuth();
 
-    console.log("isAdmin: ", isAdmin);
-    console.log("user: ", user);
+    console.log("User: ", user);
 
-    if (isAdmin) {
-        return <AdminDashboard />;
-    }
+    console.log("Role: ", role);
 
-    return <UserDashboard />;
+    const dashboard = () => {
+        switch (role) {
+            case "ROLE_ADMIN":
+                return <AdminDashboard />;
+            case "ROLE_MANAGER":
+                return <ManagerDashboard />;
+            case "ROLE_BROKER":
+                return <BrokerDashboard />;
+            default:
+                return <HomePage />;
+        }
+    };
+
+    return (
+        <>{dashboard()}</>
+
+    );
 };
 
 export default DashboardPage;
