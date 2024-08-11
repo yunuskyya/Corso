@@ -2,6 +2,7 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.AccountRequestTransaction;
+import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerByBrokerResponse;
@@ -95,7 +96,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     // only manager or broker
     @Override
-    public void createCustomer(CustomerUpdateRequest customerDto) {
+    public void createCustomer(CreateCustomerRequest customerDto) {
         int currentUserId = authService.getCurrentUserId();
         User user = new User();
         user.setId(currentUserId);

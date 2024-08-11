@@ -1,5 +1,6 @@
 package com.infina.corso.controller;
 
+import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerByBrokerResponse;
@@ -57,7 +58,7 @@ public class CustomerController {
     // Create a new customer
     @PostMapping
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CustomerUpdateRequest customerRequest) {
+    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CreateCustomerRequest customerRequest) {
         customerService.createCustomer(customerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

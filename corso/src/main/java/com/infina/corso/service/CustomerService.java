@@ -1,5 +1,6 @@
 package com.infina.corso.service;
 
+import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.CustomerByBrokerResponse;
@@ -16,7 +17,7 @@ public interface CustomerService {
     CustomerGetByIdResponse getCustomerById(Long id);
     Page<CustomerByBrokerResponse> getAllCustomersByBrokerId(Long brokerId, Pageable pageable);
     Page<CustomerResponse> getAllCustomersPaged(Pageable pageable);
-    void createCustomer(CustomerUpdateRequest customerDto);
+    void createCustomer(CreateCustomerRequest customerDto);
     CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customerDto);
     void deleteCustomer(Long id);
     Page<CustomerFilterResponse> filterCustomersPaged(CustomerFilterRequest filterRequest, Pageable pageable);
