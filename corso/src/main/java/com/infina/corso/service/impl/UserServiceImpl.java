@@ -16,6 +16,8 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,24 +29,32 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final EmailHelper emailHelper;
-    private UserRepository userRepository;
-    private ModelMapperConfig mapper;
-    private PasswordEncoder passwordEncoder;
-    private TokenService tokenService;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapperForResponse;
+    private final ModelMapper modelMapperForRequest;
+    private final PasswordEncoder passwordEncoder;
     private static final Logger logger = LogManager.getLogger(UserServiceImpl.class);
+
+    public UserServiceImpl(UserRepository userRepository, @Qualifier("modelMapperForResponse") ModelMapper modelMapperForResponse,
+                           @Qualifier("modelMapperForRequest") ModelMapper modelMapperForRequest, EmailHelper emailHelper, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.modelMapperForResponse = modelMapperForResponse;
+        this.modelMapperForRequest = modelMapperForRequest;
+        this.emailHelper = emailHelper;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public Page<GetAllUserResponse> getAllUser(Pageable pageable) {
         return userRepository.findAll(pageable)
-                .map(user -> mapper.modelMapperForResponse().map(user, GetAllUserResponse.class));
+                .map(user -> modelMapperForResponse.map(user, GetAllUserResponse.class));
     }
     @Override
     public void registerBroker(@Valid RegisterUserRequest registerUserRequest) {
-        User newUser = mapper.modelMapperForRequest().map(registerUserRequest, User.class);
+        User newUser = modelMapperForRequest.map(registerUserRequest, User.class);
         newUser.setPassword(passwordEncoder.encode(""));
         newUser.setAuthorities(new HashSet<>() {{
             add(Role.ROLE_BROKER);
@@ -58,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void registerManager(@Valid RegisterManagerRequest request) {
-        User newUser = mapper.modelMapperForRequest().map(request, User.class);
+        User newUser = modelMapperForRequest.map(request, User.class);
         String rawPassword = request.getPassword();  // Ham şifreyi saklayın
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setAuthorities(new HashSet<>() {{
