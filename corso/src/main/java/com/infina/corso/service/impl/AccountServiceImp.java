@@ -6,6 +6,7 @@ import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
+import com.infina.corso.dto.response.GetCustomerAccountsForTransactionPage;
 import com.infina.corso.exception.AccountAlreadyExistsException;
 import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.Account;
@@ -19,6 +20,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -131,6 +133,21 @@ public class AccountServiceImp implements AccountService {
                 .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
                 .collect(Collectors.toList());
     }
+
+    public List<GetCustomerAccountsForTransactionPage> getAccountsBalanceBiggerThanZeroByCustomerId(Long customerId) {
+        List<Account> accounts = accountRepository.findByCustomerId(customerId);
+        List<Account> biggerThanZero = new ArrayList<>();
+        for (Account account : accounts) {
+            if (account.getBalance().compareTo(BigDecimal.ZERO) > 0) {
+                biggerThanZero.add(account);
+            }
+        }
+        return biggerThanZero.stream()
+                .map(account -> mapper.modelMapperForResponse().map(account, GetCustomerAccountsForTransactionPage.class))
+                .collect(Collectors.toList());
+    }
+
+
     @Override
     public void reactivateAccount(Long id) {
         Account accountInDB = accountRepository.findById(id)

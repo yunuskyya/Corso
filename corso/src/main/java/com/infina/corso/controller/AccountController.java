@@ -3,6 +3,7 @@ package com.infina.corso.controller;
 import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
+import com.infina.corso.dto.response.GetCustomerAccountsForTransactionPage;
 import com.infina.corso.service.AccountService;
 import com.infina.corso.shared.GenericMessage;
 import com.infina.corso.shared.Messages;
@@ -43,6 +44,12 @@ public class AccountController {
     @Operation(summary = "Get accounts by customer ID", description = "Retrieve a list of accounts by customer ID.")
     public ResponseEntity<List<GetAllAccountResponse>> getAccountsByCustomerId(@PathVariable Long customerId) {
         return ResponseEntity.ok(accountService.getAccountsByCustomerId(customerId));
+    }
+
+    @GetMapping("/customer/transaction/{customerId}")
+    @Operation(summary = "Get accounts by customer ID", description = "Retrieve a list of accounts by customer ID.")
+    public ResponseEntity<List<GetCustomerAccountsForTransactionPage>> getAccountsBalanceBiggerThanZeroByCustomerId(@PathVariable Long customerId) {
+        return ResponseEntity.ok(accountService.getAccountsBalanceBiggerThanZeroByCustomerId(customerId));
     }
 
     @PostMapping
