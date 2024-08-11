@@ -45,14 +45,6 @@ const Navbar = ({ onLogout }) => {
                         {user && isLoginSuccess && (<div className='d-block d-lg-none'>
                             <AccordionNavs variant={'navs'} />
                         </div>)}
-                        <li className='nav-item'>
-                            <div className='mt-auto'>
-                                <Link className="nav-link" to="/profile">
-                                    <i className="bi bi-person"></i>
-                                    <span className="ms-2">Profile</span>
-                                </Link>
-                            </div>
-                        </li>
                         {user && isLoginSuccess && (
                             <div className='row'>
                                 <div className='col-12 fs-6 fw-bold text-info text-center'>{user.username}</div>
