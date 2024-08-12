@@ -5,7 +5,7 @@ import com.infina.corso.model.Customer;
 import com.infina.corso.model.enums.CustomerType;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class CustomerSpecification {
 
@@ -147,7 +147,7 @@ public class CustomerSpecification {
         };
     }
 
-    public static Specification<Customer> hasCreatedAt(LocalDateTime createdAt) {
+    public static Specification<Customer> hasCreatedAt(LocalDate createdAt) {
         return (root, query, cb) -> {
             if (createdAt == null) {
                 return cb.conjunction();
@@ -157,7 +157,7 @@ public class CustomerSpecification {
         };
     }
 
-    public static Specification<Customer> hasCreatedBetween(LocalDateTime start, LocalDateTime end) {
+    public static Specification<Customer> hasCreatedBetween(LocalDate start, LocalDate end) {
         return (root, query, cb) -> {
             if (start == null || end == null) {
                 return cb.conjunction();
@@ -168,12 +168,13 @@ public class CustomerSpecification {
     }
 
     public static Specification<Customer> filterByAllGivenFieldsWithAnd(CustomerFilterRequest filterRequest) {
+        boolean isIndividual = filterRequest.getCustomerType() == CustomerType.BIREYSEL;
         return (root, query, criteriaBuilder) -> criteriaBuilder.and(
                 hasUser(filterRequest.getUserId()).toPredicate(root, query, criteriaBuilder),
-                likeNameOrSurname(filterRequest.getName()).toPredicate(root, query, criteriaBuilder),
-                likeCompanyName(filterRequest.getName()).toPredicate(root, query, criteriaBuilder),
-                hasVkn(filterRequest.getVkn()).toPredicate(root, query, criteriaBuilder),
-                hasTcKimlikNo(filterRequest.getTcKimlikNo()).toPredicate(root, query, criteriaBuilder),
+                likeNameOrSurname(isIndividual? filterRequest.getName() : null).toPredicate(root, query, criteriaBuilder),
+                likeCompanyName(isIndividual? null : filterRequest.getName()).toPredicate(root, query, criteriaBuilder),
+                hasVkn(isIndividual? null: filterRequest.getVkn()).toPredicate(root, query, criteriaBuilder),
+                hasTcKimlikNo(isIndividual? filterRequest.getTcKimlikNo() : null).toPredicate(root, query, criteriaBuilder),
                 hasCustomerType(filterRequest.getCustomerType()).toPredicate(root, query, criteriaBuilder),
                 hasAccountId(filterRequest.getAccountId()).toPredicate(root, query, criteriaBuilder),
                 hasPhone(filterRequest.getPhone()).toPredicate(root, query, criteriaBuilder),
