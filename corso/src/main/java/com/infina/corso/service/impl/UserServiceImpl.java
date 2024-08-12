@@ -80,19 +80,22 @@ public class UserServiceImpl implements UserService {
         emailHelper.sendRegistrationEmail(newUser);
 
     }
+
     @Override
-    public void changePassword(ChangePasswordRequest changePasswordRequest) {
-        User user = userRepository.findByEmail(changePasswordRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+    public void changePassword(ChangePasswordRequest changePasswordRequest, int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(changePasswordRequest.getOldPassword(), user.getPassword())) {
-            throw new PasswordMismatchException("Old password is incorrect.");
+            logger.info("eski şifre yanlış: {}", user.getEmail());
+            throw new PasswordMismatchException("Old password is incorrect");
         }
 
-        user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
+        String encodedNewPassword = passwordEncoder.encode(changePasswordRequest.getNewPassword());
+        user.setPassword(encodedNewPassword);
+        emailHelper.sendPasswordChangeNotification(user);
         userRepository.save(user);
     }
-
     public List<Transaction> getAllTransactionsById(int id){
         Optional<User> user = userRepository.findById(id);
         return user.get().getTransactions();
