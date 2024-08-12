@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createAccount, getAllAccountsSelectedCustomer, deleteAccount } from '../api/accountApi';
+import { createAccount, getAllAccountsSelectedCustomer, deleteAccount,getAllAccounts } from '../api/accountApi';
 
 const initialState = {
     accounts: [],
@@ -31,6 +31,13 @@ export const removeAccount = createAsyncThunk(
         return response;
     }
 );
+export const getAllAccountsForManager = createAsyncThunk(
+    'account/getAllAccountsForManager',
+    async () => {
+        const response = await getAllAccounts();
+        return response;
+    }
+);
 
 const accountSlice = createSlice({
     name: 'account',
@@ -59,6 +66,20 @@ const accountSlice = createSlice({
                 state.error = action.error.message;
             })
             // Fetch Accounts
+            .addCase(getAllAccountsForManager.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(getAllAccountsForManager.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.accounts = action.payload;
+                state.error = null;
+            })
+            .addCase(getAllAccountsForManager.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            // Fetch Accounts for Customer
             .addCase(fetchAccountsForCustomer.pending, (state) => {
                 state.status = 'loading';
                 state.error = null;
