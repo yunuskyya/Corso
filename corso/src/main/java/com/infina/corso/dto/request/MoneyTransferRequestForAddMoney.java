@@ -1,17 +1,15 @@
 package com.infina.corso.dto.request;
 
-import lombok.Getter;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
-@Getter
-public class MoneyTransferRequest {
+@Data
+public class MoneyTransferRequestForAddMoney {
 
     private Long customer_id;
 
     private String currencyCode;
-
-    private String ibanNo;
 
     private BigDecimal amount;
 

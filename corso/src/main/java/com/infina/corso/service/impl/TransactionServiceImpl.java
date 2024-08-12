@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional
     public void transactionSave(TransactionRequest transactionRequest) {
-        if(!systemDateService.isDayClosed()) {
+        if (!systemDateService.isDayClosed()) {
             try {
                 LocalDate systemDate = systemDateService.getSystemDate();
                 AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccount_id(), transactionRequest.getPurchasedCurrency());
@@ -65,6 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
                     boolean isCrossRate = !transactionRequest.getSoldCurrency().equals("TL") && !transactionRequest.getPurchasedCurrency().equals("TL");
                     if (isCrossRate) {
                         Double rate = calculateCurrencyRate(transactionRequest.getSoldCurrency(), transactionRequest.getPurchasedCurrency());
+                        transaction.setRate(rate);
                         double transactionAmountInSoldCurrency = transactionRequest.getAmount();
                         BigDecimal newBalance = calculateTransactionCostForCross(account.get(), transactionRequest.getAmount(), rate);
                         //hesap bakiye yeterlilik kontrolü
@@ -73,10 +74,16 @@ public class TransactionServiceImpl implements TransactionService {
                         }
                         account.get().setBalance(newBalance);
                     } else {
+                        BigDecimal newBalance;
                         if (transaction.getSoldCurrency().equals("TL")) {
                             transaction.setTransactionType('A');
-                        } else transaction.setTransactionType('S');
-                        BigDecimal newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                            transaction.setRate(Double.parseDouble(currencyService.findByCode(transactionRequest.getPurchasedCurrency()).getSelling()));
+                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                        } else {
+                            transaction.setTransactionType('S');
+                            transaction.setRate(Double.parseDouble(currencyService.findByCode(transactionRequest.getSoldCurrency()).getBuying()));
+                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getSoldCurrency(), transaction.getTransactionType());
+                        }
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                             throw new RuntimeException("Insufficient funds for account number: " + account.get().getAccountNumber());
                         }
@@ -144,10 +151,13 @@ public class TransactionServiceImpl implements TransactionService {
     private BigDecimal calculateTransactionCostForTRY(char transactionType, double amount, String currencyCode) {
         Currency currency = currencyService.findByCode(currencyCode);
         double currencyPrice;
+        BigDecimal cost;
         if (transactionType == 'S') {
-            currencyPrice = Double.parseDouble(currency.getBuying());
-        } else currencyPrice = Double.parseDouble(currency.getSelling());
-        BigDecimal cost = new BigDecimal(currencyPrice * amount);
+            cost = new BigDecimal(amount);
+        } else {
+            currencyPrice = Double.parseDouble(currency.getSelling());
+            cost = new BigDecimal(currencyPrice * amount);
+        }
         return cost;
     }
 
@@ -174,10 +184,17 @@ public class TransactionServiceImpl implements TransactionService {
     //Entity listesinin Dto listesine çevrimi
     private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
-                .map(transaction -> modelMapperConfig.modelMapperForTransaction()
-                        .map(transaction, TransactionResponse.class))
+                .map(transaction -> {
+                    TransactionResponse response = modelMapperConfig.modelMapperForTransaction()
+                            .map(transaction, TransactionResponse.class);
+                    // Transaction'dan Account'a ve Account'tan Customer'a ulaşarak ad ve soyadını alıyoruz.
+                    Customer customer = transaction.getAccount().getCustomer();
+                    response.setName(customer.getName());
+                    response.setSurname(customer.getSurname());
+                    return response;
+                })
                 .collect(Collectors.toList());
-    }
 
+    }
 
 }

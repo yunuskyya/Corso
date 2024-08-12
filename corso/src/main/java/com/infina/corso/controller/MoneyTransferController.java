@@ -1,8 +1,7 @@
 package com.infina.corso.controller;
 
-import com.infina.corso.dto.request.MoneyTransferRequest;
+import com.infina.corso.dto.request.MoneyTransferRequestForAddMoney;
 import com.infina.corso.dto.response.MoneyTransferResponse;
-import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.service.MoneyTransferService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,7 +18,7 @@ public class MoneyTransferController {
     }
 
     @PostMapping
-    public void saveTransfer(@RequestBody MoneyTransferRequest transfer) {
+    public void saveTransfer(@RequestBody MoneyTransferRequestForAddMoney transfer) {
         moneyTransferService.saveMoneyTransfer(transfer);
     }
 

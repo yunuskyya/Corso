@@ -43,6 +43,9 @@ public class Transaction {
     private double cost; */
 
     @Column
+    private Double rate;
+
+    @Column
     private LocalDate systemDate;
 
     @CreationTimestamp
