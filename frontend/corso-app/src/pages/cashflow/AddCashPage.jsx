@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { fetchCustomerList } from '../../api/transactionApi';
-import { fetchIbanListByCustomer } from '../../api/moneyTransferApi';
+import { fetchIbanListByCustomer, createMoneyTransfer } from '../../api/moneyTransferApi';
+
 
 const AddCashPage = () => {
     const { user } = useAuth();
@@ -31,7 +32,7 @@ const AddCashPage = () => {
             const getIbanList = async () => {
                 try {
                     const response = await fetchIbanListByCustomer(selectedCustomer);
-                    console.log('useEffect method içi erkal : ' + response);
+                    console.log('useEffect method içi erkal : ', response);
                     setIbanList(response);  // API'den gelen IBAN listesini set ediyoruz
                 } catch (error) {
                     console.error('Error fetching IBAN list:', error);
@@ -53,21 +54,29 @@ const AddCashPage = () => {
         const iban = e.target.value;
         setSelectedIban(iban);
 
-        const selectedIbanDetails = ibanList.find((item) => item.ibanNo === iban);
+        const selectedIbanDetails = ibanList.find((item) => item.iban === iban);
         if (selectedIbanDetails) {
             setCurrencyType(selectedIbanDetails.currencyCode);
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const transferRequest = {
             customer_id: selectedCustomer,
-            ibanNo: selectedIban,
+            currencyCode: currencyType,
             amount: parseFloat(amount),
+            receiver: null,
+            sender: selectedIban  
         };
-        // Bu noktada transferRequest'i API'ye gönderebilirsiniz
-        console.log('Transfer Request:', transferRequest);
+        try {
+            const response = await createMoneyTransfer(transferRequest);
+            console.log('Transfer successful:', response);
+            // Success handling here
+        } catch (error) {
+            console.error('Error creating money transfer:', error);
+            // Error handling here
+        }
     };
 
     return (
@@ -105,7 +114,7 @@ const AddCashPage = () => {
                     >
                         <option value="">IBAN Seçiniz</option>
                         {ibanList.map((iban) => (
-                            <option key={iban.id} value={iban.ibanName}>
+                            <option key={iban.id} value={iban.iban}>
                                 {iban.ibanName} {iban.iban}
                             </option>
                         ))}

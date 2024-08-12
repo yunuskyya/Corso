@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { moneyTransferApi } from '../api/moneyTransferApi';
+import { createMoneyTransfer} from '../api/moneyTransferApi';
 import { fetchCustomerList as fetchCustomerListApi } from '../api/transactionApi';
 import { fetchIbanListByCustomer as fetchIbanListByCustomerApi} from '../api/moneyTransferApi';
 
