@@ -143,7 +143,7 @@ public class CustomerSpecification {
                 return cb.conjunction();
             }
 
-            return cb.equal(root.get("currencyCode"), currencyCode);
+            return cb.equal(root.get("accounts").get("currency"), currencyCode);
         };
     }
 
@@ -179,7 +179,7 @@ public class CustomerSpecification {
                 hasPhone(filterRequest.getPhone()).toPredicate(root, query, criteriaBuilder),
                 hasEmail(filterRequest.getEmail()).toPredicate(root, query, criteriaBuilder),
                 hasCreatedBetween(filterRequest.getDateStart(), filterRequest.getDateEnd()).toPredicate(root, query, criteriaBuilder),
-                hasStatus(filterRequest.getStatus().name()).toPredicate(root, query, criteriaBuilder),
+                hasStatus(filterRequest.getStatus()== null? null : filterRequest.getStatus().name()).toPredicate(root, query, criteriaBuilder),
                 hasCurrencyCode(filterRequest.getCurrencyCode()).toPredicate(root, query, criteriaBuilder));
     }
 
