@@ -65,6 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
                     boolean isCrossRate = !transactionRequest.getSoldCurrency().equals("TL") && !transactionRequest.getPurchasedCurrency().equals("TL");
                     if (isCrossRate) {
                         Double rate = calculateCurrencyRate(transactionRequest.getSoldCurrency(), transactionRequest.getPurchasedCurrency());
+                        transaction.setRate(rate);
                         double transactionAmountInSoldCurrency = transactionRequest.getAmount();
                         BigDecimal newBalance = calculateTransactionCostForCross(account.get(), transactionRequest.getAmount(), rate);
                         //hesap bakiye yeterlilik kontrolü
@@ -76,9 +77,11 @@ public class TransactionServiceImpl implements TransactionService {
                         BigDecimal newBalance;
                         if (transaction.getSoldCurrency().equals("TL")) {
                             transaction.setTransactionType('A');
+                            transaction.setRate(Double.parseDouble(currencyService.findByCode(transactionRequest.getPurchasedCurrency()).getSelling()));
                             newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
                         } else {
                             transaction.setTransactionType('S');
+                            transaction.setRate(Double.parseDouble(currencyService.findByCode(transactionRequest.getSoldCurrency()).getBuying()));
                             newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getSoldCurrency(), transaction.getTransactionType());
                         }
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
@@ -192,14 +195,6 @@ public class TransactionServiceImpl implements TransactionService {
                 })
                 .collect(Collectors.toList());
 
-
-        //Entity listesinin Dto listesine çevrimi
-   /* private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
-        return transactionList.stream()
-                .map(transaction -> modelMapperConfig.modelMapperForTransaction()
-                        .map(transaction, TransactionResponse.class))
-                .collect(Collectors.toList());
-    } */
     }
 
 }

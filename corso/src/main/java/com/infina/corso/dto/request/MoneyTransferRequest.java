@@ -1,10 +1,11 @@
 package com.infina.corso.dto.request;
 
+import lombok.Data;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 
-@Getter
+@Data
 public class MoneyTransferRequest {
 
     private Long customer_id;

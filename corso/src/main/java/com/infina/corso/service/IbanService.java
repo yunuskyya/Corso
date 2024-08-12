@@ -1,6 +1,7 @@
 package com.infina.corso.service;
 
 import com.infina.corso.dto.request.IbanRegisterRequest;
+import com.infina.corso.dto.response.IbanResponse;
 import com.infina.corso.model.Iban;
 
 import java.util.List;
@@ -12,4 +13,5 @@ public interface IbanService {
     List<Iban> getAllIbans();
     //Iban updateIban(Long id, Iban iban);
     void deleteIban(Long id);
+    List<IbanResponse> getIbansByCustomerId(Long id);
 }

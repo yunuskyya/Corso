@@ -18,6 +18,7 @@ const initialState = {
 
 export const fetchCustomerListThunk = createAsyncThunk('transaction/fetchCustomerList', async (userId) => {
     const response = await fetchCustomerListApi(userId);
+    console.log("deneme erkal: "+ response.content);
     return response;
 });
 

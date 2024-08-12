@@ -15,4 +15,5 @@ public class TransactionResponse {
     private String soldCurrency;
     private int amount;
     private LocalDate transactionSystemDate;
+    private Double rate;
 }

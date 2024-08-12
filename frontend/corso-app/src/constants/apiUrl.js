@@ -24,7 +24,16 @@ export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transa
 
 export const CURRENCY_URL_COST = BASE_URL + '/currencies/cost';
 
-//transaction urls:
+// transaction urls:
 
 export const TRANSACTION_URL_CREATE = BASE_URL + '/transaction/create';
 export const TRANSACTION_URL_GET_ALL_BY_BROKER = BASE_URL + '/transaction/get-all/{userId}';
+
+// money transfer urls:
+
+export const MONEY_TRANSFER_CREATE = BASE_URL + '/money-transfer';
+
+
+// iban urls:
+
+export const IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID = BASE_URL + '/iban/customer/{customerId}'
