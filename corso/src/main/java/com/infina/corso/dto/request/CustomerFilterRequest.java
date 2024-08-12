@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -24,6 +24,6 @@ public class CustomerFilterRequest {
     private String currencyCode;
     private String phone;
     private String email;
-    private LocalDateTime dateStart;
-    private LocalDateTime dateEnd;
+    private LocalDate dateStart;
+    private LocalDate dateEnd;
 }

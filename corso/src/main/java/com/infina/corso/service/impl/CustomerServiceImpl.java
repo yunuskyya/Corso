@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -160,10 +161,23 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public Page<CustomerFilterResponse> filterCustomersPaged(CustomerFilterRequest filterRequest, Pageable pageable) {
         Specification<Customer> specification = CustomerSpecification.filterByAllGivenFieldsWithAnd(filterRequest);
-        return customerRepository.findAll(specification, pageable)
-                .map(customer -> modelMapperResponse.map(customer, CustomerFilterResponse.class));
+        Page<Customer> customers =  customerRepository.findAll(specification, pageable);
+        return customers.map(customer -> {
+            CustomerFilterResponse customerFilterResponse = modelMapperResponse.map(customer, CustomerFilterResponse.class);
+            switch (customer.getCustomerType()) {
+                case BIREYSEL:
+                    customerFilterResponse.setName(customer.getName() + " " + customer.getSurname());
+                    break;
+                case KURUMSAL:
+                    customerFilterResponse.setName(customer.getCompanyName());
+                    break;
+            }
+            return customerFilterResponse;
+
+        });
     }
 
     @Override
