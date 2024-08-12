@@ -45,7 +45,7 @@ export const registerManager = async (managerRequest) => {
 
 // Kullanıcı şifresini değiştirme
 export const changePassword = async (changePasswordRequest) => {
-    return axiosInstance.post(USER_CHANGE_PASSWORD_URL, {
+    return axiosInstance.put(USER_CHANGE_PASSWORD_URL, {
         email: changePasswordRequest.email,
         oldPassword: changePasswordRequest.oldPassword,
         newPassword: changePasswordRequest.newPassword
@@ -59,7 +59,7 @@ export const changePassword = async (changePasswordRequest) => {
 
 // Şifre sıfırlama talebi
 export const resetPassword = async (resetPasswordRequest) => {
-    return axiosInstance.post(USER_RESET_PASSWORD_URL, {
+    return axiosInstance.put(USER_RESET_PASSWORD_URL, {
         email: resetPasswordRequest.email
     }).then(response => {
         return response.data;
@@ -71,7 +71,7 @@ export const resetPassword = async (resetPasswordRequest) => {
 
 // Kullanıcıyı aktifleştirme
 export const activateUser = async (activateUserRequest) => {
-    return axiosInstance.post(USER_ACTIVATE_URL, {
+    return axiosInstance.put(USER_ACTIVATE_URL, {
         email: activateUserRequest.email
     }).then(response => {
         return response.data;
