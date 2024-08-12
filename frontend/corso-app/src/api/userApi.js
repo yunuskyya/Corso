@@ -82,15 +82,16 @@ export const activateUser = async (activateUserRequest) => {
 }
 // Kullanıcı silme
 export const deleteUser = async (deleteUserRequest) => {
-    return axiosInstance.delete(USER_DELETE_URL, {
-        email: deleteUserRequest.email
-    }).then(response => {
-        return response.data;
-    }).catch(error => {
-        console.error(error);
-        throw error;
-    });
-}
+    return axiosInstance.delete(`${USER_DELETE_URL}/${deleteUserRequest.userId}`)
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.error(error);
+            throw error;
+        });
+};
+
 // Kullaıcı listesi
 export const userList = async () => {
     return axiosInstance.get(USER_LIST_URL).then(response => {

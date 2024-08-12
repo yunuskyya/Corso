@@ -13,6 +13,8 @@ import AddCashPage from '../pages/cashflow/AddCashPage';
 import SendCashPage from '../pages/cashflow/SendCashPage';
 import AddUser from '../pages/user/AddUser';
 import ChangePassword from '../pages/user/ChangePassword';
+import AddBrokerPage from '../pages/broker/AddBrokerPage';
+import ListBrokerPage from './../pages/broker/ListBrokerPage';
 
 // -------------- ADMIN --------------
 export const ADMIN = '/admin';
@@ -69,6 +71,8 @@ export const MANAGER_TRANSACTION_HISTORY = '/dashboard/manager/list-transaction-
 export const MANAGER_LIST_CASH_FLOW = '/dashboard/manager/cash-flow'; // cash flow history
 export const MANAGER_END_OF_DAY = '/dashboard/manager/end-of-day'; // end of day
 export const MANAGER_CHANGE_PASSWORD = '/dashboard/manager/change-password';
+export const MANAGER_ADD_BROKER = '/dashboard/manager/add-broker';
+export const MANAGER_LIST_BROKER = '/dashboard/manager/list-broker';
 
 export const MANAGER_OPERATIONS = [
     {
@@ -105,6 +109,24 @@ export const MANAGER_OPERATIONS = [
                 link: MANAGER_TRANSACTION_HISTORY,
                 page: <ListTransactionHistoryPage />,
             },
+        ]
+
+    },
+    {
+        title: 'Broker İşlemleri',
+        title_link: null,
+        self_page: null,
+        operations: [
+            {
+                title: 'Ekle',
+                link: MANAGER_ADD_BROKER,
+                page: <AddBrokerPage />,
+            },
+            {
+                title: 'Listele',
+                link: MANAGER_LIST_BROKER,
+                page: <ListBrokerPage />
+            }
         ]
 
     },

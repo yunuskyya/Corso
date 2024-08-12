@@ -76,7 +76,7 @@ const UserList = () => {
                                         variant="success"
                                         onClick={() => handleActivate(user.email)}
                                         disabled={!user.accountLocked || user.isDeleted}
-                                        style={{ marginRight: '5px', width: '100px' }}  // Yan yana ve aynı boyutta
+                                        style={{ marginRight: '5px', width: '100px' }}  
                                     >
                                         Aktif Et
                                     </Button>
@@ -84,7 +84,7 @@ const UserList = () => {
                                         variant="warning"
                                         onClick={() => handleUnblock(user.email)}
                                         disabled={!user.accountLocked || user.isDeleted}
-                                        style={{ marginRight: '5px', width: '100px' }}  // Yan yana ve aynı boyutta
+                                        style={{ marginRight: '5px', width: '100px' }} 
                                     >
                                         Bloke Kaldır
                                     </Button>
@@ -92,7 +92,7 @@ const UserList = () => {
                                         variant="danger"
                                         onClick={() => handleDelete(user.id)}
                                         disabled={user.isDeleted}
-                                        style={{ width: '100px' }}  // Yan yana ve aynı boyutta, son butonda margin-right yok
+                                        style={{ width: '100px' }}  
                                     >
                                         Sil
                                     </Button>
