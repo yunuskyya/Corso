@@ -2,12 +2,14 @@ package com.infina.corso.service.impl;
 
 import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.AccountRequestTransaction;
+import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.*;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.model.User;
+import com.infina.corso.model.enums.CustomerStatus;
 import com.infina.corso.model.enums.CustomerType;
 import com.infina.corso.repository.CustomerRepository;
 import com.infina.corso.service.AuthService;
@@ -62,9 +64,9 @@ public class CustomerServiceImpl implements CustomerService {
     // only manager or broker
     @Override
     public Page<CustomerByBrokerResponse> getAllCustomersByBrokerId(Long brokerId, Pageable pageable) {
-        Customer customerInDb = customerRepository.findById(brokerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-        int currentUserId = authService.getCurrentUserId();
+//        Customer customerInDb = customerRepository.findById(brokerId)
+//                .orElseThrow(() -> new RuntimeException("Customer not found"));
+//        int currentUserId = authService.getCurrentUserId();
 
         return customerRepository.findAllByUserId(brokerId, pageable)
                 .map(customer -> modelMapperResponse.map(customer, CustomerByBrokerResponse.class));
@@ -101,12 +103,13 @@ public class CustomerServiceImpl implements CustomerService {
 
     // only manager or broker
     @Override
-    public void createCustomer(CustomerUpdateRequest customerDto) {
+    public void createCustomer(CreateCustomerRequest customerDto) {
         int currentUserId = authService.getCurrentUserId();
         User user = new User();
         user.setId(currentUserId);
         Customer customerEntity = modelMapperRequest.map(customerDto, Customer.class);
         customerEntity.setUser(user);
+        customerEntity.setStatus(CustomerStatus.ACTIVE);
         customerRepository.save(customerEntity);
     }
 
