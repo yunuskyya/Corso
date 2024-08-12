@@ -37,23 +37,23 @@ const UserList = () => {
 
     return (
         <div>
-            <h1>User List</h1>
-            {userList.length === 0 ? (
+                <h1 style={{ textAlign: 'center', marginBottom: '100px' }}>Kullanıcılar</h1>          
+                  {userList.length === 0 ? (
                 <p>No users found.</p>
             ) : (
                 <Table striped bordered hover>
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Username</th>
-                            <th>First Name</th>
-                            <th>Last Name</th>
+                            <th>Kullanıcı adı</th>
+                            <th>İsim</th>
+                            <th>Soyisim</th>
                             <th>Email</th>
-                            <th>Phone</th>
-                            <th>Created At</th>
-                            <th>Updated At</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>Telefon Numarası</th>
+                            <th>Oluşturulduğu Tarih</th>
+                            <th>Güncellendiği Tarih</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,32 +68,35 @@ const UserList = () => {
                                 <td>{moment(user.createdAt).format('YYYY-MM-DD HH:mm:ss')}</td>
                                 <td>{moment(user.updatedAt).format('YYYY-MM-DD HH:mm:ss')}</td>
                                 <td>
-                                    {user.accountLocked ? 'Locked' : 'Active'}<br />
-                                    {user.isDeleted ? 'Deleted' : 'Not Deleted'}
+                                    {user.accountLocked ? 'Blokeli' : 'Aktif'}<br />
+                                    {user.isDeleted ? 'Silinmiş' : 'Silinmemiş'}
                                 </td>
-                                <td>
+                                                                <td>
                                     <Button
                                         variant="success"
                                         onClick={() => handleActivate(user.email)}
                                         disabled={!user.accountLocked || user.isDeleted}
+                                        style={{ marginRight: '5px', width: '100px' }}  // Yan yana ve aynı boyutta
                                     >
-                                        Activate
+                                        Aktif Et
                                     </Button>
                                     <Button
                                         variant="warning"
                                         onClick={() => handleUnblock(user.email)}
                                         disabled={!user.accountLocked || user.isDeleted}
+                                        style={{ marginRight: '5px', width: '100px' }}  // Yan yana ve aynı boyutta
                                     >
-                                        Unblock
+                                        Bloke Kaldır
                                     </Button>
                                     <Button
                                         variant="danger"
                                         onClick={() => handleDelete(user.id)}
                                         disabled={user.isDeleted}
+                                        style={{ width: '100px' }}  // Yan yana ve aynı boyutta, son butonda margin-right yok
                                     >
-                                        Delete
+                                        Sil
                                     </Button>
-                                </td>
+                            </td>
                             </tr>
                         ))}
                     </tbody>
