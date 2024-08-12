@@ -13,7 +13,7 @@ public class EmailHelper {
     private final MailService mailService;
     private final TokenService tokenService;
 
-    private final String resetPasswordUrl = "http://localhost:8080/swagger-ui/index.html#/User%20Management/resetPassword";
+    private final String resetPasswordUrl = "http://localhost:5173/set-password";
 
     public void sendTokenEmail(String to, String token) {
         String subject = "CORSO Account Activation";
