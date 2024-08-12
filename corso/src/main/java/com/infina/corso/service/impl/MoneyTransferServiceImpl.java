@@ -1,6 +1,6 @@
 package com.infina.corso.service.impl;
 
-import com.infina.corso.dto.request.MoneyTransferRequest;
+import com.infina.corso.dto.request.MoneyTransferRequestForAddMoney;
 import com.infina.corso.dto.response.MoneyTransferResponse;
 import com.infina.corso.model.*;
 import com.infina.corso.repository.AccountRepository;
@@ -37,7 +37,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
     }
 
     @Transactional
-    public void saveMoneyTransfer(MoneyTransferRequest moneyTransfer) {
+    public void saveMoneyTransfer(MoneyTransferRequestForAddMoney moneyTransfer) {
         try {
             Optional<SystemDate> systemDate = systemDateRepository.findById(1);
             MoneyTransfer transfer = modelMapperForRequest.map(moneyTransfer, MoneyTransfer.class);
@@ -45,6 +45,9 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
             Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomer_id());
             Optional<Account> account = findAccountForTransfer(moneyTransfer, transfer, customerRepository);
             updateAccountBalance(account, moneyTransfer, transfer.getDirection());
+            if (transfer.getDirection() == 'G'){
+                transfer.setReceiver(account.get().getAccountNumber());
+            }else transfer.setSender(account.get().getAccountNumber());
             accountRepository.save(account.get());
             customerRepository.save(customer.get());
             transfer.setSystemDate(systemDate.get().getDate());
@@ -66,16 +69,16 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
                 .collect(Collectors.toList());
     }
 
-    private MoneyTransfer setTransferDirection(MoneyTransferRequest moneyTransfer, MoneyTransfer transfer) {
-        if (moneyTransfer.getReceiver() != null && moneyTransfer.getReceiver().startsWith("TR")) {
-            transfer.setDirection('Ç');
-        } else {
+    private MoneyTransfer setTransferDirection(MoneyTransferRequestForAddMoney moneyTransfer, MoneyTransfer transfer) {
+        if (moneyTransfer.getReceiver() == null) {
             transfer.setDirection('G');
+        } else {
+            transfer.setDirection('Ç');
         }
         return transfer;
     }
 
-    private Optional<Account> findAccountForTransfer(MoneyTransferRequest moneyTransfer, MoneyTransfer
+    private Optional<Account> findAccountForTransfer(MoneyTransferRequestForAddMoney moneyTransfer, MoneyTransfer
             transfer, CustomerRepository customerRepository) {
         Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomer_id());
         return customer.get().getAccounts().stream()
@@ -83,7 +86,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
                 .findFirst();
     }
 
-    private void updateAccountBalance(Optional<Account> account, MoneyTransferRequest moneyTransfer,
+    private void updateAccountBalance(Optional<Account> account, MoneyTransferRequestForAddMoney moneyTransfer,
                                       char direction) {
         BigDecimal amount = moneyTransfer.getAmount();
         if (direction == 'G') {

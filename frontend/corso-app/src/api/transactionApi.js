@@ -1,14 +1,25 @@
 import {axiosInstance} from './interceptor'
-import { CUSTOMER_URL_LIST_FOR_BROKER, CURRENCY_URL_COST, ACCOUNT_URL_LIST_FOR_BROKER, TRANSACTION_URL_CREATE } from '../constants/apiUrl';
+import { CUSTOMER_URL_LIST_FOR_BROKER, CURRENCY_URL_COST, ACCOUNT_URL_LIST_FOR_BROKER, TRANSACTION_URL_CREATE, TRANSACTION_URL_GET_ALL_BY_BROKER } from '../constants/apiUrl';
 
 
 export const fetchCustomerList = async (userId) => {
     try {
-        console.log("deneme : : : "+CUSTOMER_URL_LIST_FOR_BROKER.replace('{userId}', parseInt(userId)));
+
         const response = await axiosInstance.get(CUSTOMER_URL_LIST_FOR_BROKER.replace('{userId}', parseInt(userId)));
-        return response.data; // Bu, CustomerByBrokerResponseTransactionPage sınıfının listesi olacak.
+        console.log("****resp****:", response.data);
+        return response.data;
     } catch (error) {
         console.error('Error fetching customer list:', error);
+        throw error;
+    }
+};
+
+export const fetchTransactionListForBroker = async (userId) => {
+    try {
+        const response = await axiosInstance.get(TRANSACTION_URL_GET_ALL_BY_BROKER.replace('{userId}', parseInt(userId)));
+        return response.data; 
+    } catch (error) {
+        console.error('Error fetching transaction list:', error);
         throw error;
     }
 };
@@ -23,12 +34,12 @@ export const fetchAccountsForCustomerBalanceHigherThanZero = async (customerId) 
     }
 };
 
-export const fetchCurrencyCost = async (purchasedCurrencyCode, soldCurrencyCode, amount) => {
+export const fetchCurrencyCost = async (purchasedCurrencyCode, soldCurrencyCode, selectedAccountBalance) => {
     try {
         const response = await axiosInstance.post(CURRENCY_URL_COST, {
             soldCurrencyCode,
             purchasedCurrencyCode,
-            amount
+            selectedAccountBalance
         }, {
             headers: {
                 'Content-Type': 'application/json'

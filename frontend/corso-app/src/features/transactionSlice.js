@@ -1,22 +1,24 @@
-// src/features/transactionSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchCustomerList as fetchCustomerListApi, 
          fetchAccountsForCustomerBalanceHigherThanZero as fetchAccountsForCustomerBalanceHigherThanZeroApi,
          fetchCurrencyCost as fetchCurrencyCostApi, 
-         createTransaction as createTransactionApi } from '../api/transactionApi';
+         createTransaction as createTransactionApi,
+         fetchTransactionListForBroker as fetchTransactionListForBrokerApi } from '../api/transactionApi';
 
 const initialState = {
     customers: [],
     accounts: [],
+    transactions: [], // Yeni eklenen state alanı
     status: 'idle',
     error: null,
-    currencyCost: null,
+    maxBuying: null,
     currencyStatus: 'idle',
     transactionStatus: 'idle', // İşlem durumunu takip etmek için ekledik
 };
 
 export const fetchCustomerListThunk = createAsyncThunk('transaction/fetchCustomerList', async (userId) => {
     const response = await fetchCustomerListApi(userId);
+    console.log("deneme erkal: "+ response);
     return response;
 });
 
@@ -27,17 +29,24 @@ export const fetchAccountsForCustomerThunk = createAsyncThunk('transaction/fetch
 
 export const fetchCurrencyCostThunk = createAsyncThunk(
     'transaction/fetchCurrencyCost',
-    async ({ purchasedCurrencyCode, soldCurrencyCode, amount }) => {
-        const response = await fetchCurrencyCostApi(purchasedCurrencyCode, soldCurrencyCode, amount);
+    async ({ purchasedCurrencyCode, soldCurrencyCode, selectedAccountBalance}) => {
+        const response = await fetchCurrencyCostApi(purchasedCurrencyCode, soldCurrencyCode, selectedAccountBalance);
         return response;
     }
-);
+); 
 
 export const createTransactionThunk = createAsyncThunk(
     'transaction/createTransaction',
     async ({ account_id, purchasedCurrency, soldCurrency, amount, user_id }) => {
-        console.log("slice'ın içinde : "+account_id);
         const response = await createTransactionApi(account_id, purchasedCurrency, soldCurrency, amount, user_id);
+        return response;
+    }
+);
+
+export const fetchTransactionListForBrokerThunk = createAsyncThunk(
+    'transaction/fetchTransactionListForBroker',
+    async (userId) => {
+        const response = await fetchTransactionListForBrokerApi(userId);
         return response;
     }
 );
@@ -84,8 +93,9 @@ const transactionSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchCurrencyCostThunk.fulfilled, (state, action) => {
+                console.log('Action Payload:', action.payload);
                 state.currencyStatus = 'succeeded';
-                state.currencyCost = action.payload.cost; // API'den gelen maliyeti sakla
+                state.maxBuying = action.payload.maxBuying; 
             })
             .addCase(fetchCurrencyCostThunk.rejected, (state, action) => {
                 state.currencyStatus = 'failed';
@@ -101,6 +111,19 @@ const transactionSlice = createSlice({
             })
             .addCase(createTransactionThunk.rejected, (state, action) => {
                 state.transactionStatus = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(fetchTransactionListForBrokerThunk.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(fetchTransactionListForBrokerThunk.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.transactions = action.payload; // Gelen veriyi state'e ekliyoruz
+                state.error = null;
+            })
+            .addCase(fetchTransactionListForBrokerThunk.rejected, (state, action) => {
+                state.status = 'failed';
                 state.error = action.error.message;
             });
     },
