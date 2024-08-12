@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
             add(Role.ROLE_BROKER);
         }});
         newUser.setActive(true);
-        newUser.setResetPasswordToken(UUID.randomUUID().toString());// Bu eklendikten sonra login olunca şifre değiştirme ekranı gelecek
+        newUser.setResetPasswordToken(UUID.randomUUID().toString());
         userRepository.save(newUser);
         logger.info("Broker registered: {}", newUser.getUsername());
         emailHelper.sendTokenEmail(newUser.getEmail(), newUser.getResetPasswordToken());
