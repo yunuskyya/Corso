@@ -1,47 +1,47 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchIbanListByCustomerThunk, createMoneyTransferThunk, fetchCustomerListForMoneyTransferThunk } from '../../features/moneyTransferSlice';
-
+import React, { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { fetchCustomerList } from '../../api/transactionApi';
+import { fetchIbanListByCustomer } from '../../api/moneyTransferApi';
 
 const AddCashPage = () => {
-    const dispatch = useAppDispatch();
     const { user } = useAuth();
     const [selectedCustomer, setSelectedCustomer] = useState('');
     const [selectedIban, setSelectedIban] = useState('');
     const [amount, setAmount] = useState('');
     const [currencyType, setCurrencyType] = useState('');
-    const [customerList, setCustomerList] = useState({});
+    const [customerList, setCustomerList] = useState([]);
+    const [ibanList, setIbanList] = useState([]);
 
-    const { customers, ibanList, transferStatus, successMessage, error } = useAppSelector((state) => state.moneyTransfer);
-
-    /* useEffect(() => {
-         
-         dispatch(fetchCustomerListForMoneyTransferThunk(user.id));
-     }, [dispatch, user.id]);
- */
-
-    const getCustomerList = useCallback(async (page) => {
-        try {
-            const response = await fetchCustomerList(user.id);
-            setCustomerList(response);
-            console.log("getCustomerList methodu içi: " + response);
-        } catch (error) {
-            //toast.error("Hata,",error);
-        }
+    // Müşteri listesini API'den çek
+    useEffect(() => {
+        const getCustomerList = async () => {
+            try {
+                const response = await fetchCustomerList(user.id);
+                setCustomerList(response.content);  // API'den gelen müşteri listesini set ediyoruz
+            } catch (error) {
+                console.error('Error fetching customer list:', error);
+            }
+        };
+        getCustomerList();
     }, [user.id]);
 
-    useEffect(() => {
-        getCustomerList();
-    }, [getCustomerList]);
-
+    // Seçilen müşteri değiştiğinde IBAN listesini çek
     useEffect(() => {
         if (selectedCustomer) {
-            // Seçilen müşteri değiştiğinde IBAN listesini çek
-            dispatch(fetchIbanListByCustomerThunk(selectedCustomer));
+            const getIbanList = async () => {
+                try {
+                    const response = await fetchIbanListByCustomer(selectedCustomer);
+                    console.log('useEffect method içi erkal : ' + response);
+                    setIbanList(response);  // API'den gelen IBAN listesini set ediyoruz
+                } catch (error) {
+                    console.error('Error fetching IBAN list:', error);
+                }
+            };
+            getIbanList();
+        } else {
+            setIbanList([]);  // Müşteri seçilmediğinde IBAN listesini sıfırla
         }
-    }, [selectedCustomer, dispatch]);
+    }, [selectedCustomer]);
 
     const handleCustomerChange = (e) => {
         setSelectedCustomer(e.target.value);
@@ -52,7 +52,7 @@ const AddCashPage = () => {
     const handleIbanChange = (e) => {
         const iban = e.target.value;
         setSelectedIban(iban);
-        // Seçilen IBAN'ın döviz türünü ayarla
+
         const selectedIbanDetails = ibanList.find((item) => item.ibanNo === iban);
         if (selectedIbanDetails) {
             setCurrencyType(selectedIbanDetails.currencyCode);
@@ -66,7 +66,8 @@ const AddCashPage = () => {
             ibanNo: selectedIban,
             amount: parseFloat(amount),
         };
-        dispatch(createMoneyTransferThunk(transferRequest));
+        // Bu noktada transferRequest'i API'ye gönderebilirsiniz
+        console.log('Transfer Request:', transferRequest);
     };
 
     return (
@@ -84,13 +85,11 @@ const AddCashPage = () => {
                         required
                     >
                         <option value="">Müşteri Seçiniz</option>
-                        {
-                            customerList?.content?.map((customer) => (
-                                <option key={customer.id} value={customer.id}>
-                                    {customer.name} {customer.surname}
-                                </option>
-                            ))}
-
+                        {customerList?.map((customer) => (
+                            <option key={customer.id} value={customer.id}>
+                                {customer.name} {customer.surname}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
@@ -104,10 +103,10 @@ const AddCashPage = () => {
                         style={styles.select}
                         required
                     >
-                        <option value="">Select IBAN</option>
+                        <option value="">IBAN Seçiniz</option>
                         {ibanList.map((iban) => (
-                            <option key={iban.ibanNo} value={iban.ibanNo}>
-                                {iban.ibanNo}
+                            <option key={iban.id} value={iban.ibanName}>
+                                {iban.ibanName} {iban.iban}
                             </option>
                         ))}
                     </select>
@@ -145,14 +144,10 @@ const AddCashPage = () => {
                     type="submit"
                     className="btn btn-primary"
                     style={styles.button}
-                    disabled={transferStatus === 'loading'}
                 >
-                    {transferStatus === 'loading' ? 'Submitting...' : 'Submit'}
+                    Submit
                 </button>
             </form>
-
-            {successMessage && <div style={styles.alertSuccess}>{successMessage}</div>}
-            {error && <div style={styles.alertError}>{error}</div>}
         </div>
     );
 };
@@ -188,14 +183,6 @@ const styles = {
     },
     button: {
         width: '100%',
-        marginTop: '1rem'
-    },
-    alertSuccess: {
-        color: 'green',
-        marginTop: '1rem'
-    },
-    alertError: {
-        color: 'red',
         marginTop: '1rem'
     }
 };

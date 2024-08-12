@@ -29,8 +29,8 @@ public class IbanController {
     }
 
     @GetMapping("/customer/{id}")
-    public List<IbanResponse> getIbanByCustomerId(@PathVariable Long customerId) {
-        return ibanService.getIbansByCustomerId(customerId);
+    public List<IbanResponse> getIbanByCustomerId(@PathVariable Long id) {
+        return ibanService.getIbansByCustomerId(id);
     }
 
     @GetMapping

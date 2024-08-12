@@ -48,7 +48,7 @@ public class IbanServiceImpl implements IbanService {
         customerRepository.save(customer.get());
 
     }
-
+    @Transactional
     public List<IbanResponse> getIbansByCustomerId(Long id) {
         Optional<Customer> customer = customerRepository.findById(id);
         if (customer.isPresent()) {

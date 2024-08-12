@@ -36,4 +36,4 @@ export const MONEY_TRANSFER_CREATE = BASE_URL + '/money-transfer';
 
 // iban urls:
 
-export const IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID = BASE_URL + '/iban/customer/{customerId}'
+export const IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID = BASE_URL + '/iban/customer/{customerId}';

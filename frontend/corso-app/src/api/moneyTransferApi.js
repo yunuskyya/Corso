@@ -28,6 +28,7 @@ export const moneyTransferApi = {
 export const fetchIbanListByCustomer = async (customerId) => {
     try {
         const response = await axiosInstance.get(IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID.replace('{customerId}', customerId));
+        console.log('useEffect method içi erkal : ', JSON.stringify(response, null, 2));
         return response.data;
     } catch (error) {
         console.error('Error fetching IBAN list:', error);

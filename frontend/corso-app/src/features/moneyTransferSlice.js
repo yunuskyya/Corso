@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { moneyTransferApi } from '../api/moneyTransferApi';
 import { fetchCustomerList as fetchCustomerListApi } from '../api/transactionApi';
+import { fetchIbanListByCustomer as fetchIbanListByCustomerApi} from '../api/moneyTransferApi';
 
 const initialState = {
     transferStatus: 'idle',
@@ -38,7 +39,7 @@ export const fetchIbanListByCustomerThunk = createAsyncThunk(
     'moneyTransfer/fetchIbanListByCustomer',
     async (customerId, { rejectWithValue }) => {
         try {
-            const response = await moneyTransferApi.fetchIbanListByCustomer(customerId);
+            const response = await moneyTransferApi.fetchIbanListByCustomerApi(customerId);
             console.log("slice içi method denemesi erkal **: "+response);
             return response.data;
         } catch (error) {
