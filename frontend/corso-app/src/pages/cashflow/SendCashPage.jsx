@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { fetchCustomerList } from '../../api/transactionApi';
