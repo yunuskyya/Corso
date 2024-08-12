@@ -6,7 +6,7 @@ export const fetchCustomerList = async (userId) => {
     try {
 
         const response = await axiosInstance.get(CUSTOMER_URL_LIST_FOR_BROKER.replace('{userId}', parseInt(userId)));
-        console.log("****resp****:", response);
+        console.log("****resp****:", response.data);
         return response.data;
     } catch (error) {
         console.error('Error fetching customer list:', error);
