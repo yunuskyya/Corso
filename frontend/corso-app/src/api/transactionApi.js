@@ -23,12 +23,12 @@ export const fetchAccountsForCustomerBalanceHigherThanZero = async (customerId) 
     }
 };
 
-export const fetchCurrencyCost = async (purchasedCurrencyCode, soldCurrencyCode, amount) => {
+export const fetchCurrencyCost = async (purchasedCurrencyCode, soldCurrencyCode, selectedAccountBalance) => {
     try {
         const response = await axiosInstance.post(CURRENCY_URL_COST, {
             soldCurrencyCode,
             purchasedCurrencyCode,
-            amount
+            selectedAccountBalance
         }, {
             headers: {
                 'Content-Type': 'application/json'

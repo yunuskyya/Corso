@@ -10,7 +10,7 @@ const initialState = {
     accounts: [],
     status: 'idle',
     error: null,
-    currencyCost: null,
+    maxBuying: null,
     currencyStatus: 'idle',
     transactionStatus: 'idle', // İşlem durumunu takip etmek için ekledik
 };
@@ -27,16 +27,17 @@ export const fetchAccountsForCustomerThunk = createAsyncThunk('transaction/fetch
 
 export const fetchCurrencyCostThunk = createAsyncThunk(
     'transaction/fetchCurrencyCost',
-    async ({ purchasedCurrencyCode, soldCurrencyCode, amount }) => {
-        const response = await fetchCurrencyCostApi(purchasedCurrencyCode, soldCurrencyCode, amount);
+    async ({ purchasedCurrencyCode, soldCurrencyCode, selectedAccountBalance}) => {
+        const response = await fetchCurrencyCostApi(purchasedCurrencyCode, soldCurrencyCode, selectedAccountBalance);
         return response;
     }
-);
+); 
+
+
 
 export const createTransactionThunk = createAsyncThunk(
     'transaction/createTransaction',
     async ({ account_id, purchasedCurrency, soldCurrency, amount, user_id }) => {
-        console.log("slice'ın içinde : "+account_id);
         const response = await createTransactionApi(account_id, purchasedCurrency, soldCurrency, amount, user_id);
         return response;
     }
@@ -84,8 +85,9 @@ const transactionSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchCurrencyCostThunk.fulfilled, (state, action) => {
+                console.log('Action Payload:', action.payload);
                 state.currencyStatus = 'succeeded';
-                state.currencyCost = action.payload.cost; // API'den gelen maliyeti sakla
+                state.maxBuying = action.payload.maxBuying; 
             })
             .addCase(fetchCurrencyCostThunk.rejected, (state, action) => {
                 state.currencyStatus = 'failed';

@@ -11,6 +11,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -32,8 +34,31 @@ public class CurrencyServiceImp implements CurrencyService {
         this.currencyRedisTemplate = currencyRedisTemplate;
     }
 
-    public CurrencyResponseForCost calculateCostCrossRate (CurrencyRequestForCost currencyRequestForCost){
+    public CurrencyResponseForCost calculateCostCrossRate(CurrencyRequestForCost currencyRequestForCost) {
         boolean isCrossRate = !currencyRequestForCost.getSoldCurrencyCode().equals("TL") && !currencyRequestForCost.getPurchasedCurrencyCode().equals("TL");
+        CurrencyResponseForCost currencyResponseForCost = new CurrencyResponseForCost();
+        if (isCrossRate) {
+            Double rate = rateCalculate(currencyRequestForCost.getSoldCurrencyCode(), currencyRequestForCost.getPurchasedCurrencyCode());
+            BigDecimal maxBuying = BigDecimal.valueOf(rate).multiply(currencyRequestForCost.getSelectedAccountBalance());
+            currencyResponseForCost.setMaxBuying(maxBuying);
+            return currencyResponseForCost;
+        }
+        if (currencyRequestForCost.getPurchasedCurrencyCode().equals("TL")) {
+            Currency currency = findByCode(currencyRequestForCost.getSoldCurrencyCode());
+            Double currencyPrice = Double.parseDouble(currency.getBuying());
+            BigDecimal maxBuying = BigDecimal.valueOf(currencyPrice).multiply(currencyRequestForCost.getSelectedAccountBalance());
+            currencyResponseForCost.setMaxBuying(maxBuying);
+            return currencyResponseForCost;
+        } else {
+            Currency currency = findByCode(currencyRequestForCost.getPurchasedCurrencyCode());
+            Double currencyPrice = Double.parseDouble(currency.getBuying());
+            BigDecimal maxBuying = currencyRequestForCost.getSelectedAccountBalance().divide(BigDecimal.valueOf(currencyPrice), 2, RoundingMode.HALF_UP);
+            currencyResponseForCost.setMaxBuying(maxBuying);
+            return currencyResponseForCost;
+        }
+    }
+
+    /* boolean isCrossRate = !currencyRequestForCost.getSoldCurrencyCode().equals("TL") && !currencyRequestForCost.getPurchasedCurrencyCode().equals("TL");
         CurrencyResponseForCost currencyResponseForCost = new CurrencyResponseForCost();
         if(isCrossRate){
            Double cost = rateCalculate(currencyRequestForCost.getSoldCurrencyCode(), currencyRequestForCost.getPurchasedCurrencyCode());
@@ -48,8 +73,7 @@ public class CurrencyServiceImp implements CurrencyService {
         } else currencyPrice = Double.parseDouble(currency.getSelling());
         Double cost = currencyPrice* currencyRequestForCost.getAmount();
         currencyResponseForCost.setCost(cost);
-        return currencyResponseForCost;
-    }
+        return currencyResponseForCost; */
 
     private Double rateCalculate(String soldCurrency, String purchasedCurrency) {
         Currency soldCurrencyEntity = findByCode(soldCurrency);
@@ -112,7 +136,6 @@ public class CurrencyServiceImp implements CurrencyService {
             throw new RuntimeException("Veri alımı sırasında bir hata oluştu", e);
         }
     }
-
 
 
 }

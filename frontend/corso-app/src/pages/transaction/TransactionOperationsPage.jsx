@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk, createTransactionThunk } from '../../features/transactionSlice'; // Doğru importlar
+import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk } from '../../features/transactionSlice'; 
 import { currencies } from '../../constants/currencies';
 import useAuth from '../../hooks/useAuth';
 
@@ -13,14 +13,16 @@ const TransactionOperationsPage = () => {
   const [isBuyCurrencyDisabled, setBuyCurrencyDisabled] = useState(true);
   const [isAmountInputDisabled, setAmountInputDisabled] = useState(true);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
+  const [selectedAccountBalance, setSelectedAccountBalance] = useState(null);
+  const [maxAmount, setMaxAmount] = useState(null); 
+
+
   const { user } = useAuth();
   const dispatch = useAppDispatch();
-
   const customers = useAppSelector((state) => state.transaction.customers);
   const accounts = useAppSelector((state) => state.transaction.accounts);
-  const currencyCost = useAppSelector((state) => state.transaction.currencyCost);
+  const maxBuying = useAppSelector((state) => state.transaction.maxBuying);
   const currencyStatus = useAppSelector((state) => state.transaction.currencyStatus);
-  const transactionStatus = useAppSelector((state) => state.transaction.transactionStatus);
 
   useEffect(() => {
     dispatch(fetchCustomerListThunk(user.id));
@@ -33,14 +35,32 @@ const TransactionOperationsPage = () => {
   }, [selectedCustomer, dispatch]);
 
   useEffect(() => {
-    if (amount && selectedSellCurrency && selectedBuyCurrency) {
+    if (selectedSellCurrency && selectedBuyCurrency) {
       dispatch(fetchCurrencyCostThunk({
-        purchasedCurrencyCode: selectedSellCurrency,
-        soldCurrencyCode: selectedBuyCurrency,
-        amount: parseFloat(amount),
+        purchasedCurrencyCode: selectedBuyCurrency,
+        soldCurrencyCode: selectedSellCurrency,
+        selectedAccountBalance
       }));
     }
-  }, [amount, selectedSellCurrency, selectedBuyCurrency, dispatch]);
+  }, [selectedSellCurrency, selectedBuyCurrency, selectedAccountBalance, dispatch]);
+  
+
+  useEffect(() => {
+    if (selectedSellCurrency && accounts.length > 0) {
+      const selectedAccount = accounts.find(account => account.currency === selectedSellCurrency);
+      if (selectedAccount) {
+        setSelectedAccountBalance(selectedAccount.balance);
+      } else {
+        setSelectedAccountBalance(null);
+      }
+    }
+  }, [selectedSellCurrency, accounts]);
+
+  useEffect(() => {
+    if (maxBuying) {
+        setMaxAmount(maxBuying.maxBuying); // maxBuying değerini kullan
+    }
+  }, [maxBuying]);
 
   const handleCustomerChange = (event) => {
     setSelectedCustomer(event.target.value);
@@ -68,34 +88,12 @@ const TransactionOperationsPage = () => {
     setConfirmDisabled(false);
 
     if (amountValue && selectedSellCurrency && selectedBuyCurrency) {
-        dispatch(fetchCurrencyCostThunk({
-            purchasedCurrencyCode: selectedBuyCurrency,
-            soldCurrencyCode: selectedSellCurrency,
-            amount: parseFloat(amountValue) 
-        }));
-    }
-  };
-
-  const handleConfirmClick = () => {
-    if (selectedCustomer && selectedSellCurrency && selectedBuyCurrency && amount) {
-      // Seçilen döviz türüne göre hesabı bul
-      const selectedAccount = accounts.find(account => account.currency === selectedSellCurrency);
-      console.log(selectedAccount);
-
-      if (selectedAccount) {
-        const account_id = selectedAccount.id;
-        dispatch(createTransactionThunk({
-          account_id,
-          purchasedCurrency: selectedBuyCurrency,
-          soldCurrency: selectedSellCurrency,
-          amount: parseFloat(amount),
-          user_id: user.id
-        }));
-      } else {
-        console.error('Hesap bulunamadı!');
-      }
-    } else {
-      console.error('Tüm alanları doldurmanız gerekiyor!');
+      dispatch(fetchCurrencyCostThunk({
+        purchasedCurrencyCode: selectedBuyCurrency,
+        soldCurrencyCode: selectedSellCurrency,
+        amount: parseFloat(amountValue),
+        selectedAccountBalance: selectedAccountBalance
+      }));
     }
   };
 
@@ -140,14 +138,22 @@ const TransactionOperationsPage = () => {
         <input type="number" className="form-control" id="amountInput" placeholder="Miktar girin" value={amount} onChange={handleAmountChange} disabled={isAmountInputDisabled} style={styles.input} />
       </div>
 
-      {/* Maliyet Alanı */}
+      {/* Bakiye ve Maksimum Alınabilir Döviz Alanları */}
       <div style={styles.transactionPreview}>
         <div style={styles.previewContent}>
+          <div style={styles.balanceContainer}>
+            <div style={styles.balanceBox}>
+              <p style={styles.balanceText}>Hesap Bakiyesi:</p>
+              <p style={styles.balanceValue}>{selectedAccountBalance ? selectedAccountBalance.toFixed(2) : 'Bilgi Yok'}</p>
+            </div>
+            <div style={styles.maxAmountBox}>
+              <p style={styles.maxAmountText}>Maks. Alınabilir Döviz Miktarı:</p>
+              <p style={styles.maxAmountValue}>{maxBuying !== null ? maxBuying.toFixed(2) : 'Bilgi Yok'}</p>
+            </div>
+          </div>
           <h5 style={styles.previewTitle}>Maliyet</h5>
-          <p style={styles.previewText}>{currencyStatus === 'loading' ? 'Hesaplanıyor...' : `Maliyet: ${currencyCost ? currencyCost.toFixed(2) : 'Bilgi Yok'}`}</p>
-          <button className="btn btn-primary" disabled={isConfirmDisabled || transactionStatus === 'loading'} onClick={handleConfirmClick}>
-            {transactionStatus === 'loading' ? 'İşlem Yapılıyor...' : 'İşlemi Onayla'}
-          </button>
+          <p style={styles.previewText}>{currencyStatus === 'loading' ? 'Hesaplanıyor...' : `Maliyet: ${maxBuying ? maxBuying.toFixed(2) : 'Bilgi Yok'}`}</p>
+          <button className="btn btn-primary" disabled={isConfirmDisabled}>İşlemi Onayla</button>
         </div>
       </div>
     </div>
@@ -196,6 +202,39 @@ const styles = {
   },
   previewText: {
     margin: '0.5rem 0'
+  },
+  balanceContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginBottom: '1rem'
+  },
+  balanceBox: {
+    backgroundColor: '#f1f1f1',
+    padding: '0.5rem',
+    borderRadius: '4px',
+    flex: 1
+  },
+  balanceText: {
+    fontSize: '0.875rem',
+    color: '#555'
+  },
+  balanceValue: {
+    fontSize: '1rem',
+    fontWeight: 'bold'
+  },
+  maxAmountBox: {
+    backgroundColor: '#e0f7fa',
+    padding: '0.5rem',
+    borderRadius: '4px',
+    flex: 1
+  },
+  maxAmountText: {
+    fontSize: '0.875rem',
+    color: '#00796b'
+  },
+  maxAmountValue: {
+    fontSize: '1rem',
+    fontWeight: 'bold'
   }
 };
 
