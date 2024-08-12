@@ -43,6 +43,7 @@ public class CurrencyServiceImp implements CurrencyService {
         Currency currency = findByCode(currencyRequestForCost.getPurchasedCurrencyCode());
         double currencyPrice;
         if (currencyRequestForCost.getPurchasedCurrencyCode().equals("TL")) {
+            currency = findByCode(currencyRequestForCost.getSoldCurrencyCode());
             currencyPrice = Double.parseDouble(currency.getBuying());
         } else currencyPrice = Double.parseDouble(currency.getSelling());
         Double cost = currencyPrice* currencyRequestForCost.getAmount();

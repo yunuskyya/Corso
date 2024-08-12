@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional
     public void transactionSave(TransactionRequest transactionRequest) {
-        if(!systemDateService.isDayClosed()) {
+        if (!systemDateService.isDayClosed()) {
             try {
                 LocalDate systemDate = systemDateService.getSystemDate();
                 AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccount_id(), transactionRequest.getPurchasedCurrency());
@@ -73,10 +73,14 @@ public class TransactionServiceImpl implements TransactionService {
                         }
                         account.get().setBalance(newBalance);
                     } else {
+                        BigDecimal newBalance;
                         if (transaction.getSoldCurrency().equals("TL")) {
                             transaction.setTransactionType('A');
-                        } else transaction.setTransactionType('S');
-                        BigDecimal newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                        } else {
+                            transaction.setTransactionType('S');
+                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getSoldCurrency(), transaction.getTransactionType());
+                        }
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                             throw new RuntimeException("Insufficient funds for account number: " + account.get().getAccountNumber());
                         }
@@ -144,10 +148,13 @@ public class TransactionServiceImpl implements TransactionService {
     private BigDecimal calculateTransactionCostForTRY(char transactionType, double amount, String currencyCode) {
         Currency currency = currencyService.findByCode(currencyCode);
         double currencyPrice;
+        BigDecimal cost;
         if (transactionType == 'S') {
-            currencyPrice = Double.parseDouble(currency.getBuying());
-        } else currencyPrice = Double.parseDouble(currency.getSelling());
-        BigDecimal cost = new BigDecimal(currencyPrice * amount);
+            cost = new BigDecimal(amount);
+        } else {
+            currencyPrice = Double.parseDouble(currency.getSelling());
+            cost = new BigDecimal(currencyPrice * amount);
+        }
         return cost;
     }
 
