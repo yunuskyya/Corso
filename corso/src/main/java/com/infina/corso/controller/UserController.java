@@ -21,12 +21,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/user")
 @Tag(name = "User Management", description = "Operations related to user management")
@@ -119,12 +119,14 @@ public class UserController {
     @PutMapping("/set-password")
     @Operation(summary = "Set user password", description = "Set the password for a user who registered but didn't set a password yet.")
     public GenericMessage setPassword(@RequestParam("token") String token, @Valid @RequestBody UpdatePasswordRequest newPassword) {
+        System.out.println("token: " + token);
         try {
             userService.updatePassword(token, newPassword);
             return new GenericMessage("Şifre başarıyla oluşturuldu.");
         } catch (RuntimeException e) {
             return new GenericMessage("Şifre oluşturulurken bir hata oluştu: " + e.getMessage());
         }
+
     }
     @PutMapping("/unBlock")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
