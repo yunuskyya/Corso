@@ -1,13 +1,14 @@
-// src/features/transactionSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { fetchCustomerList as fetchCustomerListApi, 
          fetchAccountsForCustomerBalanceHigherThanZero as fetchAccountsForCustomerBalanceHigherThanZeroApi,
          fetchCurrencyCost as fetchCurrencyCostApi, 
-         createTransaction as createTransactionApi } from '../api/transactionApi';
+         createTransaction as createTransactionApi,
+         fetchTransactionListForBroker as fetchTransactionListForBrokerApi } from '../api/transactionApi';
 
 const initialState = {
     customers: [],
     accounts: [],
+    transactions: [], // Yeni eklenen state alanı
     status: 'idle',
     error: null,
     maxBuying: null,
@@ -33,12 +34,18 @@ export const fetchCurrencyCostThunk = createAsyncThunk(
     }
 ); 
 
-
-
 export const createTransactionThunk = createAsyncThunk(
     'transaction/createTransaction',
     async ({ account_id, purchasedCurrency, soldCurrency, amount, user_id }) => {
         const response = await createTransactionApi(account_id, purchasedCurrency, soldCurrency, amount, user_id);
+        return response;
+    }
+);
+
+export const fetchTransactionListForBrokerThunk = createAsyncThunk(
+    'transaction/fetchTransactionListForBroker',
+    async (userId) => {
+        const response = await fetchTransactionListForBrokerApi(userId);
         return response;
     }
 );
@@ -103,6 +110,19 @@ const transactionSlice = createSlice({
             })
             .addCase(createTransactionThunk.rejected, (state, action) => {
                 state.transactionStatus = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(fetchTransactionListForBrokerThunk.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(fetchTransactionListForBrokerThunk.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.transactions = action.payload; // Gelen veriyi state'e ekliyoruz
+                state.error = null;
+            })
+            .addCase(fetchTransactionListForBrokerThunk.rejected, (state, action) => {
+                state.status = 'failed';
                 state.error = action.error.message;
             });
     },

@@ -181,10 +181,25 @@ public class TransactionServiceImpl implements TransactionService {
     //Entity listesinin Dto listesine çevrimi
     private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
         return transactionList.stream()
+                .map(transaction -> {
+                    TransactionResponse response = modelMapperConfig.modelMapperForTransaction()
+                            .map(transaction, TransactionResponse.class);
+                    // Transaction'dan Account'a ve Account'tan Customer'a ulaşarak ad ve soyadını alıyoruz.
+                    Customer customer = transaction.getAccount().getCustomer();
+                    response.setName(customer.getName());
+                    response.setSurname(customer.getSurname());
+                    return response;
+                })
+                .collect(Collectors.toList());
+
+
+        //Entity listesinin Dto listesine çevrimi
+   /* private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
+        return transactionList.stream()
                 .map(transaction -> modelMapperConfig.modelMapperForTransaction()
                         .map(transaction, TransactionResponse.class))
                 .collect(Collectors.toList());
+    } */
     }
-
 
 }

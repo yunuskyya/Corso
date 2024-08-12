@@ -8,9 +8,9 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class TransactionResponse {
-
+    private String name;
+    private String surname;
     private int user_id;
-    private char transactionType;
     private String purchasedCurrency;
     private String soldCurrency;
     private int amount;
