@@ -85,7 +85,7 @@ public class CustomerController {
     }
 
     // Filter customers paged
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
     public ResponseEntity<Page<CustomerFilterResponse>> filterCustomersPaged(@RequestBody @Validated CustomerFilterRequest filterRequest, Pageable pageable) {
         Page<CustomerFilterResponse> customers = customerService.filterCustomersPaged(filterRequest, pageable);
