@@ -5,10 +5,7 @@ import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
-import com.infina.corso.dto.response.CustomerByBrokerResponse;
-import com.infina.corso.dto.response.CustomerFilterResponse;
-import com.infina.corso.dto.response.CustomerGetByIdResponse;
-import com.infina.corso.dto.response.CustomerResponse;
+import com.infina.corso.dto.response.*;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.model.User;
@@ -74,6 +71,15 @@ public class CustomerServiceImpl implements CustomerService {
         return customerRepository.findAllByUserId(brokerId, pageable)
                 .map(customer -> modelMapperResponse.map(customer, CustomerByBrokerResponse.class));
     }
+
+    // only manager or broker
+    public Page<CustomerByBrokerResponseTransactionPage> getAllCustomersByBrokerIdForTransaction(Long brokerId, Pageable pageable) {
+        return customerRepository.findAllByUserId(brokerId, pageable)
+                .map(customer -> modelMapperResponse.map(customer, CustomerByBrokerResponseTransactionPage.class));
+    }
+
+
+
 
     // Only manager or admin can use this method or the controller that calls this
     // method must have a security check

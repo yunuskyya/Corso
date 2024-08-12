@@ -1,4 +1,4 @@
-import { axiosInstance } from './interceptor'
+import {axiosInstance} from './interceptor'
 import { CUSTOMER_URL } from '../constants/apiUrl'
 
 export const createCustomer = async (customerRequest) => {

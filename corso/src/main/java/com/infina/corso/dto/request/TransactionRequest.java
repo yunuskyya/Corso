@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public class TransactionRequest {
 
-    private String accountNumber;
+    private Long account_id;
     private String purchasedCurrency;
     private String soldCurrency;
     private double amount;

@@ -12,4 +12,6 @@ public interface TransactionService {
     void transactionSave(TransactionRequest transactionRequest);
     List<TransactionResponse> collectTransactionsForSelectedUser(int id);
     List<TransactionResponse> collectAllTransactions();
+    Double calculateCurrencyRate(String a, String b);
+    BigDecimal calculateNewBalanceForCross(double amount, double rate);
 }

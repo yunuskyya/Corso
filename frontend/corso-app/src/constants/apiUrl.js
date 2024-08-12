@@ -12,8 +12,18 @@ export const CURRENT_USER_URL = USER_URL + '/role';
 // customer urls:
 
 export const CUSTOMER_URL = BASE_URL + '/customer';
+export const CUSTOMER_URL_LIST_FOR_BROKER = BASE_URL + '/customer/transaction/broker/{userId}';
 
 // account urls:
 
-export const ACCOUNT_URL = BASE_URL + 'accounts';
-export const ACCOUNT_URL_CUSTOMER = BASE_URL + 'accounts/faketest';
+export const ACCOUNT_URL = BASE_URL + '/accounts';
+export const ACCOUNT_URL_CUSTOMER = BASE_URL + '/accounts/faketest';
+export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transaction/{customerId}';
+
+// currency urls:
+
+export const CURRENCY_URL_COST = BASE_URL + '/currencies/cost';
+
+//transaction urls:
+
+export const TRANSACTION_URL_CREATE = BASE_URL + '/transaction/create';
