@@ -81,7 +81,7 @@ const AddCashPage = () => {
 
     return (
         <div style={styles.container}>
-            <h2 style={styles.header}>Add Cash</h2>
+            <h2 style={styles.header}>Para Yatır</h2>
             <form onSubmit={handleSubmit} style={styles.form}>
                 {/* Müşteri Seçimi */}
                 <div style={styles.formGroup}>
@@ -154,7 +154,7 @@ const AddCashPage = () => {
                     className="btn btn-primary"
                     style={styles.button}
                 >
-                    Submit
+                    Onayla
                 </button>
             </form>
         </div>

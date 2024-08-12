@@ -47,7 +47,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
             updateAccountBalance(account, moneyTransfer, transfer.getDirection());
             if (transfer.getDirection() == 'G'){
                 transfer.setReceiver(account.get().getAccountNumber());
-            }
+            }else transfer.setSender(account.get().getAccountNumber());
             accountRepository.save(account.get());
             customerRepository.save(customer.get());
             transfer.setSystemDate(systemDate.get().getDate());
