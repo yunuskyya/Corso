@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import {createCustomer} from '../api/customerApi';
+import { createCustomer } from '../api/customerApi';
 
 const initialState = {
-    customer: null,
+    result: null,
     status: 'idle',
     error: null,
 };
@@ -29,7 +29,7 @@ const customerSlice = createSlice({
             })
             .addCase(createNewCustomer.fulfilled, (state, action) => {
                 state.status = 'succeeded';
-                state.customer = action.payload;
+                state.result = action.payload;
                 state.error = null;
             })
             .addCase(createNewCustomer.rejected, (state, action) => {

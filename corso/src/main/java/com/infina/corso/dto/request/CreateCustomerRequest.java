@@ -1,8 +1,7 @@
 package com.infina.corso.dto.request;
 
-import com.infina.corso.model.enums.CustomerStatus;
 import com.infina.corso.model.enums.CustomerType;
-import com.infina.corso.validation.annotations.ValidCustomerUpdateRequest;
+import com.infina.corso.validation.annotations.ValidCreateCustomerRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -15,17 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@ValidCustomerUpdateRequest
-public class CustomerUpdateRequest {
-
+@ValidCreateCustomerRequest
+public class CreateCustomerRequest {
     private String name;
 
     private String surname;
+
     @NotNull
     private CustomerType customerType;
-    @NotNull
-    private CustomerStatus status;
-
     private String tcKimlikNo;
     private String companyName;
     private String vkn;

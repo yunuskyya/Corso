@@ -1,11 +1,9 @@
 package com.infina.corso.controller;
 
+import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
-import com.infina.corso.dto.response.CustomerByBrokerResponse;
-import com.infina.corso.dto.response.CustomerFilterResponse;
-import com.infina.corso.dto.response.CustomerGetByIdResponse;
-import com.infina.corso.dto.response.CustomerResponse;
+import com.infina.corso.dto.response.*;
 import com.infina.corso.service.CustomerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,10 +52,18 @@ public class CustomerController {
         return ResponseEntity.ok(customers);
     }
 
+    // Get all customers by broker ID
+    @GetMapping("/transaction/broker/{brokerId}")
+    @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
+    public ResponseEntity<Page<CustomerByBrokerResponseTransactionPage>> getAllCustomersByBrokerIdTransactions(@PathVariable Long brokerId, Pageable pageable) {
+        Page<CustomerByBrokerResponseTransactionPage> customers = customerService.getAllCustomersByBrokerIdForTransaction(brokerId, pageable);
+        return ResponseEntity.ok(customers);
+    }
+
     // Create a new customer
     @PostMapping
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CustomerUpdateRequest customerRequest) {
+    public ResponseEntity<Void> createCustomer(@RequestBody @Validated CreateCustomerRequest customerRequest) {
         customerService.createCustomer(customerRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
