@@ -1,5 +1,5 @@
 import {axiosInstance} from './interceptor'
-import { ACCOUNT_URL, ACCOUNT_URL_CUSTOMER } from '../constants/apiUrl'
+import { ACCOUNT_URL, ACCOUNT_URL_CUSTOMER,ACCOUNT_URL_LIST_FOR_MANAGER} from '../constants/apiUrl'
 
 export const createAccount = async (accountRequest) => {
     
@@ -46,6 +46,16 @@ export const deleteAccount = async (accountRequest) => {
 
 }
 
+export const getAllAccounts = async () => {
+        
+        return axiosInstance.get (ACCOUNT_URL_LIST_FOR_MANAGER).then((response) => {
+            return response.data;
+        }).catch((error) => {
+            console.error(error);
+            throw error;
+        });
+    
+    }
 
 
 
