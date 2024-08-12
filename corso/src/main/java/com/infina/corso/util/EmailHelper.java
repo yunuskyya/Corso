@@ -38,4 +38,13 @@ public class EmailHelper {
                 "Infina Corso Ekibi";
         mailService.sendSimpleMessage(to, subject, text);
     }
+    public void sendPasswordChangeNotification(User user) {
+        String to = user.getEmail();
+        String subject = "Şifre Değiştirme Bilgilendirmesi";
+        String text = "Merhaba " + user.getFirstName() + ",\n\n" +
+                "Şifreniz başarıyla değiştirilmiştir. Eğer bu işlemi siz gerçekleştirmediyseniz, lütfen hemen destek ekibimizle iletişime geçiniz.\n\n" +
+                "Saygılarımızla,\n" +
+                "Infina Corso Ekibi";
+        mailService.sendSimpleMessage(to, subject, text);
+    }
 }
