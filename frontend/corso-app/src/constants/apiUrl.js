@@ -11,7 +11,7 @@ export const CURRENT_USER_URL = USER_URL + '/role';
 
 // customer urls:
 
-export const CUSTOMER_URL = BASE_URL + 'customer';
+export const CUSTOMER_URL = BASE_URL + '/customer';
 
 // account urls:
 
