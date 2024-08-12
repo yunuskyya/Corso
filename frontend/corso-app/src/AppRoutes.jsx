@@ -9,6 +9,7 @@ import { ADMIN_OPERATIONS, MANAGER_OPERATIONS, BROKER_OPERATIONS } from './const
 import useAuth from './hooks/useAuth';
 import TransactionOperationsPage from './pages/transaction/TransactionOperationsPage';
 import ChangePassword from './pages/user/ChangePassword';
+import AddBrokerPage from './pages/broker/AddBrokerPage';
 
 
 const AppRoutes = () => {

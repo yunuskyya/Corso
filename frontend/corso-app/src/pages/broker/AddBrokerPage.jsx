@@ -93,7 +93,7 @@ const AddBrokerPage = () => {
                 </Form.Group>
 
                 <Button variant="primary" type="submit" className="mt-3">
-                    Broker Ekle
+                    Ekle
                 </Button>
             </Form>
         </Container>
