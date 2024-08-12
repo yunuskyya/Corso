@@ -78,6 +78,7 @@ export const deleteUser = createAsyncThunk(
             const response = await apiDeleteUser(deleteUserRequest);
             return response;
         } catch (error) {
+            console.log('ASDJJKASJKDK');
             return rejectWithValue(error.response.data);
         }
     }
