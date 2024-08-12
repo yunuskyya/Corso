@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap stil dosyasını import et
 import {registerBroker} from '../../features/userSlice'; // Redux eylemi
+import { useDispatch } from 'react-redux';
+
 const AddBrokerPage = () => {
-    const [broker, setBroker] = useState({
-        name: '',
-        surname: '',
+        const dispatch = useDispatch();
+        const [broker, setBroker] = useState({
+        firstName: '',
+        lastName: '',
+        username: '',
         email: '',
         phone: '',
+
     });
 
     const [error, setError] = useState('');
@@ -20,21 +25,22 @@ const AddBrokerPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            // Replace with your API call
             console.log(broker);
-            // Assuming you have a function to handle the API request
-            // await axios.post('/api/add-broker', broker);
+            await dispatch(registerBroker(broker)).unwrap();
             setSuccess('Broker başarıyla eklendi.');
             setError('');
             setBroker({
-                name: '',
-                surname: '',
+                firstName: '',
+                lastName: '',
+                username: '',
                 email: '',
                 phone: '',
+
             });
         } catch (err) {
-            setError('Broker eklenirken bir hata oluştu.');
+            setError('Broker asdas asdasd hata oluştu.');
             setSuccess('');
+          
         }
     };
 
@@ -44,25 +50,37 @@ const AddBrokerPage = () => {
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
             <Form onSubmit={handleSubmit}>
-                <Form.Group controlId="formName">
+                <Form.Group controlId="formFirstName">
                     <Form.Label>İsim</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="İsminizi girin"
-                        name="name"
-                        value={broker.name}
+                        name="firstName"
+                        value={broker.firstName}
                         onChange={handleChange}
                         required
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formSurname">
+                <Form.Group controlId="formLastName">
                     <Form.Label>Soyisim</Form.Label>
                     <Form.Control
                         type="text"
                         placeholder="Soyisminizi girin"
-                        name="surname"
-                        value={broker.surname}
+                        name="lastName"
+                        value={broker.lastName}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="formUsername">
+                    <Form.Label>username</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="username giriniz"
+                        name="username"
+                        value={broker.username}
                         onChange={handleChange}
                         required
                     />
@@ -94,7 +112,7 @@ const AddBrokerPage = () => {
 
                 <Button variant="primary" type="submit" className="mt-3">
                     Ekle
-                </Button>
+                </Button >
             </Form>
         </Container>
     );
