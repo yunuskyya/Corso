@@ -91,8 +91,18 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
                 // 5. İşlem yönüne göre filtreleme
                 .filter(transfer -> (direction == null || transfer.getDirection() == direction))
                 // 6. DTO'ya dönüştür ve listeye topla
-                .map(transfer -> modelMapperForResponse.map(transfer, MoneyTransferResponseForList.class))
+                .map(transfer -> {
+                    MoneyTransferResponseForList response = modelMapperForResponse.map(transfer, MoneyTransferResponseForList.class);
+                    response.setCustomerNameSurname(customerId != null ? getCustomerNameSurname(customerId) : "");
+                    return response;
+                })
                 .collect(Collectors.toList());
+    }
+
+    private String getCustomerNameSurname(Long customerId) {
+        return customerRepository.findById(customerId)
+                .map(customer -> customer.getName() + " " + customer.getSurname())
+                .orElse(""); // Eğer müşteri bulunamazsa boş döndür
     }
 
 

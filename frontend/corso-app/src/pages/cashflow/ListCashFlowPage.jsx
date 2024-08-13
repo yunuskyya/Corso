@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import moment from 'moment'; // Moment kütüphanesini import ediyoruz
 import useAuth from '../../hooks/useAuth';
 import { fetchCustomerList } from '../../api/transactionApi';
 import { fetchFilteredMoneyTransferList } from '../../api/moneyTransferApi';
-
 
 const ListCashFlowPage = () => {
     const { user } = useAuth();
@@ -46,6 +46,12 @@ const ListCashFlowPage = () => {
         setEndDate('');
         setTransactionDirection('');
         setTransactionList([]);
+    };
+
+    // Tarih formatını dönüştüren yardımcı fonksiyon
+    const formatDate = (dateStr) => {
+        // Gelen tarih formatı 'yyyyMMdd', bu yüzden formatı 'YYYYMMDD' olarak kullanmalıyız
+        return moment(dateStr, 'YYYYMMDD').format('YYYY-MM-DD');
     };
 
     return (
@@ -146,8 +152,9 @@ const ListCashFlowPage = () => {
                     </thead>
                     <tbody>
                         {transactionList?.map((transaction) => (
-                            <tr key={transaction.customerNameSurname}>
-                                <td>{transaction.systemDate}</td>
+                            <tr key={transaction.systemDate}>
+                                <td>{transaction.customerNameSurname}</td>
+                                <td>{formatDate(transaction.systemDate)}</td> {/* Tarih formatını dönüştür */}
                                 <td>{transaction.receiver}</td>
                                 <td>{transaction.sender}</td>
                                 <td>{transaction.amount}</td>
