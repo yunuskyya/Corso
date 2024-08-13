@@ -12,6 +12,16 @@ public class CustomerSpecification {
     private CustomerSpecification() {
     }
 
+    public static Specification<Customer> hasCustomerId(Long customerId) {
+        return (root, query, cb) -> {
+            if (customerId == null) {
+                return cb.conjunction();
+            }
+
+            return cb.equal(root.get("id"), customerId);
+        };
+    }
+
     public static Specification<Customer> likeName(String name) {
         return (root, query, cb) -> {
             if (name == null || name.isEmpty()) {
@@ -171,6 +181,7 @@ public class CustomerSpecification {
         boolean isIndividual = filterRequest.getCustomerType() == CustomerType.BIREYSEL;
         return (root, query, criteriaBuilder) -> criteriaBuilder.and(
                 hasUser(filterRequest.getUserId()).toPredicate(root, query, criteriaBuilder),
+                hasCustomerId(filterRequest.getCustomerId()).toPredicate(root, query, criteriaBuilder),
                 likeNameOrSurname(isIndividual? filterRequest.getName() : null).toPredicate(root, query, criteriaBuilder),
                 likeCompanyName(isIndividual? null : filterRequest.getName()).toPredicate(root, query, criteriaBuilder),
                 hasVkn(isIndividual? null: filterRequest.getVkn()).toPredicate(root, query, criteriaBuilder),
