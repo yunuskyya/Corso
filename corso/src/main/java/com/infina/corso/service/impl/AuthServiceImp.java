@@ -51,7 +51,7 @@ public class AuthServiceImp implements AuthService {
         User inDB = userRepository.findByEmail(credentials.email())
                 .orElseThrow(() -> {
                     logger.error("User not found: {}", credentials.email());
-                    return new RuntimeException("User not found: " + credentials.email());
+                    return new AuthenticationException();
                 });
 
         if (inDB.isAccountLocked()) {
