@@ -107,6 +107,17 @@ export const unblockUser = createAsyncThunk(
         }
     }
 );
+export const userListBroker = createAsyncThunk(
+    'user/userListBroker',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await apiUserListBroker();
+            return response.content;
+        } catch (error) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 
 // Slice
 const userSlice = createSlice({
@@ -194,6 +205,18 @@ const userSlice = createSlice({
                 state.userList = action.payload;
             })
             .addCase(fetchUserList.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.payload;
+            })
+            // User List Broker
+            .addCase(userListBroker.pending, (state) => {
+                state.status = 'loading';
+            })
+            .addCase(userListBroker.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.userList = action.payload;
+            })
+            .addCase(userListBroker.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.payload;
             })
