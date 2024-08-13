@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import useAuth from '../../hooks/useAuth';
 import { fetchCustomerList } from '../../api/transactionApi';
-//import { fetchTransactionList } from '../../api/transactionApi';
+import { fetchFilteredMoneyTransferList } from '../../api/moneyTransferApi';
+
 
 const ListCashFlowPage = () => {
     const { user } = useAuth();
@@ -26,13 +27,14 @@ const ListCashFlowPage = () => {
 
     const handleListClick = async () => {
         try {
-            /*const response = await fetchTransactionList({
-                customer: selectedCustomer,
+            const direction = transactionDirection === 'IN' ? 'G' : transactionDirection === 'OUT' ? 'Ç' : null; // Yön dönüşümünü yap
+            const response = await fetchFilteredMoneyTransferList({
+                customerId: selectedCustomer,
                 startDate,
                 endDate,
-                direction: transactionDirection,
+                direction,
             });
-            setTransactionList(response); */
+            setTransactionList(response);
         } catch (error) {
             console.error('Error fetching transaction list:', error);
         }
@@ -133,22 +135,23 @@ const ListCashFlowPage = () => {
                 <table className="table table-bordered">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Customer</th>
-                            <th>Currency</th>
-                            <th>Amount</th>
-                            <th>Date</th>
-                            <th>Direction</th>
+                            <th>Müşteri</th>
+                            <th>Tarih</th>
+                            <th>Alan Hesap</th>
+                            <th>Gönderen Hesap</th>
+                            <th>Miktar</th>
+                            <th>Döviz Kodu</th>
+                            <th>Yön</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {transactionList.map((transaction) => (
-                            <tr key={transaction.id}>
-                                <td>{transaction.id}</td>
-                                <td>{transaction.customerName}</td>
-                                <td>{transaction.currencyType}</td>
+                        {transactionList?.map((transaction) => (
+                            <tr key={transaction.customerNameSurname}>
+                                <td>{transaction.systemDate}</td>
+                                <td>{transaction.receiver}</td>
+                                <td>{transaction.sender}</td>
                                 <td>{transaction.amount}</td>
-                                <td>{transaction.date}</td>
+                                <td>{transaction.currencyCode}</td>
                                 <td>{transaction.direction}</td>
                             </tr>
                         ))}

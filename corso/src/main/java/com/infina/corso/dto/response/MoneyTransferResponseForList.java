@@ -1,15 +1,14 @@
 package com.infina.corso.dto.response;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-public class MoneyTransferResponse {
+@Data
+public class MoneyTransferResponseForList {
 
-    private String ibanNo;
+    private String customerNameSurname;
 
     private double amount;
 
@@ -18,4 +17,8 @@ public class MoneyTransferResponse {
     private String sender;
 
     private LocalDate systemDate;
+
+    private String direction;
+
+    private String currencyCode;
 }
