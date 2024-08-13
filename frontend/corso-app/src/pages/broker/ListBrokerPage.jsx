@@ -4,7 +4,7 @@ import ReactPaginate from 'react-paginate';
 import moment from 'moment';
 import { userListBroker } from '../../api/userApi'; // API fonksiyonunun yolu
 
-const ListBrokerPage = () => {
+const BrokerListPage = () => {
     const dispatch = useDispatch();
     const { userList, status, error } = useSelector(state => state.user);
 
@@ -85,7 +85,7 @@ const ListBrokerPage = () => {
                                     <td>{broker.phone}</td>
                                     <td>{formatDate(broker.updatedAt)}</td>
                                     <td>{formatDate(broker.createdAt)}</td>
-                                    </tr>
+                                </tr>
                             ))}
                         </tbody>
                     </Table>

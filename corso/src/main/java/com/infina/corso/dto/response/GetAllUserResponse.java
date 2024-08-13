@@ -1,9 +1,8 @@
 package com.infina.corso.dto.response;
-import com.infina.corso.model.enums.Role;
+
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
 @Data
 public class GetAllUserResponse {

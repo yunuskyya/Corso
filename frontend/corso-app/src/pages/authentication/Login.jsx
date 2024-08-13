@@ -6,8 +6,11 @@ import { useEffect } from 'react';
 import { resetLoginStatus } from '../../features/authSlice';
 import './Loginstyle.css'
 import logo from '../../assets/LogoCorso.png';
+import { GeneralSpinner } from '../../components/Common/GeneralSpinner';
 
 const Login = () => {
+    const [showAlert, setShowAlert] = useState(true);
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const error = useAppSelector((state) => state.auth.error);
@@ -38,10 +41,15 @@ const Login = () => {
         return <Navigate to="/dashboard" />;
     }
 
+    function handleResetState() {
+        setShowAlert(false);
+        dispatch(resetLoginStatus());
+    }
+
     return (
         <div className="form-signin w-100 m-auto">
             <form onSubmit={handleSubmit}>
-                <div class="text-center">
+                <div className="text-center">
                     <img className="col mb-4 w-75" src={logo} alt="logo" />
                 </div>
                 <div className="form-group">
@@ -63,10 +71,19 @@ const Login = () => {
                     />
                 </div>
                 <button type="submit" className="btn btn-primary">Login</button>
-                {auth.status === 'loading' && <p>Loading...</p>}
-                {auth.status === 'failed' && auth.error && <p>{auth.error}</p>}
+                {auth.status === 'loading' && <GeneralSpinner />}
+                {auth.status === 'failed' && auth.error && showAlert && (
+                    <div className='alert alert-danger alert-dismissible' role='alert'>
+                        <div>{auth.error}</div>
+                        <button
+                            type="button"
+                            className="btn-close"
+                            onClick={handleResetState}
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                )}
             </form>
-
         </div>
     );
 };

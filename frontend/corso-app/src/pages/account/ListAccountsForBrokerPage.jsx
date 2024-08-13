@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { getAllAccountsForManager } from '../../features/accountSlice';
 import { Button, Table, Spinner, Alert } from 'react-bootstrap';
 import moment from 'moment';
 import ReactPaginate from 'react-paginate';
 
-const AccountsList = () => {
-    const dispatch = useDispatch();
-    const { accounts, status, error } = useSelector(state => state.account);
+const ListAccountsForBrokerrPage = () => {
+    const dispatch = useAppDispatch();
+    const { accounts, status, error } = useAppSelector(state => state.account);
 
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
@@ -81,7 +81,7 @@ const AccountsList = () => {
                         </tbody>
                     </Table>
                     <div className="d-flex justify-content-center">
-                         <ReactPaginate
+                        <ReactPaginate
                             previousLabel={'Önceki'}
                             nextLabel={'Sonraki'}
                             breakLabel={'...'}
@@ -99,7 +99,7 @@ const AccountsList = () => {
                             breakClassName={'page-item'}
                             breakLinkClassName={'page-link'}
                             activeClassName={'active'}
-                        /> 
+                        />
                     </div>
                 </>
             )}
@@ -107,4 +107,4 @@ const AccountsList = () => {
     );
 };
 
-export default AccountsList;
+export default ListAccountsForBrokerrPage;

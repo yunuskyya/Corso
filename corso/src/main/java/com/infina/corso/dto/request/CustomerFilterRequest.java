@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Builder
 public class CustomerFilterRequest {
     private Long userId; // brokerId
+    private Long customerId;
     private Long accountId; // accountNumber that customer has
     private String name; // name + surname or companyName
     private String tcKimlikNo;

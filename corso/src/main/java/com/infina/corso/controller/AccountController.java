@@ -52,10 +52,10 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getAccountsBalanceBiggerThanZeroByCustomerId(customerId));
     }
 
-    @PostMapping
+    @PostMapping("/{customerId}")
     @Operation(summary = "Create a new account", description = "Create a new account with the given details.")
     @PreAuthorize("hasRole('ROLE_BROKER') OR hasRole('ROLE_MANAGER')")
-    public GenericMessage createAccount(@RequestParam Long customerId, @RequestBody CreateAccountRequest createAccountRequest) {
+    public GenericMessage createAccount(@PathVariable Long customerId, @RequestBody CreateAccountRequest createAccountRequest) {
         accountService.createAccount(createAccountRequest, customerId);
         return new GenericMessage(Messages.getMessageForLocale("corso.create.account.success.message.successfully",
                 LocaleContextHolder.getLocale()));
