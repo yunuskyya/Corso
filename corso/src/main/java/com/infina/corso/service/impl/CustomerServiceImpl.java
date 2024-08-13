@@ -6,6 +6,9 @@ import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.*;
+import com.infina.corso.exception.AccessDeniedException;
+import com.infina.corso.exception.CustomerNotFoundException;
+import com.infina.corso.exception.UnauthorizedAccessException;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.model.User;
@@ -51,16 +54,16 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerGetByIdResponse getCustomerById(Long id) {
         Customer customerInDb = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException(id));
         int currentUserId = authService.getCurrentUserId();
 
         if (customerInDb.getUser().getId() != currentUserId) {
-            throw new RuntimeException("You are not authorized to see this customer");
+            throw new UnauthorizedAccessException();
         }
 
         return customerRepository.findById(id)
                 .map(customer -> modelMapperResponse.map(customer, CustomerGetByIdResponse.class))
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException(id));
     }
 
     // only manager or broker
@@ -132,11 +135,11 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse updateCustomer(Long id, CustomerUpdateRequest customerDto) {
         Customer customerInDb = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-        int currentUserId = authService.getCurrentUserId();
+                .orElseThrow(() -> new CustomerNotFoundException(id));
+                    int currentUserId = authService.getCurrentUserId();
 
         if (customerInDb.getUser().getId() != currentUserId) {
-            throw new RuntimeException("You are not authorized to see this customer");
+            throw new UnauthorizedAccessException();
         }
         Optional<Customer> foundCustomer = customerRepository.findById(id);
 
@@ -156,19 +159,19 @@ public class CustomerServiceImpl implements CustomerService {
             customerRepository.save(customerEntity);
             return modelMapperResponse.map(customerEntity, CustomerResponse.class);
         } else {
-            throw new RuntimeException("Customer not found");
-        }
+              throw new CustomerNotFoundException(id);
+            }
     }
 
     // only manager or broker
     @Override
     public void deleteCustomer(Long id) {
         Customer customerInDb = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new CustomerNotFoundException(id));
         int currentUserId = authService.getCurrentUserId();
 
         if (customerInDb.getUser().getId() != currentUserId) {
-            throw new RuntimeException("You are not authorized to see this customer");
+            throw new AccessDeniedException();
         }
 
         customerRepository.deleteById(id);
@@ -179,7 +182,7 @@ public class CustomerServiceImpl implements CustomerService {
     public Page<CustomerFilterResponse> filterCustomersPaged(CustomerFilterRequest filterRequest, Pageable pageable) {
         if (filterRequest.getUserId() != null) {
             if (filterRequest.getUserId() != authService.getCurrentUserId()) {
-                throw new RuntimeException("Bu müşterilerin bilgisini görmeye yetkiniz yok.");
+                throw new AccessDeniedException();
             }
         }
 
