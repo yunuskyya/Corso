@@ -65,7 +65,7 @@ const ListAccountsForBrokerrPage = () => {
                                 <th>Bakiye</th>
                                 <th>Oluşturulma Tarihi</th>
                                 <th>Güncellenme Tarihi</th>
-                                <th>Müşteri ID</th>
+                                <th>Müşteri No</th>
                             </tr>
                         </thead>
                         <tbody>
