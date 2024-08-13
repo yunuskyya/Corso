@@ -20,8 +20,20 @@ export const CUSTOMER_URL_FILTER = CUSTOMER_URL + '/filter'
 export const ACCOUNT_URL = BASE_URL + '/accounts';
 export const ACCOUNT_URL_CUSTOMER = BASE_URL + '/accounts/faketest';
 export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transaction/{customerId}';
+export const ACCOUNT_URL_LIST_FOR_MANAGER = BASE_URL + '/accounts';
 
 // currency urls:
+
+// user urls:
+export const USER_REGISTER_BROKER_URL = USER_URL + '/register/broker';  // Broker kaydı
+export const USER_REGISTER_MANAGER_URL = USER_URL + '/register/manager'; // Manager kaydı
+export const USER_CHANGE_PASSWORD_URL = USER_URL + '/change-password';   // Şifre değişikliği
+export const USER_RESET_PASSWORD_URL = USER_URL + '/reset-password';     // Şifre sıfırlama
+export const USER_ACTIVATE_URL = USER_URL + '/activate';                 // Kullanıcı aktif etme
+export const USER_UNBLOCK_URL = USER_URL + '/unBlock';                   // Kullanıcı blok kaldırma
+export const USER_DELETE_URL = USER_URL + '';
+export const USER_LIST_URL = USER_URL + '/all';
+export const USER_LIST_BROKER_URL = USER_URL + '/allBrokers';
 
 export const CURRENCY_URL_COST = BASE_URL + '/currencies/cost';
 

@@ -3,8 +3,11 @@ package com.infina.corso.controller;
 import com.infina.corso.config.CurrentUser;
 import com.infina.corso.dto.request.*;
 import com.infina.corso.dto.response.GetAllUserResponse;
+import com.infina.corso.exception.PasswordMismatchException;
+import com.infina.corso.model.User;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.UserService;
+import com.infina.corso.service.impl.AuthServiceImp;
 import com.infina.corso.shared.GenericMessage;
 import com.infina.corso.shared.Messages;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/api/v1/user")
 @Tag(name = "User Management", description = "Operations related to user management")
@@ -30,22 +34,24 @@ public class UserController {
 
     private final UserService userService;
     private final MailService emailService;
+    private final AuthServiceImp authServiceImpl;
 
-    public UserController(UserService userService, MailService emailService) {
+    public UserController(UserService userService, MailService emailService, AuthServiceImp authServiceImpl) {
         this.userService = userService;
         this.emailService = emailService;
+        this.authServiceImpl = authServiceImpl;
     }
 
-    @GetMapping("/brokers")
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
-    @Operation(summary = "Get all brokers", description = "Retrieve a paginated list of all brokers.")
-    public ResponseEntity<Page<GetAllUserResponse>> getAllBrokers(Pageable pageable) {
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation(summary = "Get all users", description = "Retrieve a paginated list of all brokers.")
+    public ResponseEntity<Page<GetAllUserResponse>> getAllUsers(Pageable pageable) {
         Page<GetAllUserResponse> brokers = userService.getAllUser(pageable);
         return ResponseEntity.ok(brokers);
     }
 
     @PostMapping("/register/broker")
-    @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
     @Operation(summary = "Register a new broker", description = "Register a new broker with the given details.")
     public GenericMessage registerBroker(@Valid @RequestBody RegisterUserRequest request) {
         userService.registerBroker(request);
@@ -84,14 +90,21 @@ public class UserController {
 
     @PutMapping("/change-password")
     @Operation(summary = "Change user password", description = "Change the password of a user.")
-    public GenericMessage changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<GenericMessage> changePassword(@Valid @RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
-            userService.changePassword(changePasswordRequest);
-            return  new GenericMessage(Messages.getMessageForLocale("corso.change.password.success.message.successfully",
-                    LocaleContextHolder.getLocale()));
+            int currentUserId = authServiceImpl.getCurrentUserId();
+            userService.changePassword(changePasswordRequest,currentUserId);
+
+            return ResponseEntity.ok(new GenericMessage(Messages.getMessageForLocale("corso.change.password.success.message.successfully",
+                    LocaleContextHolder.getLocale())));
+        } catch (PasswordMismatchException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new GenericMessage(Messages.getMessageForLocale("corso.change.password.error.message.oldPasswordMismatch",
+                            LocaleContextHolder.getLocale())));
         } catch (Exception e) {
-            return new GenericMessage(Messages.getMessageForLocale("corso.change.password.error.message.error",
-                    LocaleContextHolder.getLocale()));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new GenericMessage(Messages.getMessageForLocale("corso.change.password.error.message.error",
+                            LocaleContextHolder.getLocale())));
         }
     }
 
@@ -106,12 +119,14 @@ public class UserController {
     @PutMapping("/set-password")
     @Operation(summary = "Set user password", description = "Set the password for a user who registered but didn't set a password yet.")
     public GenericMessage setPassword(@RequestParam("token") String token, @Valid @RequestBody UpdatePasswordRequest newPassword) {
+        System.out.println("token: " + token);
         try {
             userService.updatePassword(token, newPassword);
             return new GenericMessage("Şifre başarıyla oluşturuldu.");
         } catch (RuntimeException e) {
             return new GenericMessage("Şifre oluşturulurken bir hata oluştu: " + e.getMessage());
         }
+
     }
     @PutMapping("/unBlock")
     @PreAuthorize("hasRole('ROLE_ADMIN') OR hasRole('ROLE_MANAGER')")
@@ -129,4 +144,12 @@ public class UserController {
         return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
     }
+    @GetMapping("/allBrokers")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ResponseEntity<Page<GetAllUserResponse>> getAllBrokers(Pageable pageable) {
+        Page<GetAllUserResponse> brokers = userService.getAllBrokers(pageable);
+        return ResponseEntity.ok(brokers);
+    }
+
+
 }

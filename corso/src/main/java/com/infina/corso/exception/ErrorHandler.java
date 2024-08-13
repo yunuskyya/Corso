@@ -23,6 +23,9 @@ public class ErrorHandler {
             AuthenticationException.class,
             GeneralErrorException.class,
             AccountAlreadyExistsException.class,
+            InvalidTokenException.class,
+            UserNotBlockedException.class,
+            PasswordMismatchException.class,
             AccessDeniedException.class
     })
     ResponseEntity<ApiError> handleCustomException(Exception exception, HttpServletRequest request) {
@@ -48,6 +51,12 @@ public class ErrorHandler {
             error.setStatus(403);
         } else if (exception instanceof AccountAlreadyExistsException) {
             error.setStatus(409);
+        } else if (exception instanceof InvalidTokenException) {
+            error.setStatus(401);
+        } else if (exception instanceof UserNotBlockedException) {
+            error.setStatus(400);
+        } else if (exception instanceof PasswordMismatchException) {
+            error.setStatus(400);
         }
         return ResponseEntity.status(error.getStatus()).body(error);
     }
