@@ -31,8 +31,9 @@ export const USER_CHANGE_PASSWORD_URL = USER_URL + '/change-password';   // Şif
 export const USER_RESET_PASSWORD_URL = USER_URL + '/reset-password';     // Şifre sıfırlama
 export const USER_ACTIVATE_URL = USER_URL + '/activate';                 // Kullanıcı aktif etme
 export const USER_UNBLOCK_URL = USER_URL + '/unBlock';                   // Kullanıcı blok kaldırma
-export const USER_DELETE_URL = USER_URL + '/';
+export const USER_DELETE_URL = USER_URL + '';
 export const USER_LIST_URL = USER_URL + '/all';
+export const USER_LIST_BROKER_URL = USER_URL + '/allBrokers';
 
 export const CURRENCY_URL_COST = BASE_URL + '/currencies/cost';
 
