@@ -1,6 +1,7 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.dto.response.GetAllAccountForEndOfDayResponse;
+import com.infina.corso.dto.response.GetAllCustomerForEndOfDayResponse;
 import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -109,6 +110,38 @@ public class PdfReportService {
             table.addCell(account.getAccountNumber());
             table.addCell(String.valueOf(account.getBalance()));
         }
+
+        document.add(table);
+        document.close();
+
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    public ByteArrayInputStream exportCustomersToPdf(List<GetAllCustomerForEndOfDayResponse> customers ) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(out);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        document.add(new Paragraph("Müşteri Listesi"));
+
+        Table table = new Table(new float[]{2, 2, 2, 2, 2});
+        table.setWidth(UnitValue.createPercentValue(100));
+
+        table.addHeaderCell("Müşteri Adı Soyadı");
+        table.addHeaderCell("TC Kimlik No");
+        table.addHeaderCell("Müşteri Tipi");
+        table.addHeaderCell("Şirket Adı");
+        table.addHeaderCell("VKN");
+
+        for (GetAllCustomerForEndOfDayResponse customer : customers) {
+            table.addCell(customer.getCustomerNameSurname() != null ? customer.getCustomerNameSurname() : "");
+            table.addCell(customer.getTcKimlikNo() != null ? customer.getTcKimlikNo() : "");
+            table.addCell(customer.getCustomerType() != null ? customer.getCustomerType().toString() : "");
+            table.addCell(customer.getCompanyName() != null ? customer.getCompanyName() : "");
+            table.addCell(customer.getVkn() != null ? customer.getVkn() : "");
+        }
+
 
         document.add(table);
         document.close();

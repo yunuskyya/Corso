@@ -1,6 +1,7 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.dto.response.GetAllAccountForEndOfDayResponse;
+import com.infina.corso.dto.response.GetAllCustomerForEndOfDayResponse;
 import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.model.SystemDate;
@@ -8,6 +9,7 @@ import com.infina.corso.repository.SystemDateRepository;
 import com.infina.corso.service.MoneyTransferService;
 import com.infina.corso.service.TransactionService;
 import com.infina.corso.service.impl.AccountServiceImp;
+import com.infina.corso.service.impl.CustomerServiceImpl;
 import com.infina.corso.service.impl.ExcelReportService;
 import com.infina.corso.service.impl.PdfReportService;
 import org.springframework.http.HttpHeaders;
@@ -34,15 +36,17 @@ public class ReportController {
     private final MoneyTransferService moneyTransferService;
     private final SystemDateRepository systemDateRepository;
     private final AccountServiceImp accountServiceImp;
+    private final CustomerServiceImpl customerServiceImpl;
 
 
-    public ReportController(ExcelReportService excelReportService, PdfReportService pdfReportService, TransactionService transactionService, MoneyTransferService moneyTransferService, SystemDateRepository systemDateRepository, AccountServiceImp accountServiceImp) {
+    public ReportController(ExcelReportService excelReportService, PdfReportService pdfReportService, TransactionService transactionService, MoneyTransferService moneyTransferService, SystemDateRepository systemDateRepository, AccountServiceImp accountServiceImp, CustomerServiceImpl customerServiceImpl) {
         this.excelReportService = excelReportService;
         this.pdfReportService = pdfReportService;
         this.transactionService = transactionService;
         this.moneyTransferService = moneyTransferService;
         this.systemDateRepository = systemDateRepository;
         this.accountServiceImp = accountServiceImp;
+        this.customerServiceImpl = customerServiceImpl;
     }
 
 
@@ -169,6 +173,38 @@ public class ReportController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=accounts.xlsx");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(in.readAllBytes());
+    }
+
+    //*************CUSTOMERS******************************
+
+    //GUN SONU CUSTOMER PDF
+    @GetMapping("/export-customers/pdf")
+    public ResponseEntity<byte[]> exportCustomersToPdf() {
+        List< GetAllCustomerForEndOfDayResponse> customers = customerServiceImpl.getAllCustomersForEndOfDay();
+        ByteArrayInputStream in = pdfReportService.exportCustomersToPdf(customers);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=customers.pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(in.readAllBytes());
+    }
+
+    //GUN SONU CUSTOMER EXCEL
+    @GetMapping("/export-customers/excel")
+    public ResponseEntity<byte[]> exportCustomersToExcel() throws IOException {
+        List< GetAllCustomerForEndOfDayResponse> customers = customerServiceImpl.getAllCustomersForEndOfDay();
+        ByteArrayInputStream in = excelReportService.exportCustomersToExcel(customers);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "attachment; filename=customers.xlsx");
 
         return ResponseEntity.ok()
                 .headers(headers)

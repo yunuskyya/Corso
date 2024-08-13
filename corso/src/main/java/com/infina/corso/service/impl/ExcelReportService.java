@@ -1,6 +1,7 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.dto.response.GetAllAccountForEndOfDayResponse;
+import com.infina.corso.dto.response.GetAllCustomerForEndOfDayResponse;
 import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.dto.response.TransactionResponse;
 import org.apache.poi.ss.usermodel.RichTextString;
@@ -56,10 +57,10 @@ public class ExcelReportService {
 
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("Müsteri");
-        headerRow.createCell(1).setCellValue("Amount");
-        headerRow.createCell(2).setCellValue("Receiver");
-        headerRow.createCell(3).setCellValue("Sender");
-        headerRow.createCell(4).setCellValue("System Date");
+        headerRow.createCell(1).setCellValue("Adet");
+        headerRow.createCell(2).setCellValue("Alan Hesap");
+        headerRow.createCell(3).setCellValue("Yollayan Hesap");
+        headerRow.createCell(4).setCellValue("Tarih");
 
         int rowNum = 1;
         for (MoneyTransferResponseForList moneyTransfer : moneyTransfers) {
@@ -105,4 +106,33 @@ public class ExcelReportService {
 
         return new ByteArrayInputStream(out.toByteArray());
     }
+
+    public ByteArrayInputStream exportCustomersToExcel(List<GetAllCustomerForEndOfDayResponse> customers) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Müşteri Listesi");
+
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Müşteri Adı Soyadı");
+        headerRow.createCell(1).setCellValue("TC Kimlik No");
+        headerRow.createCell(2).setCellValue("Müşteri Tipi");
+        headerRow.createCell(3).setCellValue("Şirket Adı");
+        headerRow.createCell(4).setCellValue("VKN");
+
+        int rowNum = 1;
+        for (GetAllCustomerForEndOfDayResponse customer : customers) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(customer.getCustomerNameSurname());
+            row.createCell(1).setCellValue(customer.getTcKimlikNo());
+            row.createCell(2).setCellValue(customer.getCustomerType().toString());
+            row.createCell(3).setCellValue(customer.getCompanyName());
+            row.createCell(4).setCellValue(customer.getVkn());
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
 }
