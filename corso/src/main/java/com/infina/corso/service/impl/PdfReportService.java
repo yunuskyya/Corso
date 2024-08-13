@@ -32,11 +32,11 @@ public class PdfReportService {
         Table table = new Table(new float[]{1, 1, 2, 2, 2});
         table.setWidth(UnitValue.createPercentValue(100));
 
-        table.addHeaderCell("Müşteri");
-        table.addHeaderCell("Alınan Döviz");
-        table.addHeaderCell("Satılan Döviz");
+        table.addHeaderCell("Müsteri");
+        table.addHeaderCell("Alınan Doviz");
+        table.addHeaderCell("Satılan Doviz");
         table.addHeaderCell("Miktar");
-        table.addHeaderCell("Gerçekleşen Kur Fiyatı");
+        table.addHeaderCell("Gerceklesen Kur Fiyatı");
         table.addHeaderCell("Tarih");
 
         for (TransactionResponse transaction : transactions) {
@@ -66,10 +66,10 @@ public class PdfReportService {
         table.setWidth(UnitValue.createPercentValue(100));
 
         table.addHeaderCell("Müsteri");
-        table.addHeaderCell("Amount");
-        table.addHeaderCell("Receiver");
-        table.addHeaderCell("Sender");
-        table.addHeaderCell("System Date");
+        table.addHeaderCell("Miktar");
+        table.addHeaderCell("Alan Hesap");
+        table.addHeaderCell("Gonderen Hesap");
+        table.addHeaderCell("Tarih");
 
         for (MoneyTransferResponseForList moneyTransfer : moneyTransfers) {
             table.addCell(moneyTransfer.getCustomerNameSurname());
@@ -99,7 +99,7 @@ public class PdfReportService {
 
         table.addHeaderCell("Tarih");
         table.addHeaderCell("Döviz Tipi");
-        table.addHeaderCell("Müşteri");
+        table.addHeaderCell("Müsteri");
         table.addHeaderCell("Hesap No");
         table.addHeaderCell("Bakiye");
 
@@ -123,15 +123,15 @@ public class PdfReportService {
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        document.add(new Paragraph("Müşteri Listesi"));
+        document.add(new Paragraph("Müsteri Listesi"));
 
         Table table = new Table(new float[]{2, 2, 2, 2, 2});
         table.setWidth(UnitValue.createPercentValue(100));
 
-        table.addHeaderCell("Müşteri Adı Soyadı");
+        table.addHeaderCell("Müsteri Adı Soyadı");
         table.addHeaderCell("TC Kimlik No");
-        table.addHeaderCell("Müşteri Tipi");
-        table.addHeaderCell("Şirket Adı");
+        table.addHeaderCell("Müsteri Tipi");
+        table.addHeaderCell("Sirket Adı");
         table.addHeaderCell("VKN");
 
         for (GetAllCustomerForEndOfDayResponse customer : customers) {

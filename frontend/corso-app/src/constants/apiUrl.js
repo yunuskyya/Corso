@@ -22,6 +22,7 @@ export const ACCOUNT_URL_CUSTOMER = BASE_URL + '/accounts/faketest';
 export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transaction/{customerId}';
 export const ACCOUNT_URL_CREATE_ACCOUT = ACCOUNT_URL + '/{customerId}';
 export const ACCOUNT_URL_LIST_FOR_MANAGER = BASE_URL + '/accounts';
+export const ACCOUNT_URL_LIST_FOR_BROKER_BY_ID = ACCOUNT_URL + '/broker/{userId}';
 
 // currency urls:
 
@@ -52,8 +53,9 @@ export const MONEY_TRANSFER_FILTRED_LIST = BASE_URL + '/money-transfer/get-filte
 
 export const IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID = BASE_URL + '/iban/customer/{customerId}';
 
-// reports ursl:
+// end of day - reports ursl:
 
+export const END_OF_DAY_START_CLOSE_DAY = BASE_URL + '/system-date/start-close-day';
 export const REPORTS_MONEY_TRANSFER_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-money-transfers/excel';
 export const REPORTS_MONEY_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-money-transfers/pdf';
 export const REPORTS_CUSTOMERS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-customers/excel';
