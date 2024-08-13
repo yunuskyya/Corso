@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
 public class AccountAlreadyExistsException extends RuntimeException {
-    public AccountAlreadyExistsException(String accountNumber) {
-        super(Messages.getMessageForLocale("corso.account.alreadyexists.error.message",
-                LocaleContextHolder.getLocale(), accountNumber));
+    public AccountAlreadyExistsException() {
+        super(Messages.getMessageForLocale("error.account.already.exists.with.currency", LocaleContextHolder.getLocale()));
     }
 }
