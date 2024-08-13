@@ -4,7 +4,7 @@ import { userListBroker } from '../../features/userSlice';
 import { Table, Spinner, Alert } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 
-const BrokerListPage = () => {
+const ListBrokerPage = () => {
     const dispatch = useDispatch();
     const { userList, status, error } = useSelector(state => state.user);
 
@@ -94,4 +94,4 @@ const BrokerListPage = () => {
     );
 };
 
-export default BrokerListPage;
+export default ListBrokerPage;
