@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserList, deleteUser, activateUser, unblockUser } from '../../features/userSlice';
-import { Button, Table, Spinner, Alert } from 'react-bootstrap';
+import { Button, Table, Spinner, Alert, Form } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
-import moment from 'moment';  // Moment kütüphanesini import et
+import moment from 'moment';  
 
 const UserList = () => {
     const dispatch = useDispatch();
@@ -11,15 +11,51 @@ const UserList = () => {
 
     const [currentPage, setCurrentPage] = useState(0);
     const [alert, setAlert] = useState({ show: false, message: '', variant: '' });
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filteredUsers, setFilteredUsers] = useState([]);
+    const [filterState, setFilterState] = useState('active'); // Kullanıcıları filtreleme durumu
     const itemsPerPage = 5;
+
+    useEffect(() => {
+  
+        dispatch(fetchUserList());
+    }, [dispatch]);
 
     useEffect(() => {
         dispatch(fetchUserList());
     }, [dispatch]);
+    
+    useEffect(() => {
+        console.log('*****UserList component mounted', userList);
+        const filtered = userList.filter(user => {
+            const email = user.email || '';
+            const isMatch = email.toLowerCase().includes(searchTerm.toLowerCase());
+    
+            if (filterState === 'all') {
+                return isMatch; // Tüm kullanıcıları göster
+            }
+    
+            if (filterState === 'active') {
+                return isMatch && !user.deleted && !user.accountLocked;
+            }
+    
+            if (filterState === 'deleted') {
+                return isMatch && user.deleted;
+            }
+    
+            if (filterState === 'blocked') {
+                return isMatch && user.accountLocked;
+            }
+    
+            return false; // Varsayılan durum, geçerli değil
+        });
+        setFilteredUsers(filtered);
+    }, [searchTerm, userList, filterState]);
+    
 
-    const handleDelete = (userId) => {
+    const handleDelete = (user) => {
         if (window.confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
-            dispatch(deleteUser({ userId }))
+            dispatch(deleteUser({ userId: user.id }))
                 .unwrap()
                 .then(() => {
                     setAlert({ show: true, message: 'Kullanıcı başarıyla silindi.', variant: 'success' });
@@ -31,8 +67,8 @@ const UserList = () => {
         }
     };
 
-    const handleActivate = (email) => {
-        dispatch(activateUser({ email }))
+    const handleActivate = (user) => {
+        dispatch(activateUser({ email: user.email }))
             .unwrap()
             .then(() => {
                 setAlert({ show: true, message: 'Kullanıcı başarıyla aktifleştirildi.', variant: 'success' });
@@ -43,8 +79,8 @@ const UserList = () => {
             });
     };
 
-    const handleUnblock = (email) => {
-        dispatch(unblockUser({ email }))
+    const handleUnblock = (user) => {
+        dispatch(unblockUser({ email: user.email }))
             .unwrap()
             .then(() => {
                 setAlert({ show: true, message: 'Kullanıcının engeli başarıyla kaldırıldı.', variant: 'success' });
@@ -58,13 +94,31 @@ const UserList = () => {
     const handlePageChange = ({ selected }) => {
         setCurrentPage(selected);
     };
+  
+const formatDate = (dateArray) => {
 
-    const formatDate = (dateArray) => {
-        if (!dateArray) return 'N/A';
-        const [year, month, day, hour, minute, second, millisecond] = dateArray;
-        const date = new Date(Date.UTC(year, month - 1, day, hour, minute, second, millisecond));
-        return moment(date).format('DD-MM-YYYY HH:mm:ss'); // Formatı buradan ayarlayın
-    };
+    if (dateArray) {
+        const [year, month, day, hours, minutes, seconds, nanoseconds] = dateArray;
+
+        // Create a new Date object with correct zero-based month adjustment
+        // Convert nanoseconds to milliseconds
+        const date = new Date(year, month - 1, day, hours, minutes, seconds, Math.floor(nanoseconds / 1000000));
+
+        // Create a moment object from the Date object
+        const momentDate = moment(date);
+
+        // Check if the date is valid
+        if (!momentDate.isValid()) {
+            return 'Invalid Date';
+        }
+
+        // Format the date as desired
+        return momentDate.format('DD-MM-YYYY HH:mm:ss'); // Customize format as needed
+
+    }
+
+    return 'NULL DATE'
+};
 
     if (status === 'loading') {
         return (
@@ -78,53 +132,117 @@ const UserList = () => {
         return <Alert variant="danger">Hata: {error}</Alert>;
     }
 
-    const paginatedUsers = userList.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
-    const pageCount = Math.ceil(userList.length / itemsPerPage);
+    const paginatedUsers = filteredUsers.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+    const pageCount = Math.ceil(filteredUsers.length / itemsPerPage);
 
     return (
-        <div>
+        <div className="container mt-4">
             <h1 className="text-center mb-4">Kullanıcılar</h1>
             {alert.show && <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>{alert.message}</Alert>}
-            {userList.length === 0 ? (
+            <Form className="mb-4">
+                <Form.Group controlId="search">
+                    <Form.Control
+                        type="text"
+                        placeholder="Email ile ara..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </Form.Group>
+            </Form>
+            <div className="mb-4">
+            <Button
+    variant={filterState === 'active' ? "primary" : "secondary"}
+    onClick={() => setFilterState('active')}
+>
+    Aktif Kullanıcıları Göster
+</Button>
+<Button
+    variant={filterState === 'deleted' ? "primary" : "secondary"}
+    onClick={() => setFilterState('deleted')}
+    className="ms-2"
+>
+    Silinmiş Kullanıcıları Göster
+</Button>
+<Button
+    variant={filterState === 'blocked' ? "primary" : "secondary"}
+    onClick={() => setFilterState('blocked')}
+    className="ms-2"
+>
+    Bloke Olmuş Kullanıcıları Göster
+</Button>
+<Button
+    variant={filterState === 'all' ? "primary" : "secondary"}
+    onClick={() => setFilterState('all')}
+    className="ms-2"
+>
+    Tüm Kullanıcıları Göster
+</Button>
+
+            </div>
+            {filteredUsers.length === 0 ? (
                 <p className="text-center">Kullanıcı bulunamadı.</p>
             ) : (
                 <>
-                    <Table striped bordered hover responsive className="table">
-                        <thead>
-                            <tr>
-                                <th style={{ width: '10%' }}>ID</th>
-                                <th style={{ width: '10%' }}>Kullanıcı Adı</th>
-                                <th style={{ width: '10%' }}>İsim</th>
-                                <th style={{ width: '10%' }}>Soyisim</th>
-                                <th style={{ width: '10%' }}>Email</th>
-                                <th style={{ width: '10%' }}>Telefon Numarası</th>
-                                <th style={{ width: '10%' }}>Oluşturulma Tarihi</th>
-                                <th style={{ width: '10%' }}>Güncelleme Tarihi</th>
-                                <th style={{ width: '20%' }}>İşlemler</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {paginatedUsers.map(user => (
-                                <tr key={user.id}>
-                                    <td>{user.id}</td>
-                                    <td>{user.username || 'N/A'}</td>
-                                    <td>{user.firstName || 'N/A'}</td>
-                                    <td>{user.lastName || 'N/A'}</td>
-                                    <td>{user.email}</td>
-                                    <td>{user.phone || 'N/A'}</td>
-                                    <td>{formatDate(user.createdAt)}</td>
-                                    <td>{formatDate(user.updatedAt)}</td>
-                                    <td>
-                                        <div className="d-flex gap-2">
-                                            <Button variant="warning btn flex-grow-1" onClick={() => handleActivate(user.email)}>Aktifleştir</Button>
-                                            <Button variant="danger btn flex-grow-1" onClick={() => handleDelete(user.id)}>Sil</Button>
-                                            <Button variant="info btn flex-grow-1 text-nowrap" onClick={() => handleUnblock(user.email)}>Engeli Kaldır</Button>
-                                        </div>
-                                    </td>
+                    <div className="table-responsive">
+                        <Table striped bordered hover>
+                            <thead className="thead-dark">
+                                <tr>
+                                    <th style={{ width: '5%' }}>ID</th>
+                                    <th style={{ width: '20%' }}>Kullanıcı Adı</th>
+                                    <th style={{ width: '20%' }}>İsim</th>
+                                    <th style={{ width: '20%' }}>Soyisim</th>
+                                    <th style={{ width: '20%' }}>Email</th>
+                                    <th style={{ width: '15%' }}>Telefon Numarası</th>
+                                    <th style={{ width: '15%' }}>Oluşturulma Tarihi</th>
+                                    <th style={{ width: '15%' }}>Güncelleme Tarihi</th>
+                                    <th style={{ width: '15%' }}>İşlem</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </Table>
+                            </thead>
+                            <tbody>
+                                {paginatedUsers.map(user => (
+                                    <tr key={user.id}>
+                                        <td>{user.id}</td>
+                                        <td>{user.username || 'N/A'}</td>
+                                        <td>{user.firstName || 'N/A'}</td>
+                                        <td>{user.lastName || 'N/A'}</td>
+                                        <td>{user.email}</td>
+                                        <td>{user.phone || 'N/A'}</td>
+                                        <td>{formatDate(user.createdAt)}</td>
+                                        <td>{formatDate(user.updatedAt)}</td>
+                                        <td>
+                                            {filterState === 'active' && (
+                                                <Button
+                                                    variant="danger"
+                                                    onClick={() => handleDelete(user)}
+                                                    size="sm"
+                                                >
+                                                    Sil
+                                                </Button>
+                                            )}
+                                            {filterState === 'deleted' && (
+                                                <Button
+                                                    variant="success"
+                                                    onClick={() => handleActivate(user)}
+                                                    size="sm"
+                                                >
+                                                    Aktifleştir
+                                                </Button>
+                                            )}
+                                            {filterState === 'blocked' && (
+                                                <Button
+                                                    variant="info"
+                                                    onClick={() => handleUnblock(user)}
+                                                    size="sm"
+                                                >
+                                                    Blokeyi Kaldır
+                                                </Button>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </div>
                     <ReactPaginate
                         previousLabel={"Önceki"}
                         nextLabel={"Sonraki"}
