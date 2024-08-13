@@ -5,6 +5,7 @@ import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
+import com.infina.corso.dto.response.GetAllAccountForEndOfDayResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.dto.response.GetCustomerAccountsForTransactionPage;
 import com.infina.corso.exception.AccountAlreadyExistsException;
@@ -112,6 +113,20 @@ public class AccountServiceImp implements AccountService {
         List<Account> accounts = accountRepository.findAll();
         return accounts.stream()
                 .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    public List<GetAllAccountForEndOfDayResponse> getAllAccountsforEndOfDay() {
+        List<Account> accounts = accountRepository.findAll();
+        return accounts.stream()
+                .map(account -> {
+                    GetAllAccountForEndOfDayResponse response = mapper.modelMapperForResponse()
+                            .map(account, GetAllAccountForEndOfDayResponse.class);
+                    Customer customer = account.getCustomer();
+                    String customerNameSurname = customer.getName() + " " + customer.getSurname();
+                    response.setCustomerNameSurname(customerNameSurname);
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 

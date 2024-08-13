@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerServiceImpl implements CustomerService {
@@ -88,6 +89,19 @@ public class CustomerServiceImpl implements CustomerService {
     public Page<CustomerResponse> getAllCustomersPaged(Pageable pageable) {
         return customerRepository.findAll(pageable)
                 .map(customer -> modelMapperResponse.map(customer, CustomerResponse.class));
+    }
+
+    public List<GetAllCustomerForEndOfDayResponse> getAllCustomersForEndOfDay() {
+        List<Customer> customers = customerRepository.findAll();
+        return customers.stream()
+                .map(customer -> {
+                    GetAllCustomerForEndOfDayResponse response = modelMapperResponse
+                            .map(customer, GetAllCustomerForEndOfDayResponse.class);
+                    String customerNameSurname = customer.getName() + " " + customer.getSurname();
+                    response.setCustomerNameSurname(customerNameSurname);
+                    return response;
+                })
+                .collect(Collectors.toList());
     }
 
     public AccountRequestTransaction checkAccountsForPurchasedCurrency(Account account, String currencyCode) {

@@ -52,7 +52,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Transactional
     public void transactionSave(TransactionRequest transactionRequest) {
-        if (!systemDateService.isDayClosed()) {
+        if (!systemDateService.isDayClosedStarted()) {
             try {
                 LocalDate systemDate = systemDateService.getSystemDate();
                 AccountRequestTransaction accountRequestTransaction = accountService.checkIfAccountExists(transactionRequest.getAccount_id(), transactionRequest.getPurchasedCurrency());
