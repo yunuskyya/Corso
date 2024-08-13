@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class AccountNotFoundException extends RuntimeException {
-    public AccountNotFoundException(Long accountId) {
-        super(Messages.getMessageForLocale("error.account.not.found.with.id", LocaleContextHolder.getLocale(), accountId));
+    public AccountNotFoundException() {
+        super(Messages.getMessageForLocale("error.account.not.found.with.id", LocaleContextHolder.getLocale()));
     }
 }
