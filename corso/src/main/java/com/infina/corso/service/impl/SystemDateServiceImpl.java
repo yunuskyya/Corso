@@ -14,9 +14,11 @@ import java.util.Optional;
 public class SystemDateServiceImpl implements SystemDateService {
 
     private final SystemDateRepository systemDateRepository;
+    private final PdfReportService pdfReportService;
 
-    public SystemDateServiceImpl(SystemDateRepository systemDateRepository) {
+    public SystemDateServiceImpl(SystemDateRepository systemDateRepository, PdfReportService pdfReportService) {
         this.systemDateRepository = systemDateRepository;
+        this.pdfReportService = pdfReportService;
     }
 
 
@@ -54,15 +56,28 @@ public class SystemDateServiceImpl implements SystemDateService {
         SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
         systemDate.setDayClosedStarted(true);
         systemDateRepository.save(systemDate);
+        //tüm müşterileri getirecek pdf ve excel methodu -- customerRepository find all ile alınıp responseDto listesine çevrilecek
+        //tüm hesapları getirecek pdf ve excel methodu -- accountRepository find all ile alınıp responseDto listesine çevrilecek
+        //tüm işlemleri getirecek pdf ve excel methodu transactionRepository find all ile alınıp responseDto listesine çevrilecek
+        //tüm nakit akışını getirecek pdf ve excel methodu moneyTransferRepository find all ile alınıp responseDto listesine çevrilecek +
     }
 
-    public void openDay(){
-        SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
-        systemDate.setDayClosed(false);
-        systemDateRepository.save(systemDate);
+
+
+    public void closeDay(LocalDate date) {
+        try {
+            SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
+            systemDate.setDate(date);
+            systemDate.setDayClosedStarted(false);
+        } catch (Exception e) {
+            // Genel bir hata yakalama
+            System.out.println("Hata: " + e.getMessage());
+        }
     }
 
-    public void closeDay() {
+
+
+   /* public void closeDay(LocalDate date) {
         try {
             SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
             // Tarih farkını kontrol et
@@ -85,14 +100,14 @@ public class SystemDateServiceImpl implements SystemDateService {
             // Genel bir hata yakalama
             System.out.println("Hata: " + e.getMessage());
         }
-    }
+    } */
 
     @Scheduled(cron = "0 0 0 * * ?")
     public void autoCloseDayAtMidnight() {
         SystemDate systemDate = systemDateRepository.findById(1).get();
         if (!systemDate.isDayClosed()) {
             System.out.println("Automatically closing the day at " + LocalDateTime.now());
-            closeDay();
+            //closeDay();
         }
     }
 }

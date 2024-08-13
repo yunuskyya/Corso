@@ -1,7 +1,9 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.dto.response.GetAllAccountForEndOfDayResponse;
 import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.dto.response.TransactionResponse;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -11,30 +13,34 @@ import org.springframework.stereotype.Service;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
 public class ExcelReportService {
 
     public ByteArrayInputStream exportTransactionsToExcel(List<TransactionResponse> transactions) throws IOException {
+
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Transactions");
 
         Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("User ID");
-        headerRow.createCell(1).setCellValue("Purchased Currency");
-        headerRow.createCell(2).setCellValue("Sold Currency");
-        headerRow.createCell(3).setCellValue("Amount");
-        headerRow.createCell(4).setCellValue("Transaction Date");
+        headerRow.createCell(0).setCellValue("Müşteri");
+        headerRow.createCell(1).setCellValue("Alınan Döviz");
+        headerRow.createCell(2).setCellValue("Satılan Döviz");
+        headerRow.createCell(3).setCellValue("Miktar");
+        headerRow.createCell(4).setCellValue("Gerçekleşen Kur Fiyatı");
+        headerRow.createCell(5).setCellValue("Tarih");
 
         int rowNum = 1;
         for (TransactionResponse transaction : transactions) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(transaction.getUser_id());
+            row.createCell(0).setCellValue(transaction.getName()+ " "+ transaction.getSurname());
             row.createCell(1).setCellValue(transaction.getPurchasedCurrency());
             row.createCell(2).setCellValue(transaction.getSoldCurrency());
             row.createCell(3).setCellValue(transaction.getAmount());
-            row.createCell(4).setCellValue(transaction.getTransactionSystemDate().toString());
+            row.createCell(4).setCellValue(transaction.getRate());
+            row.createCell(5).setCellValue(transaction.getTransactionSystemDate().toString());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -49,18 +55,48 @@ public class ExcelReportService {
         Sheet sheet = workbook.createSheet("Money Transfers");
 
         Row headerRow = sheet.createRow(0);
-        headerRow.createCell(0).setCellValue("Amount");
-        headerRow.createCell(1).setCellValue("Receiver");
-        headerRow.createCell(2).setCellValue("Sender");
-        headerRow.createCell(3).setCellValue("System Date");
+        headerRow.createCell(0).setCellValue("Müsteri");
+        headerRow.createCell(1).setCellValue("Amount");
+        headerRow.createCell(2).setCellValue("Receiver");
+        headerRow.createCell(3).setCellValue("Sender");
+        headerRow.createCell(4).setCellValue("System Date");
 
         int rowNum = 1;
         for (MoneyTransferResponseForList moneyTransfer : moneyTransfers) {
             Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue(moneyTransfer.getAmount());
-            row.createCell(1).setCellValue(moneyTransfer.getReceiver());
-            row.createCell(2).setCellValue(moneyTransfer.getSender());
-            row.createCell(3).setCellValue(moneyTransfer.getSystemDate().toString());
+            row.createCell(0).setCellValue(moneyTransfer.getCustomerNameSurname());
+            row.createCell(1).setCellValue(moneyTransfer.getAmount());
+            row.createCell(2).setCellValue(moneyTransfer.getReceiver());
+            row.createCell(3).setCellValue(moneyTransfer.getSender());
+            row.createCell(4).setCellValue(moneyTransfer.getSystemDate().toString());
+        }
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        workbook.close();
+
+        return new ByteArrayInputStream(out.toByteArray());
+    }
+
+    public ByteArrayInputStream exportAccountsToExcel(List<GetAllAccountForEndOfDayResponse> accounts) throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Hesap Listesi");
+
+        Row headerRow = sheet.createRow(0);
+        headerRow.createCell(0).setCellValue("Tarih");
+        headerRow.createCell(1).setCellValue("Döviz Tipi");
+        headerRow.createCell(2).setCellValue("Müşteri");
+        headerRow.createCell(3).setCellValue("Hesap No");
+        headerRow.createCell(4).setCellValue("Bakiye");
+
+        int rowNum = 1;
+        for (GetAllAccountForEndOfDayResponse account : accounts) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(account.getDate());
+            row.createCell(1).setCellValue(account.getCurrency());
+            row.createCell(2).setCellValue(account.getCustomerNameSurname());
+            row.createCell(3).setCellValue(account.getAccountNumber());
+            row.createCell(4).setCellValue(account.getBalance().doubleValue());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
