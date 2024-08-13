@@ -1,7 +1,7 @@
 import AddCustomerPage from '../pages/customer/AddCustomerPage';
 import ListUser from '../pages/user/ListUser';
 import ListCustomerPage from '../pages/customer/ListCustomerPage';
-import ListAccountPage from '../pages/account/ListAccountPage';
+import ListAccountsForManagerPage from '../pages/account/ListAccountsForManagerPage';
 import ActivateUser from '../pages/user/ActivateUser';
 import ListTransactionHistoryPage from '../pages/transaction/ListTransactionHistoryPage';
 import TransactionOperationsPage from '../pages/transaction/TransactionOperationsPage';
@@ -95,7 +95,7 @@ export const MANAGER_OPERATIONS = [
             {
                 title: 'Hesap Listele',
                 link: MANAGER_LIST_ACCOUNTS,
-                page: <ListAccountPage />,
+                page: <ListAccountsForManagerPage />,
             },
         ]
     },
