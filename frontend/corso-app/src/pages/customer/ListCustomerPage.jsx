@@ -6,8 +6,10 @@ import useAuth from '../../hooks/useAuth';
 import moment from 'moment';
 import { currencies } from '../../constants/currencies';
 import { GeneralSpinner } from '../../components/Common/GeneralSpinner';
+import { useNavigate } from 'react-router-dom';
 
 const ListCustomerPage = () => {
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { customers, totalPages, currentPage, loading, error } = useAppSelector((state) => state.customerList);
 
@@ -335,7 +337,10 @@ const ListCustomerPage = () => {
                                 <td>{formatDate(customer.createdAt)}</td>
                                 <td>
                                     <button className="btn btn-danger btn-sm" onClick={() => alert(`Delete ${customer.name}`)}>
-                                        Delete
+                                        Sil
+                                    </button>
+                                    <button className="btn btn-warning btn-sm" onClick={() => navigate(`/dashboard/broker/add-account?customerId=${customer.id}`)}>
+                                        Hesap Ekle
                                     </button>
                                 </td>
                             </tr>
