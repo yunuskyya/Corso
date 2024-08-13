@@ -45,6 +45,7 @@ export const TRANSACTION_URL_GET_ALL_BY_BROKER = BASE_URL + '/transaction/get-al
 // money transfer urls:
 
 export const MONEY_TRANSFER_CREATE = BASE_URL + '/money-transfer';
+export const MONEY_TRANSFER_FILTRED_LIST = BASE_URL + '/money-transfer/get-filtered';
 
 
 // iban urls:

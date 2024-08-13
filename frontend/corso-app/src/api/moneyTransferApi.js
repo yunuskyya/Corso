@@ -1,5 +1,5 @@
 import { axiosInstance } from './interceptor';
-import { MONEY_TRANSFER_CREATE, IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID } from '../constants/apiUrl';
+import { MONEY_TRANSFER_CREATE, IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID, MONEY_TRANSFER_FILTRED_LIST } from '../constants/apiUrl';
 
 
 
@@ -23,6 +23,26 @@ export const createMoneyTransfer = async ({ customer_id, currencyCode, amount, r
     }
 };
 
+export const fetchFilteredMoneyTransferList = async ({ customerId, startDate, endDate, currencyCode, direction }) => {
+    try {
+        const response = await axiosInstance.post(MONEY_TRANSFER_FILTRED_LIST, {
+            customerId,
+            startDate,
+            endDate,
+            currencyCode,
+            direction,
+        }, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching filtered money transfer list:', error);
+        throw error;
+    }
+};
+
 
 export const fetchIbanListByCustomer = async (customerId) => {
     try {
@@ -34,3 +54,4 @@ export const fetchIbanListByCustomer = async (customerId) => {
         throw error;
     }
 };
+
