@@ -1,10 +1,7 @@
 package com.infina.corso;
 
-import com.infina.corso.config.ApiRequestThread;
-import com.infina.corso.service.CurrencyService;
-import com.infina.corso.service.impl.CurrencyServiceImp;
+
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;

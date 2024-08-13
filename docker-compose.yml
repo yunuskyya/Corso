@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   backend:
     build:
@@ -11,10 +13,24 @@ services:
       - ./corso/data:/app/data
     networks:
       - app-network
+    depends_on:
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend/corso-app
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    networks:
+      - app-network
+
   redis:
     image: redis:latest
     ports:
       - "6379:6379"
+    networks:
+      - app-network
 
 networks:
   app-network:
