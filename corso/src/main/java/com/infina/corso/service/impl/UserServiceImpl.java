@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll(pageable)
                 .map(user -> modelMapperForResponse.map(user, GetAllUserResponse.class));
     }
+
     @Override
     public void registerBroker(@Valid RegisterUserRequest registerUserRequest) {
         User newUser = modelMapperForRequest.map(registerUserRequest, User.class);
@@ -96,17 +97,19 @@ public class UserServiceImpl implements UserService {
         emailHelper.sendPasswordChangeNotification(user);
         userRepository.save(user);
     }
-    public List<Transaction> getAllTransactionsById(int id){
+
+    public List<Transaction> getAllTransactionsById(int id) {
         Optional<User> user = userRepository.findById(id);
         return user.get().getTransactions();
     }
+
     @Override
-    public void deleteUser(int id){
-      User userInDB = userRepository.findById(id).orElseThrow(() -> {
-          logger.error("User not found with id: {}", id);
-          throw new UserNotFoundException("User not found with id: " + id);
-      });
-      userInDB.setDeleted(true);
+    public void deleteUser(int id) {
+        User userInDB = userRepository.findById(id).orElseThrow(() -> {
+            logger.error("User not found with id: {}", id);
+            throw new UserNotFoundException("User not found with id: " + id);
+        });
+        userInDB.setDeleted(true);
         userRepository.save(userInDB);
         logger.info("User deleted: {}", userInDB.getUsername());
     }
@@ -125,6 +128,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(userInDb);
         emailHelper.sendTokenEmail(passwordResetRequest.getEmail(), userInDb.getResetPasswordToken());
     }
+
     @Override
     public void activateUser(UserActivateRequest userActivateRequest) {
 
@@ -135,13 +139,26 @@ public class UserServiceImpl implements UserService {
 
         if (!userInDb.isDeleted()) {
             logger.debug("User is already active: {}", userActivateRequest.getEmail());
-            throw new  GeneralErrorException("user.already.active.error.message");
+            throw new GeneralErrorException("user.already.active.error.message");
         }
 
         userInDb.setDeleted(false);
         userRepository.save(userInDb);
         logger.info("User activated: {}", userActivateRequest.getEmail());
     }
+
+    @Override
+    public Page<GetAllUserResponse> getAllBrokers(Pageable pageable) {
+        Page<User> brokersPage = userRepository.findAllByAuthorities(Role.ROLE_BROKER, pageable);
+
+        if (brokersPage.isEmpty()) {
+            logger.error("No broker found");
+            throw new UserNotFoundException("No broker found");
+        }
+
+        return brokersPage.map(user -> modelMapperForResponse.map(user, GetAllUserResponse.class));
+    }
+
 
     @Override
     public void userUnblock(UserUnblockRequest userUnblockRequest) {
