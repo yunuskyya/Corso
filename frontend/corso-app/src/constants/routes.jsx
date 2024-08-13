@@ -82,7 +82,7 @@ export const MANAGER_OPERATIONS = [
         self_page: null,
         operations: [
             {
-                title: 'Müşteri Listele',
+                title: 'Müşteri İşlemleri',
                 link: MANAGER_LIST_CUSTOMER,
                 page: <ListCustomerPage />,
             },
@@ -185,7 +185,7 @@ export const BROKER_CHANGE_PASSWORD = '/dashboard/broker/change-password';
 
 export const BROKER_OPERATIONS = [
     {
-        title: 'Müşteri İşlemleri',
+        title: 'Müşteri Yönetimi',
         title_link: null,
         self_page: null,
         operations: [
@@ -195,7 +195,7 @@ export const BROKER_OPERATIONS = [
                 page: <AddCustomerPage />,
             },
             {
-                title: 'Müşteri Listele',
+                title: 'Müşteri İşlemleri',
                 link: BROKER_LIST_CUSTOMER,
                 page: <ListCustomerPage />,
             },
@@ -251,12 +251,12 @@ export const BROKER_OPERATIONS = [
                 page: <ListCashFlowPage />,
             },
             {
-                title: 'Nakit Ekle',
+                title: 'Para Yatır',
                 link: BROKER_ADD_CASH,
                 page: <AddCashPage />,
             },
             {
-                title: 'Nakit Gönder',
+                title: 'Para Gönder',
                 link: BROKER_SEND_CASH,
                 page: <SendCashPage />,
             }

@@ -16,6 +16,5 @@ public class SystemDate {
     @Id
     private int id;
     private LocalDate date;
-    private boolean isDayClosed;
     private boolean isDayClosedStarted;
 }

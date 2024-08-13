@@ -1,5 +1,7 @@
 package com.infina.corso;
 
+
+import lombok.AllArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -14,9 +16,13 @@ import java.util.concurrent.ExecutionException;
 @EnableJpaRepositories(basePackages = "com.infina.corso.repository")
 @EntityScan(basePackages = "com.infina.corso.model")
 @EnableScheduling
+@AllArgsConstructor
 public class CorsoApplication {
+
 
     public static void main(String[] args) throws ExecutionException, InterruptedException, IOException {
         SpringApplication.run(CorsoApplication.class, args);
+
+
     }
 }

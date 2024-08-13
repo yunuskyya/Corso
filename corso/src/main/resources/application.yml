@@ -21,7 +21,7 @@ spring:
         use_sql_comments: true
   data:
     redis:
-      host: localhost
+      host: redis # it was localhost
       port: 6379
   session:
     store-type: redis

@@ -59,23 +59,6 @@ public class CurrencyServiceImp implements CurrencyService {
         }
     }
 
-    /* boolean isCrossRate = !currencyRequestForCost.getSoldCurrencyCode().equals("TL") && !currencyRequestForCost.getPurchasedCurrencyCode().equals("TL");
-        CurrencyResponseForCost currencyResponseForCost = new CurrencyResponseForCost();
-        if(isCrossRate){
-           Double cost = rateCalculate(currencyRequestForCost.getSoldCurrencyCode(), currencyRequestForCost.getPurchasedCurrencyCode());
-           currencyResponseForCost.setCost(cost);
-           return currencyResponseForCost;
-        }
-        Currency currency = findByCode(currencyRequestForCost.getPurchasedCurrencyCode());
-        double currencyPrice;
-        if (currencyRequestForCost.getPurchasedCurrencyCode().equals("TL")) {
-            currency = findByCode(currencyRequestForCost.getSoldCurrencyCode());
-            currencyPrice = Double.parseDouble(currency.getBuying());
-        } else currencyPrice = Double.parseDouble(currency.getSelling());
-        Double cost = currencyPrice* currencyRequestForCost.getAmount();
-        currencyResponseForCost.setCost(cost);
-        return currencyResponseForCost; */
-
     private Double rateCalculate(String soldCurrency, String purchasedCurrency) {
         Currency soldCurrencyEntity = findByCode(soldCurrency);
         Double a = Double.parseDouble(soldCurrencyEntity.getSelling());
@@ -84,12 +67,6 @@ public class CurrencyServiceImp implements CurrencyService {
         Double rate = a / b;
         return rate;
     }
-
-
-    /* public Currency findByCode(TransactionRequest transactionRequest) {
-        String code = transactionRequest.getPurchasedCurrency();
-        return currencyRepository.findByCode(code);
-    } */
 
     public Currency findByCode(String code) {
         ListOperations<String, Currency> listOps = currencyRedisTemplate.opsForList();

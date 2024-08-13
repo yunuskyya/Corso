@@ -62,14 +62,12 @@ public class TransactionServiceImpl implements TransactionService {
                     transaction.setSystemDate(systemDate);
                     Optional<Account> account = accountRepository.findById(transactionRequest.getAccount_id());
                     account.get().getTransactions().add(transaction);
-                    // Çapraz kur işlemi olup olmadığını kontrol et
                     boolean isCrossRate = !transactionRequest.getSoldCurrency().equals("TL") && !transactionRequest.getPurchasedCurrency().equals("TL");
                     if (isCrossRate) {
                         Double rate = calculateCurrencyRate(transactionRequest.getSoldCurrency(), transactionRequest.getPurchasedCurrency());
                         transaction.setRate(rate);
                         double transactionAmountInSoldCurrency = transactionRequest.getAmount();
                         BigDecimal newBalance = calculateTransactionCostForCross(account.get(), transactionRequest.getAmount(), rate);
-                        //hesap bakiye yeterlilik kontrolü
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                             throw new InsufficientFundsException("Insufficient funds for account number: " + account.get().getAccountNumber());
                                     }
@@ -90,12 +88,10 @@ public class TransactionServiceImpl implements TransactionService {
                         }
                         account.get().setBalance(newBalance);
                     }
-                    //satın alınan döviz türündeki hesabın bakiyesinin güncellenmesi
                     Account accountPurchasedCurrency = accountRepository.findByAccountNumber(accountRequestTransaction.getAccountNo());
                     BigDecimal amountToAdd = BigDecimal.valueOf(transactionRequest.getAmount());
                     BigDecimal updatedBalancePurchasedCurrency = accountPurchasedCurrency.getBalance().add(amountToAdd);
                     accountPurchasedCurrency.setBalance(updatedBalancePurchasedCurrency);
-                    //
                     User user = userRepository.findById(transactionRequest.getUser_id())
                             .orElseThrow(() -> new UserNotFoundException("User not found with id: " + transactionRequest.getUser_id()));
                     transaction.setUser(user);

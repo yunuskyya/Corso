@@ -8,6 +8,5 @@ public interface SystemDateService {
     LocalDate getSystemDate();
     void closeDay(LocalDate date);
     void startCloseDay();
-    boolean isDayClosed();
     boolean isDayClosedStarted();
 }
