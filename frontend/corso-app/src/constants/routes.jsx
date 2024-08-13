@@ -15,6 +15,7 @@ import AddUser from '../pages/user/AddUser';
 import ChangePassword from '../pages/user/ChangePassword';
 import AddBrokerPage from '../pages/broker/AddBrokerPage';
 import ListBrokerPage from './../pages/broker/ListBrokerPage';
+import ListAccountsForBrokerPage from './../pages/account/ListAccountsForBrokerPage';
 
 // -------------- ADMIN --------------
 export const ADMIN = '/admin';
@@ -218,7 +219,7 @@ export const BROKER_OPERATIONS = [
             {
                 title: 'Hesap Listele',
                 link: BROKER_LIST_ACCOUNTS,
-                page: <ListAccountPage />,
+                page: <ListAccountsForBrokerPage />,
             }
         ]
     },

@@ -8,7 +8,7 @@ const BrokerDashboard = () => {
                 <Sidebar />
             </div>
             <div className='col'>
-                <h1>Broker Dashboard</h1>
+                <h1>Pesonel Ekranı</h1>
                 <Outlet />
             </div>
         </main>

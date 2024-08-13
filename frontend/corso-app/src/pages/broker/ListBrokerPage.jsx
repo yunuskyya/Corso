@@ -1,22 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { userListBroker } from '../../features/userSlice';
 import { Table, Spinner, Alert } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
+import moment from 'moment';
+import { userListBroker } from '../../api/userApi'; // API fonksiyonunun yolu
 
-const ListBrokerPage = () => {
-    const dispatch = useDispatch();
-    const { userList, status, error } = useSelector(state => state.user);
-
+const BrokerListPage = () => {
+    const [brokers, setBrokers] = useState([]);
+    const [status, setStatus] = useState('loading');
+    const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
 
     useEffect(() => {
-        dispatch(userListBroker());
-    }, [dispatch]);
+        const fetchBrokers = async () => {
+            try {
+                const data = await userListBroker();
+                setBrokers(data.content || []);
+                setStatus('succeeded');
+            } catch (error) {
+                setError('Failed to fetch broker list');
+                setStatus('failed');
+            }
+        };
+        fetchBrokers();
+    }, []);
 
     const handlePageChange = ({ selected }) => {
         setCurrentPage(selected);
+    };
+
+    const convertToDate = (dateArray) => {
+        if (!Array.isArray(dateArray) || dateArray.length < 7) {
+            return null; // Bozuk veya eksik tarih verisi
+        }
+
+        const [year, month, day, hour, minute, second, millisecond] = dateArray;
+        return new Date(year, month - 1, day, hour, minute, second, millisecond);
     };
 
     if (status === 'loading') {
@@ -28,18 +47,17 @@ const ListBrokerPage = () => {
     }
 
     if (status === 'failed') {
-        return <Alert variant="danger">Error: {error}</Alert>;
+        return <Alert variant="danger">Hata: {error}</Alert>;
     }
 
-    // Sayfalama işlemi
     const offset = currentPage * itemsPerPage;
-    const paginatedBrokers = userList.slice(offset, offset + itemsPerPage);
-    const pageCount = Math.ceil(userList.length / itemsPerPage);
+    const paginatedBrokers = brokers.slice(offset, offset + itemsPerPage);
+    const pageCount = Math.ceil(brokers.length / itemsPerPage);
 
     return (
         <div>
             <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Broker Listesi</h1>
-            {userList.length === 0 ? (
+            {brokers.length === 0 ? (
                 <p style={{ textAlign: 'center' }}>Hiç broker bulunamadı.</p>
             ) : (
                 <>
@@ -51,6 +69,8 @@ const ListBrokerPage = () => {
                                 <th>Email</th>
                                 <th>Adı</th>
                                 <th>Soyadı</th>
+                                <th>Telefon Numarası</th>
+                                <th>Güncelleme Tarihi</th>
                                 <th>Oluşturulma Tarihi</th>
                             </tr>
                         </thead>
@@ -62,8 +82,10 @@ const ListBrokerPage = () => {
                                     <td>{broker.email}</td>
                                     <td>{broker.firstName}</td>
                                     <td>{broker.lastName}</td>
-                                    <td>{broker.createdAt}</td>
-                                </tr>
+                                    <td>{broker.phone}</td>
+                                    <td>{formatDate(broker.updatedAt)}</td>
+                                    <td>{formatDate(broker.createdAt)}</td>
+                                    </tr>
                             ))}
                         </tbody>
                     </Table>
@@ -93,5 +115,29 @@ const ListBrokerPage = () => {
         </div>
     );
 };
+const formatDate = (dateArray) => {
 
-export default ListBrokerPage;
+    if (dateArray) {
+        const [year, month, day, hours, minutes, seconds, nanoseconds] = dateArray;
+
+        // Create a new Date object with correct zero-based month adjustment
+        // Convert nanoseconds to milliseconds
+        const date = new Date(year, month - 1, day, hours, minutes, seconds, Math.floor(nanoseconds / 1000000));
+
+        // Create a moment object from the Date object
+        const momentDate = moment(date);
+
+        // Check if the date is valid
+        if (!momentDate.isValid()) {
+            return 'Invalid Date';
+        }
+
+        // Format the date as desired
+        return momentDate.format('DD-MM-YYYY HH:mm:ss'); // Customize format as needed
+
+    }
+
+    return 'NULL DATE'
+};
+
+export default BrokerListPage;
