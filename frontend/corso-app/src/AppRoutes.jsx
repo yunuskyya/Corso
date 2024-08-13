@@ -3,12 +3,11 @@ import HomePage from './pages/HomePage';
 import Login from './pages/authentication/Login';
 import DashboardPage from './pages/DashboardPage';
 import PrivateRoute from './components/PrivateRoute';
-import AddCustomerPage from './pages/customer/AddCustomerPage';
 import IbanPage from './pages/iban/IbanPage';
 import { ADMIN_OPERATIONS, MANAGER_OPERATIONS, BROKER_OPERATIONS } from './constants/routes';
 import useAuth from './hooks/useAuth';
 import TransactionOperationsPage from './pages/transaction/TransactionOperationsPage';
-
+import ResetPassword from './pages/user/ResetPassword';
 
 const AppRoutes = () => {
     const { user, role } = useAuth();
@@ -34,6 +33,7 @@ const AppRoutes = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/iban" element={<IbanPage />} />
             <Route path='/transaction' element={<TransactionOperationsPage/>}/>
+            <Route path="/set-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={
                 <PrivateRoute>
                     <DashboardPage />

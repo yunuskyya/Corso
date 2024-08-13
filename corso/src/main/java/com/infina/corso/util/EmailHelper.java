@@ -13,7 +13,7 @@ public class EmailHelper {
     private final MailService mailService;
     private final TokenService tokenService;
 
-    private final String resetPasswordUrl = "http://localhost:8080/swagger-ui/index.html#/User%20Management/resetPassword";
+    private final String resetPasswordUrl = "http://localhost:5173/set-password";
 
     public void sendTokenEmail(String to, String token) {
         String subject = "CORSO Account Activation";
@@ -34,6 +34,15 @@ public class EmailHelper {
         String subject = "Hesabınız bloke edildi";
         String text = "Merhaba " + user.getFirstName() + ",\n\n" +
                 "Hesabınız 5 başarısız giriş denemesi nedeniyle bloke edilmiştir. Lütfen daha sonra tekrar deneyiniz veya destek ekibimizle iletişime geçiniz.\n\n" +
+                "Saygılarımızla,\n" +
+                "Infina Corso Ekibi";
+        mailService.sendSimpleMessage(to, subject, text);
+    }
+    public void sendPasswordChangeNotification(User user) {
+        String to = user.getEmail();
+        String subject = "Şifre Değiştirme Bilgilendirmesi";
+        String text = "Merhaba " + user.getFirstName() + ",\n\n" +
+                "Şifreniz başarıyla değiştirilmiştir. Eğer bu işlemi siz gerçekleştirmediyseniz, lütfen hemen destek ekibimizle iletişime geçiniz.\n\n" +
                 "Saygılarımızla,\n" +
                 "Infina Corso Ekibi";
         mailService.sendSimpleMessage(to, subject, text);

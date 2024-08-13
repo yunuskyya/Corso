@@ -1,6 +1,7 @@
 package com.infina.corso.controller;
 
 import com.infina.corso.dto.request.IbanRegisterRequest;
+import com.infina.corso.dto.response.IbanResponse;
 import com.infina.corso.model.Iban;
 import com.infina.corso.service.IbanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/iban")
@@ -27,11 +27,9 @@ public class IbanController {
         return ResponseEntity.ok("Iban başarılı şekilde kaydedildi.");
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Iban> getIbanById(@PathVariable Long id) {
-        Optional<Iban> iban = ibanService.getIbanById(id);
-        return iban.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/customer/{id}")
+    public List<IbanResponse> getIbanByCustomerId(@PathVariable Long id) {
+        return ibanService.getIbansByCustomerId(id);
     }
 
     @GetMapping
