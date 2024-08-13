@@ -1,7 +1,8 @@
 package com.infina.corso.service.impl;
 
 import com.infina.corso.dto.request.MoneyTransferRequestForAddMoney;
-import com.infina.corso.dto.response.MoneyTransferResponse;
+import com.infina.corso.dto.request.MoneyTransferRequestForList;
+import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.model.MoneyTransfer;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,12 +49,13 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
             Optional<SystemDate> systemDate = systemDateRepository.findById(1);
             MoneyTransfer transfer = modelMapperForRequest.map(moneyTransfer, MoneyTransfer.class);
             setTransferDirection(moneyTransfer, transfer);
+            transfer.setCurrencyCode(moneyTransfer.getCurrencyCode());
             Optional<Customer> customer = customerRepository.findById(moneyTransfer.getCustomer_id());
             Optional<Account> account = findAccountForTransfer(moneyTransfer, transfer, customerRepository);
             updateAccountBalance(account, moneyTransfer, transfer.getDirection());
-            if (transfer.getDirection() == 'G'){
+            if (transfer.getDirection() == 'G') {
                 transfer.setReceiver(account.get().getAccountNumber());
-            }else transfer.setSender(account.get().getAccountNumber());
+            } else transfer.setSender(account.get().getAccountNumber());
             accountRepository.save(account.get());
             customerRepository.save(customer.get());
             transfer.setSystemDate(systemDate.get().getDate());
@@ -62,14 +66,57 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         }
     }
 
-    public List<MoneyTransferResponse> collectAllMoneyTransfers() {
+    public List<MoneyTransferResponseForList> filterMoneyTransfers(MoneyTransferRequestForList moneyTransferRequestForList) {
+        Long customerId = moneyTransferRequestForList.getCustomerId();
+        LocalDate startDate = moneyTransferRequestForList.getStartDate();
+        LocalDate endDate = moneyTransferRequestForList.getEndDate();
+        String currencyCode = moneyTransferRequestForList.getCurrencyCode();
+        Character direction = moneyTransferRequestForList.getDirection();
+        // 1. Tüm transferleri al
+        List<MoneyTransfer> moneyTransferList = moneyTransferRepository.findAll();
+        List<MoneyTransfer> filteredList = new ArrayList<>();
+
+        if (customerId != null) {
+            filteredList = moneyTransferList.stream()
+                    .filter(moneyTransfer -> moneyTransfer.getCustomer_id().equals(customerId))
+                    .collect(Collectors.toList());
+        } else {
+            filteredList = moneyTransferList; // Eğer customerId null ise tüm listeyi döndür
+        }
+
+        // 2. Stream başlat ve filtreleme işlemlerini uygula
+        return moneyTransferList.stream()
+                // 3. Tarih aralığına göre filtreleme
+                .filter(transfer -> (startDate == null || !transfer.getSystemDate().isBefore(startDate)) &&
+                        (endDate == null || !transfer.getSystemDate().isAfter(endDate)))
+                // 4. Döviz türüne göre filtreleme
+                .filter(transfer -> (currencyCode == null || transfer.getCurrencyCode().equals(currencyCode)))
+                // 5. İşlem yönüne göre filtreleme
+                .filter(transfer -> (direction == null || transfer.getDirection() == direction))
+                // 6. DTO'ya dönüştür ve listeye topla
+                .map(transfer -> {
+                    MoneyTransferResponseForList response = modelMapperForResponse.map(transfer, MoneyTransferResponseForList.class);
+                    response.setCustomerNameSurname(customerId != null ? getCustomerNameSurname(customerId) : "");
+                    return response;
+                })
+                .collect(Collectors.toList());
+    }
+
+    private String getCustomerNameSurname(Long customerId) {
+        return customerRepository.findById(customerId)
+                .map(customer -> customer.getName() + " " + customer.getSurname())
+                .orElse(""); // Eğer müşteri bulunamazsa boş döndür
+    }
+
+
+    public List<MoneyTransferResponseForList> collectAllMoneyTransfers() {
         List<MoneyTransfer> moneyTransferList = moneyTransferRepository.findAll();
         return convertMoneyTransferListToDto(moneyTransferList);
     }
 
-    private List<MoneyTransferResponse> convertMoneyTransferListToDto(List<MoneyTransfer> moneyTransferList) {
+    private List<MoneyTransferResponseForList> convertMoneyTransferListToDto(List<MoneyTransfer> moneyTransferList) {
         return moneyTransferList.stream()
-                .map(moneyTransfer -> modelMapperForResponse.map(moneyTransfer, MoneyTransferResponse.class))
+                .map(moneyTransfer -> modelMapperForResponse.map(moneyTransfer, MoneyTransferResponseForList.class))
                 .collect(Collectors.toList());
     }
 

@@ -1,6 +1,6 @@
 package com.infina.corso.service.impl;
 
-import com.infina.corso.dto.response.MoneyTransferResponse;
+import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -49,7 +49,7 @@ public class PdfReportService {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    public ByteArrayInputStream exportMoneyTransfersToPdf(List<MoneyTransferResponse> moneyTransfers) {
+    public ByteArrayInputStream exportMoneyTransfersToPdf(List<MoneyTransferResponseForList> moneyTransfers) {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         PdfWriter writer = new PdfWriter(out);
@@ -58,17 +58,15 @@ public class PdfReportService {
 
         document.add(new Paragraph("Money Transfers"));
 
-        Table table = new Table(new float[]{1, 2, 2, 2, 2});
+        Table table = new Table(new float[]{1, 2, 2, 2});
         table.setWidth(UnitValue.createPercentValue(100));
 
-        table.addHeaderCell("IBAN No");
         table.addHeaderCell("Amount");
         table.addHeaderCell("Receiver");
         table.addHeaderCell("Sender");
         table.addHeaderCell("System Date");
 
-        for (MoneyTransferResponse moneyTransfer : moneyTransfers) {
-            table.addCell(moneyTransfer.getIbanNo());
+        for (MoneyTransferResponseForList moneyTransfer : moneyTransfers) {
             table.addCell(String.valueOf(moneyTransfer.getAmount()));
             table.addCell(moneyTransfer.getReceiver());
             table.addCell(moneyTransfer.getSender());
