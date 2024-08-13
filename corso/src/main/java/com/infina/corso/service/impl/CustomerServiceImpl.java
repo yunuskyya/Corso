@@ -201,6 +201,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public List<CustomerFilterResponse> filterCustomers(CustomerFilterRequest filterRequest) {
         Specification<Customer> specification = CustomerSpecification.filterByAllGivenFieldsWithAnd(filterRequest);
         return customerRepository.findAll(specification)
