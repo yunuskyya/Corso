@@ -106,7 +106,7 @@ export const MANAGER_OPERATIONS = [
         self_page: null,
         operations: [
             {
-                title: 'Gemiş İşlemler',
+                title: 'Geçmiş İşlemler',
                 link: MANAGER_TRANSACTION_HISTORY,
                 page: <ListTransactionHistoryPage />,
             },

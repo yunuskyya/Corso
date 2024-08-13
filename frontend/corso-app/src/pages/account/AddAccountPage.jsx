@@ -69,16 +69,16 @@ const AddAccountPage = () => {
 
     return (
         <div className="container mt-4">
-            <h3>Create Account</h3>
+            <h3>Hesap Oluştur</h3>
             <div className="row">
                 <div className="col-12">
-                    {loading && <p>Loading customers...</p>}
-                    {error && <p className="text-danger">Error loading customers: {erro.messager}</p>}
-                    {createAccountError && <p className="text-danger">Error creating account: {createAccountError.message}</p>}
+                    {loading && <p>Müşteriler yükleniyor...</p>}
+                    {error && <p className="text-danger">Hata: {error.messager}</p>}
+                    {createAccountError && <p className="text-danger">Müşteri oluşturulurken hata oluştu: {createAccountError.message}</p>}
 
                     {/* Search Box */}
                     <div className="mb-3">
-                        <label htmlFor="searchCustomerId" className="form-label">Search by Customer ID</label>
+                        <label htmlFor="searchCustomerId" className="form-label">Müşteri no ile ara</label>
                         <div className="input-group">
                             <input
                                 type="text"
@@ -88,8 +88,8 @@ const AddAccountPage = () => {
                                 onChange={(e) => setSearchCustomerId(e.target.value)}
                                 placeholder="Enter Customer ID"
                             />
-                            <button className="btn btn-primary" onClick={handleSearch}>Search</button>
-                            <button className="btn btn-secondary" onClick={handleResetSearch}>Show All</button>
+                            <button className="btn btn-primary" onClick={handleSearch}>Ara</button>
+                            <button className="btn btn-secondary" onClick={handleResetSearch}>Hepsini Getir</button>
                         </div>
                     </div>
 
@@ -99,9 +99,9 @@ const AddAccountPage = () => {
                                 <table className="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th>Customer ID</th>
-                                            <th>Customer Type</th>
-                                            <th>Name / Company</th>
+                                            <th>Müşteri No</th>
+                                            <th>Müşteri Tipi</th>
+                                            <th>İsim / Kurum adı</th>
                                             <th>TC Kimlik No / VKN</th>
                                         </tr>
                                     </thead>
@@ -118,7 +118,7 @@ const AddAccountPage = () => {
                                             >
                                                 <td>{customer.id}</td>
                                                 <td>{customer.customerType}</td>
-                                                <td>{customer.customerType === 'BIREYSEL' ? `${customer.name} ${customer.surname}` : customer.companyName}</td>
+                                                <td>{customer.customerType === 'BIREYSEL' ? `${customer.name}` : customer.companyName}</td>
                                                 <td>{customer.customerType === 'BIREYSEL' ? customer.tcKimlikNo : customer.vkn}</td>
                                             </tr>
                                         ))}
@@ -127,7 +127,7 @@ const AddAccountPage = () => {
                             </div>
 
                             <div className="mt-3">
-                                <p><strong>Selected Customer ID:</strong> {selectedCustomerId ? selectedCustomerId : 'None'}</p>
+                                <p className='fs-4 text-warning'><strong>Seçilen Müşteri No:</strong> {selectedCustomerId ? selectedCustomerId : 'None'}</p>
                             </div>
 
                             <div className="d-flex justify-content-between">
@@ -136,22 +136,22 @@ const AddAccountPage = () => {
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage <= 0}
                                 >
-                                    Previous
+                                    Önceki
                                 </button>
-                                <span>Page {currentPage + 1} of {totalPages}</span>
+                                <span>Sayfa {currentPage + 1} / {totalPages}</span>
                                 <button
                                     className="btn btn-secondary"
                                     onClick={() => handlePageChange(currentPage + 1)}
                                     disabled={currentPage >= totalPages - 1}
                                 >
-                                    Next
+                                    Sonraki
                                 </button>
                             </div>
                         </>
                     )}
 
-                    <div className="mt-3">
-                        <label htmlFor="currencyCode" className="form-label">Currency</label>
+                    <div className="col-4 mt-3">
+                        <label htmlFor="currencyCode" className="form-label">Döviz</label>
                         <select
                             id="currencyCode"
                             name="currencyCode"
