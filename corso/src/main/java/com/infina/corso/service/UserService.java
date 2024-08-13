@@ -6,6 +6,8 @@ import com.infina.corso.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface UserService {
     Page<GetAllUserResponse> getAllUser(Pageable pageable);
     void registerBroker(RegisterUserRequest registerUserRequest);
@@ -16,4 +18,5 @@ public interface UserService {
     void resetPassword(PasswordResetRequest passwordResetRequest);
     void userUnblock(UserUnblockRequest userUnblockRequest);
     void activateUser(UserActivateRequest userActivateRequest);
+    Page<GetAllUserResponse> getAllBrokers(Pageable pageable);
 }
