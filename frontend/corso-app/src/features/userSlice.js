@@ -7,7 +7,8 @@ import {
     activateUser as apiActivateUser, 
     deleteUser as apiDeleteUser, 
     userList as apiUserList, 
-    unblockUser as apiUnblockUser
+    unblockUser as apiUnblockUser,
+    userListBroker as apiUserListBroker
 } from '../api/userApi'; // API işlevlerinizi içe aktarın
 
 // Async Thunks
@@ -110,6 +111,7 @@ export const unblockUser = createAsyncThunk(
 export const userListBroker = createAsyncThunk(
     'user/userListBroker',
     async (_, { rejectWithValue }) => {
+        console.log("XXXXXXXXX");
         try {
             const response = await apiUserListBroker();
             return response.content;

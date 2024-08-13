@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserList, deleteUser, activateUser, unblockUser } from '../../features/userSlice';
 import { Button, Table, Spinner, Alert } from 'react-bootstrap';
-import moment from 'moment';
 import ReactPaginate from 'react-paginate';
 
 const UserList = () => {
@@ -10,26 +9,16 @@ const UserList = () => {
     const { userList, status, error } = useSelector(state => state.user);
 
     const [currentPage, setCurrentPage] = useState(0);
-    const itemsPerPage = 5; // Sayfada gösterilecek kullanıcı sayısını 5 olarak ayarladık
+    const itemsPerPage = 5;
 
     useEffect(() => {
         dispatch(fetchUserList());
     }, [dispatch]);
 
     const handleDelete = (userId) => {
-        if (window.confirm('Are you sure you want to delete this user?')) {
+        if (window.confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
             dispatch(deleteUser({ userId }));
         }
-    };
-
-    const convertToDate = (dateArray) => {
-        if (!Array.isArray(dateArray) || dateArray.length < 7) {
-            return null; // Bozuk veya eksik tarih verisi
-        }
-
-        const [year, month, day, hour, minute, second, millisecond] = dateArray;
-        // Month değeri 0-11 arasında olduğu için +1 ekliyoruz
-        return new Date(year, month - 1, day, hour, minute, second, millisecond);
     };
 
     const handleActivate = (email) => {
@@ -44,6 +33,12 @@ const UserList = () => {
         setCurrentPage(selected);
     };
 
+    const formatDate = (dateArray) => {
+        if (!dateArray) return 'N/A';
+        const [year, month, day, hour, minute, second, millisecond] = dateArray;
+        return new Date(Date.UTC(year, month - 1, day, hour, minute, second, millisecond)).toLocaleString('tr-TR');
+    };
+
     if (status === 'loading') {
         return (
             <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
@@ -53,7 +48,7 @@ const UserList = () => {
     }
 
     if (status === 'failed') {
-        return <Alert variant="danger">Error: {error}</Alert>;
+        return <Alert variant="danger">Hata: {error}</Alert>;
     }
 
     const paginatedUsers = userList.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
@@ -61,100 +56,66 @@ const UserList = () => {
 
     return (
         <div>
-            <h1 style={{ textAlign: 'center', marginBottom: '50px' }}>Kullanıcılar</h1>
+            <h1 className="text-center mb-4">Kullanıcılar</h1>
             {userList.length === 0 ? (
-                <p style={{ textAlign: 'center' }}>No users found.</p>
+                <p className="text-center">Kullanıcı bulunamadı.</p>
             ) : (
                 <>
-                    <Table striped bordered hover responsive>
+                    <Table striped bordered hover responsive className="table">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Kullanıcı Adı</th>
-                                <th>İsim</th>
-                                <th>Soyisim</th>
-                                <th>Email</th>
-                                <th>Telefon Numarası</th>
-                                <th>Oluşturulduğu Tarih</th>
-                                <th>Güncellendiği Tarih</th>
-                                <th>Durum</th>
-                                <th style={{ minWidth: '200px' }}>İşlemler</th>
+                                <th style={{ width: '10%' }}>ID</th>
+                                <th style={{ width: '10%' }}>Kullanıcı Adı</th>
+                                <th style={{ width: '10%' }}>İsim</th>
+                                <th style={{ width: '10%' }}>Soyisim</th>
+                                <th style={{ width: '10%' }}>Email</th>
+                                <th style={{ width: '10%' }}>Telefon Numarası</th>
+                                <th style={{ width: '10%' }}>Oluşturulma Tarihi</th>
+                                <th style={{ width: '10%' }}>Güncelleme Tarihi</th>
+                                <th style={{ width: '20%' }}>İşlemler</th>
                             </tr>
                         </thead>
                         <tbody>
                             {paginatedUsers.map(user => (
                                 <tr key={user.id}>
                                     <td>{user.id}</td>
-                                    <td>{user.username}</td>
-                                    <td>{user.firstName}</td>
-                                    <td>{user.lastName}</td>
+                                    <td>{user.username || 'N/A'}</td>
+                                    <td>{user.firstName || 'N/A'}</td>
+                                    <td>{user.lastName || 'N/A'}</td>
                                     <td>{user.email}</td>
-                                    <td>{user.phone}</td>
+                                    <td>{user.phone || 'N/A'}</td>
+                                    <td>{formatDate(user.createdAt)}</td>
+                                    <td>{formatDate(user.updatedAt)}</td>
                                     <td>
-                                        {user.createdAt 
-                                            ? moment(convertToDate(user.createdAt)).format('YYYY-MM-DD HH:mm:ss')
-                                            : 'Tarih Bilgisi Yok'}
-                                    </td>
-                                    <td>
-                                        {user.updatedAt 
-                                            ? moment(convertToDate(user.updatedAt)).format('YYYY-MM-DD HH:mm:ss')
-                                            : 'Tarih Bilgisi Yok'}
-                                    </td>
-                                    <td>
-                                        {user.accountLocked ? 'Blokeli' : 'Aktif'}<br />
-                                        {user.isDeleted ? 'Silinmiş' : 'Silinmemiş'}
-                                    </td>
-                                    <td>
-                                        <Button
-                                            variant="success"
-                                            onClick={() => handleActivate(user.email)}
-                                            disabled={!user.accountLocked || user.isDeleted}
-                                            style={{ marginRight: '5px', width: '120px' }}
-                                        >
-                                            Aktif Et
-                                        </Button>
-                                        <Button
-                                            variant="warning"
-                                            onClick={() => handleUnblock(user.email)}
-                                            disabled={!user.accountLocked || user.isDeleted}
-                                            style={{ marginRight: '5px', width: '120px' }}
-                                        >
-                                            Bloke Kaldır
-                                        </Button>
-                                        <Button
-                                            variant="danger"
-                                            onClick={() => handleDelete(user.id)}
-                                            disabled={user.isDeleted}
-                                            style={{ width: '120px' }}
-                                        >
-                                            Sil
-                                        </Button>
+                                        <div className="d-flex gap-2">
+                                            <Button variant="warning btn flex-grow-1" onClick={() => handleActivate(user.email)}>Aktifleştir</Button>
+                                            <Button variant="danger btn flex-grow-1" onClick={() => handleDelete(user.id)}>Sil</Button>
+                                            <Button variant="info btn flex-grow-1 text-nowrap" onClick={() => handleUnblock(user.email)}>Engeli Kaldır</Button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
                         </tbody>
                     </Table>
-                    <div className="d-flex justify-content-center">
-                        <ReactPaginate
-                            previousLabel={'Önceki'}
-                            nextLabel={'Sonraki'}
-                            breakLabel={'...'}
-                            pageCount={pageCount}
-                            marginPagesDisplayed={2}
-                            pageRangeDisplayed={5}
-                            onPageChange={handlePageChange}
-                            containerClassName={'pagination'}
-                            pageClassName={'page-item'}
-                            pageLinkClassName={'page-link'}
-                            previousClassName={'page-item'}
-                            previousLinkClassName={'page-link'}
-                            nextClassName={'page-item'}
-                            nextLinkClassName={'page-link'}
-                            breakClassName={'page-item'}
-                            breakLinkClassName={'page-link'}
-                            activeClassName={'active'}
-                        />
-                    </div>
+                    <ReactPaginate
+                        previousLabel={"Önceki"}
+                        nextLabel={"Sonraki"}
+                        breakLabel={"..."}
+                        pageCount={pageCount}
+                        marginPagesDisplayed={2}
+                        pageRangeDisplayed={5}
+                        onPageChange={handlePageChange}
+                        containerClassName={"pagination d-flex justify-content-center mt-4"}
+                        pageClassName={"page-item"}
+                        pageLinkClassName={"page-link"}
+                        previousClassName={"page-item"}
+                        previousLinkClassName={"page-link"}
+                        nextClassName={"page-item"}
+                        nextLinkClassName={"page-link"}
+                        breakClassName={"page-item"}
+                        breakLinkClassName={"page-link"}
+                        activeClassName={"active"}
+                    />
                 </>
             )}
         </div>
