@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
 public class AccountAlreadyActiveException extends RuntimeException {
-    public AccountAlreadyActiveException(String accountNumber) {
-        super(Messages.getMessageForLocale("error.account.already.active", LocaleContextHolder.getLocale(), accountNumber));
+    public AccountAlreadyActiveException() {
+        super(Messages.getMessageForLocale("error.account.already.active", LocaleContextHolder.getLocale()));
     }
 }
