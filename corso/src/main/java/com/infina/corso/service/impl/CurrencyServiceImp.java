@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infina.corso.dto.request.CurrencyRequestForCost;
 import com.infina.corso.dto.response.CurrencyResponse;
 import com.infina.corso.dto.response.CurrencyResponseForCost;
+import com.infina.corso.exception.ApiCallException;
 import com.infina.corso.model.Currency;
 import com.infina.corso.service.CurrencyService;
 import org.springframework.data.redis.core.ListOperations;
@@ -106,16 +107,16 @@ public class CurrencyServiceImp implements CurrencyService {
                 listOps.rightPushAll("currencyList", currencies);
                 return currencyResponse;
             } else {
-                throw new RuntimeException("API çağrısında bir hata oluştu: " + response.statusCode());
+                throw new ApiCallException();
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            throw new RuntimeException("Veri alımı sırasında bir hata oluştu", e);
+            throw new ApiCallException();
         }
     }
-
-
 }
+
+
 
 
 

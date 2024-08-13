@@ -56,9 +56,9 @@ public class EmailHelper {
 
     public void sendAccountLockedEmail(User user) {
         String to = user.getEmail();
-        String subject = "Hesabınız bloke edildi";
+        String subject = "Hesabınız Kilitlenmiştir";
         String text = "Merhaba " + user.getFirstName() + ",\n\n" +
-                "Hesabınız 5 başarısız giriş denemesi nedeniyle bloke edilmiştir. Lütfen daha sonra tekrar deneyiniz veya destek ekibimizle iletişime geçiniz.\n\n" +
+                "Hesabınız, 5 başarısız giriş denemesi nedeniyle geçici olarak kilitlenmiştir. Hesabınızı tekrar kullanabilmek için lütfen daha sonra tekrar deneyin veya destek ekibimizle iletişime geçin.\n\n" +
                 "Saygılarımızla,\n" +
                 "Corso";
         mailService.sendSimpleMessage(to, subject, text);
