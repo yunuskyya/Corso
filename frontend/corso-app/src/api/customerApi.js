@@ -1,5 +1,5 @@
 import { axiosInstance } from './interceptor'
-import { CUSTOMER_URL, CUSTOMER_URL_FILTER } from '../constants/apiUrl'
+import { ACCOUNT_URL_CREATE_ACCOUT, CUSTOMER_URL, CUSTOMER_URL_FILTER } from '../constants/apiUrl'
 
 export const createCustomer = async (customerRequest) => {
 
@@ -31,6 +31,7 @@ export const filterCustomersPaged = async (filterRequest, page = 0, size = 10, s
     if (filterRequest) {
         data_to_send = {
             userId: filterRequest.userId,
+            customerId: filterRequest.customerId,
             accountId: filterRequest.accountId,
             name: filterRequest.customerType === 'BIREYSEL' ? filterRequest.name + filterRequest.surname : filterRequest.customerName,
             tcKimlikNo: filterRequest.customerType === 'BIREYSEL' ? filterRequest.tcKimlikNo : null,
@@ -57,6 +58,16 @@ export const filterCustomersPaged = async (filterRequest, page = 0, size = 10, s
         const response = await axiosInstance.post(`${CUSTOMER_URL_FILTER}?${queryParams}`, data_to_send);
 
         console.log('FILTER customers response:', response);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+};
+
+export const createAccount = async (customerId, createAccountRequest) => {
+    try {
+        const response = await axiosInstance.post(ACCOUNT_URL_CREATE_ACCOUT.replace('{customerId}', customerId), createAccountRequest);
         return response.data;
     } catch (error) {
         console.error(error);
