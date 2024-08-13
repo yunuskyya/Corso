@@ -2,6 +2,7 @@ package com.infina.corso.util;
 
 import com.infina.corso.dto.request.RegisterManagerRequest;
 import com.infina.corso.model.User;
+import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.TokenService;
 import lombok.AllArgsConstructor;
@@ -16,12 +17,20 @@ public class EmailHelper {
 
     private final String changePasswordUrl = "http://localhost:5173/login";
     private final String resetPasswordUrl = "http://localhost:5173/set-password";
+    private final UserRepository userRepository;
 
     public void sendTokenEmail(String to, String token) {
-        String subject = "CORSO Account Activation";
+        String subject = "CORSO Hesap Aktivasyonu";
         String activationUrl = resetPasswordUrl + "?token=" + token;
-        String text = "To reset your password, please use the following link:" + activationUrl;
-
+        String text = String.format(
+                "Merhaba,\n\n" +
+                        "Şifrenizi sıfırlamak için lütfen aşağıdaki bağlantıyı kullanın:\n" +
+                        "%s\n\n" +
+                        "Eğer bu işlemi siz gerçekleştirmediyseniz, lütfen hemen destek ekibimizle iletişime geçiniz.\n\n" +
+                        "Saygılarımızla,\n" +
+                        "Corso",
+                activationUrl
+        );
         mailService.sendSimpleMessage(to, subject, text);
     }
 
@@ -51,7 +60,7 @@ public class EmailHelper {
         String text = "Merhaba " + user.getFirstName() + ",\n\n" +
                 "Hesabınız 5 başarısız giriş denemesi nedeniyle bloke edilmiştir. Lütfen daha sonra tekrar deneyiniz veya destek ekibimizle iletişime geçiniz.\n\n" +
                 "Saygılarımızla,\n" +
-                "Infina Corso Ekibi";
+                "Corso";
         mailService.sendSimpleMessage(to, subject, text);
     }
     public void sendPasswordChangeNotification(User user) {
@@ -60,7 +69,7 @@ public class EmailHelper {
         String text = "Merhaba " + user.getFirstName() + ",\n\n" +
                 "Şifreniz başarıyla değiştirilmiştir. Eğer bu işlemi siz gerçekleştirmediyseniz, lütfen hemen destek ekibimizle iletişime geçiniz.\n\n" +
                 "Saygılarımızla,\n" +
-                "Infina Corso Ekibi";
+                "Corso";
         mailService.sendSimpleMessage(to, subject, text);
     }
 }
