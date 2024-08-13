@@ -1,18 +1,26 @@
 package com.infina.corso.controller;
 
+import com.infina.corso.config.CurrentUser;
 import com.infina.corso.dto.request.CreateCustomerRequest;
 import com.infina.corso.dto.request.CustomerFilterRequest;
 import com.infina.corso.dto.request.CustomerUpdateRequest;
 import com.infina.corso.dto.response.*;
+import com.infina.corso.model.User;
 import com.infina.corso.service.CustomerService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.AuthenticatedPrincipal;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 //@RestController
@@ -87,7 +95,9 @@ public class CustomerController {
     // Filter customers paged
     @PostMapping("/filter")
     @PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_BROKER')")
-    public ResponseEntity<Page<CustomerFilterResponse>> filterCustomersPaged(@RequestBody @Validated CustomerFilterRequest filterRequest, Pageable pageable) {
+    public ResponseEntity<Page<CustomerFilterResponse>> filterCustomersPaged(@RequestBody @Validated CustomerFilterRequest filterRequest, Pageable pageable /*Authentication authentication*/) {
+        //CurrentUser user = (CurrentUser) authentication.getPrincipal();
+        //System.out.println("User: " + user.getId());
         Page<CustomerFilterResponse> customers = customerService.filterCustomersPaged(filterRequest, pageable);
         return ResponseEntity.ok(customers);
     }
