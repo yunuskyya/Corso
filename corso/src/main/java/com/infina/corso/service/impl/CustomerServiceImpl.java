@@ -163,6 +163,12 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public Page<CustomerFilterResponse> filterCustomersPaged(CustomerFilterRequest filterRequest, Pageable pageable) {
+        if (filterRequest.getUserId() != null) {
+            if (filterRequest.getUserId() != authService.getCurrentUserId()) {
+                throw new RuntimeException("Bu müşterilerin bilgisini görmeye yetkiniz yok.");
+            }
+        }
+
         Specification<Customer> specification = CustomerSpecification.filterByAllGivenFieldsWithAnd(filterRequest);
         Page<Customer> customers =  customerRepository.findAll(specification, pageable);
         return customers.map(customer -> {
