@@ -3,13 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserList, deleteUser, activateUser, unblockUser } from '../../features/userSlice';
 import { Button, Table, Spinner, Alert } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
+import moment from 'moment';  // Moment kütüphanesini import et
 
 const UserList = () => {
     const dispatch = useDispatch();
     const { userList, status, error } = useSelector(state => state.user);
 
     const [currentPage, setCurrentPage] = useState(0);
-    const [alert, setAlert] = useState({ show: false, message: '', variant: '' });  // Hata ve başarı mesajlarını saklamak için kullanılan state
+    const [alert, setAlert] = useState({ show: false, message: '', variant: '' });
     const itemsPerPage = 5;
 
     useEffect(() => {
@@ -22,6 +23,7 @@ const UserList = () => {
                 .unwrap()
                 .then(() => {
                     setAlert({ show: true, message: 'Kullanıcı başarıyla silindi.', variant: 'success' });
+                    dispatch(fetchUserList());
                 })
                 .catch((err) => {
                     setAlert({ show: true, message: `Hata: ${err.message}`, variant: 'danger' });
@@ -34,6 +36,7 @@ const UserList = () => {
             .unwrap()
             .then(() => {
                 setAlert({ show: true, message: 'Kullanıcı başarıyla aktifleştirildi.', variant: 'success' });
+                dispatch(fetchUserList());
             })
             .catch((err) => {
                 setAlert({ show: true, message: `Hata: ${err.message}`, variant: 'danger' });
@@ -45,6 +48,7 @@ const UserList = () => {
             .unwrap()
             .then(() => {
                 setAlert({ show: true, message: 'Kullanıcının engeli başarıyla kaldırıldı.', variant: 'success' });
+                dispatch(fetchUserList());
             })
             .catch((err) => {
                 setAlert({ show: true, message: `Hata: ${err.message}`, variant: 'danger' });
@@ -58,7 +62,8 @@ const UserList = () => {
     const formatDate = (dateArray) => {
         if (!dateArray) return 'N/A';
         const [year, month, day, hour, minute, second, millisecond] = dateArray;
-        return new Date(Date.UTC(year, month - 1, day, hour, minute, second, millisecond)).toLocaleString('tr-TR');
+        const date = new Date(Date.UTC(year, month - 1, day, hour, minute, second, millisecond));
+        return moment(date).format('DD-MM-YYYY HH:mm:ss'); // Formatı buradan ayarlayın
     };
 
     if (status === 'loading') {
