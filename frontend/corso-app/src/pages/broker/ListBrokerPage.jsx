@@ -83,9 +83,9 @@ const BrokerListPage = () => {
                                     <td>{broker.firstName}</td>
                                     <td>{broker.lastName}</td>
                                     <td>{broker.phone}</td>
-                                    <td>{moment(convertToDate(broker.updatedAt)).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                    <td>{moment(convertToDate(broker.createdAt)).format('YYYY-MM-DD HH:mm:ss')}</td>
-                                </tr>
+                                    <td>{formatDate(broker.updatedAt)}</td>
+                                    <td>{formatDate(broker.createdAt)}</td>                                
+                                    </tr>
                             ))}
                         </tbody>
                     </Table>
@@ -114,6 +114,30 @@ const BrokerListPage = () => {
             )}
         </div>
     );
+};
+const formatDate = (dateArray) => {
+
+    if (dateArray) {
+        const [year, month, day, hours, minutes, seconds, nanoseconds] = dateArray;
+
+        // Create a new Date object with correct zero-based month adjustment
+        // Convert nanoseconds to milliseconds
+        const date = new Date(year, month - 1, day, hours, minutes, seconds, Math.floor(nanoseconds / 1000000));
+
+        // Create a moment object from the Date object
+        const momentDate = moment(date);
+
+        // Check if the date is valid
+        if (!momentDate.isValid()) {
+            return 'Invalid Date';
+        }
+
+        // Format the date as desired
+        return momentDate.format('DD-MM-YYYY HH:mm:ss'); // Customize format as needed
+
+    }
+
+    return 'NULL DATE'
 };
 
 export default BrokerListPage;
