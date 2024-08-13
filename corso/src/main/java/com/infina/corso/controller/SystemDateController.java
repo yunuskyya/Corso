@@ -29,4 +29,9 @@ public class SystemDateController {
         systemDateService.startCloseDay();
     }
 
+    @GetMapping
+    public LocalDate getSystemDate(){
+        return systemDateService.getSystemDate();
+    }
+
 }
