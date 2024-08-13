@@ -64,14 +64,14 @@ const UserList = () => {
                     <Table striped bordered hover responsive className="table">
                         <thead>
                             <tr>
-                                <th style={{ width: '5%' }}>ID</th>
-                                <th style={{ width: '15%' }}>Kullanıcı Adı</th>
-                                <th style={{ width: '15%' }}>İsim</th>
-                                <th style={{ width: '15%' }}>Soyisim</th>
-                                <th style={{ width: '20%' }}>Email</th>
-                                <th style={{ width: '15%' }}>Telefon Numarası</th>
-                                <th style={{ width: '15%' }}>Oluşturulma Tarihi</th>
-                                <th style={{ width: '15%' }}>Güncelleme Tarihi</th>
+                                <th style={{ width: '10%' }}>ID</th>
+                                <th style={{ width: '10%' }}>Kullanıcı Adı</th>
+                                <th style={{ width: '10%' }}>İsim</th>
+                                <th style={{ width: '10%' }}>Soyisim</th>
+                                <th style={{ width: '10%' }}>Email</th>
+                                <th style={{ width: '10%' }}>Telefon Numarası</th>
+                                <th style={{ width: '10%' }}>Oluşturulma Tarihi</th>
+                                <th style={{ width: '10%' }}>Güncelleme Tarihi</th>
                                 <th style={{ width: '20%' }}>İşlemler</th>
                             </tr>
                         </thead>
@@ -88,9 +88,9 @@ const UserList = () => {
                                     <td>{formatDate(user.updatedAt)}</td>
                                     <td>
                                         <div className="d-flex gap-2">
-                                            <Button variant="warning" onClick={() => handleActivate(user.email)}>Aktifleştir</Button>
-                                            <Button variant="danger" onClick={() => handleDelete(user.id)}>Sil</Button>
-                                            <Button variant="info" onClick={() => handleUnblock(user.email)}>Engeli Kaldır</Button>
+                                            <Button variant="warning btn flex-grow-1" onClick={() => handleActivate(user.email)}>Aktifleştir</Button>
+                                            <Button variant="danger btn flex-grow-1" onClick={() => handleDelete(user.id)}>Sil</Button>
+                                            <Button variant="info btn flex-grow-1 text-nowrap" onClick={() => handleUnblock(user.email)}>Engeli Kaldır</Button>
                                         </div>
                                     </td>
                                 </tr>
