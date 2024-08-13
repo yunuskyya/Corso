@@ -48,7 +48,18 @@ export const TRANSACTION_URL_GET_ALL_BY_BROKER = BASE_URL + '/transaction/get-al
 export const MONEY_TRANSFER_CREATE = BASE_URL + '/money-transfer';
 export const MONEY_TRANSFER_FILTRED_LIST = BASE_URL + '/money-transfer/get-filtered';
 
-
 // iban urls:
 
 export const IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID = BASE_URL + '/iban/customer/{customerId}';
+
+// reports ursl:
+
+export const REPORTS_MONEY_TRANSFER_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-money-transfers/excel';
+export const REPORTS_MONEY_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-money-transfers/pdf';
+export const REPORTS_CUSTOMERS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-customers/excel';
+export const REPORTS_CUSTOMERS_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-customers/pdf';
+export const REPORTS_ACCOUNTS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-accounts/excel';
+export const REPORTS_ACCOUNTS_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-accounts/pdf';
+export const REPORTS_TRANSACTIONS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-transactions/excel';
+export const REPORTS_TRANSACTIONS_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-transactions/pdf';
+

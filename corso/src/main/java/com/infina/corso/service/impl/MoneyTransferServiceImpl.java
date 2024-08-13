@@ -116,7 +116,15 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
 
     private List<MoneyTransferResponseForList> convertMoneyTransferListToDto(List<MoneyTransfer> moneyTransferList) {
         return moneyTransferList.stream()
-                .map(moneyTransfer -> modelMapperForResponse.map(moneyTransfer, MoneyTransferResponseForList.class))
+                .map(moneyTransfer -> {
+                    MoneyTransferResponseForList response = modelMapperForResponse
+                            .map(moneyTransfer, MoneyTransferResponseForList.class);
+                    Customer customer = customerRepository.findById(moneyTransfer.getCustomer_id())
+                            .orElseThrow(() -> new RuntimeException("Customer not found"));
+                    String customerNameSurname = customer.getName() + " " + customer.getSurname();
+                    response.setCustomerNameSurname(customerNameSurname);
+                    return response;
+                })
                 .collect(Collectors.toList());
     }
 

@@ -4,6 +4,7 @@ import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.CreateAccountRequest;
 import com.infina.corso.dto.request.UpdateAccountRequest;
 import com.infina.corso.dto.response.GetAccountByIdResponse;
+import com.infina.corso.dto.response.GetAllAccountForEndOfDayResponse;
 import com.infina.corso.dto.response.GetAllAccountResponse;
 import com.infina.corso.dto.response.GetCustomerAccountsForTransactionPage;
 import com.infina.corso.model.Account;
@@ -22,4 +23,5 @@ public interface AccountService {
     List<GetAllAccountResponse> getAccountsByCustomerId(Long customerId);
     AccountRequestTransaction checkIfAccountExists(Long accountId, String currencyCode);
     void reactivateAccount(Long id);
+    List<GetAllAccountForEndOfDayResponse> getAllAccountsforEndOfDay();
 }

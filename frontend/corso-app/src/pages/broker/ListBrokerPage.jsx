@@ -5,9 +5,9 @@ import moment from 'moment';
 import { userListBroker } from '../../api/userApi'; // API fonksiyonunun yolu
 
 const BrokerListPage = () => {
-    const [brokers, setBrokers] = useState([]);
-    const [status, setStatus] = useState('loading');
-    const [error, setError] = useState(null);
+    const dispatch = useDispatch();
+    const { userList, status, error } = useSelector(state => state.user);
+
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
 
