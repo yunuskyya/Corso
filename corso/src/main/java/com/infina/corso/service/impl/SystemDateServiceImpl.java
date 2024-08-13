@@ -31,11 +31,6 @@ public class SystemDateServiceImpl implements SystemDateService {
         });
     }
 
-    public boolean isDayClosed(){
-        Optional<SystemDate> systemDate = systemDateRepository.findById(1);
-        return systemDate.get().isDayClosed();
-    }
-
     public boolean isDayClosedStarted(){
         Optional<SystemDate> systemDate = systemDateRepository.findById(1);
         return systemDate.get().isDayClosedStarted();
@@ -65,6 +60,7 @@ public class SystemDateServiceImpl implements SystemDateService {
             SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
             systemDate.setDate(date);
             systemDate.setDayClosedStarted(false);
+            systemDateRepository.save(systemDate);
         } catch (Exception e) {
             // Genel bir hata yakalama
             System.out.println("Hata: " + e.getMessage());
@@ -101,7 +97,7 @@ public class SystemDateServiceImpl implements SystemDateService {
     @Scheduled(cron = "0 0 0 * * ?")
     public void autoCloseDayAtMidnight() {
         SystemDate systemDate = systemDateRepository.findById(1).get();
-        if (!systemDate.isDayClosed()) {
+        if (!systemDate.isDayClosedStarted()) {
             System.out.println("Automatically closing the day at " + LocalDateTime.now());
             //closeDay();
         }

@@ -23,7 +23,7 @@ public class ExcelReportService {
     public ByteArrayInputStream exportTransactionsToExcel(List<TransactionResponse> transactions) throws IOException {
 
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Transactions");
+        Sheet sheet = workbook.createSheet("İşlem Listesi");
 
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("Müşteri");
@@ -53,7 +53,7 @@ public class ExcelReportService {
 
     public ByteArrayInputStream exportMoneyTransfersToExcel(List<MoneyTransferResponseForList> moneyTransfers) throws IOException {
         Workbook workbook = new XSSFWorkbook();
-        Sheet sheet = workbook.createSheet("Money Transfers");
+        Sheet sheet = workbook.createSheet("Nakit Akış Listesi");
 
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("Müsteri");
