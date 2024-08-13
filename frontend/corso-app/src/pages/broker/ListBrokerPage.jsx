@@ -5,9 +5,9 @@ import moment from 'moment';
 import { userListBroker } from '../../api/userApi'; // API fonksiyonunun yolu
 
 const BrokerListPage = () => {
-    const dispatch = useDispatch();
-    const { userList, status, error } = useSelector(state => state.user);
-
+    const [brokers, setBrokers] = useState([]);
+    const [status, setStatus] = useState('loading');
+    const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
 
@@ -84,8 +84,8 @@ const BrokerListPage = () => {
                                     <td>{broker.lastName}</td>
                                     <td>{broker.phone}</td>
                                     <td>{formatDate(broker.updatedAt)}</td>
-                                    <td>{formatDate(broker.createdAt)}</td>
-                                </tr>
+                                    <td>{formatDate(broker.createdAt)}</td>                                
+                                    </tr>
                             ))}
                         </tbody>
                     </Table>
@@ -140,4 +140,4 @@ const formatDate = (dateArray) => {
     return 'NULL DATE'
 };
 
-export default ListBrokerPage;
+export default BrokerListPage;
