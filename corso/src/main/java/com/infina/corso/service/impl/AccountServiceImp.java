@@ -67,10 +67,10 @@ public class AccountServiceImp implements AccountService {
                 .orElseThrow(() -> new CustomerNotFoundException(customerId));
 
         Account existingAccount = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AccountNotFoundException(accountId));
+                .orElseThrow(() -> new AccountNotFoundException());
 
         if (!existingAccount.getCustomer().getId().equals(customerId)) {
-            throw new AccountOwnershipException(customerId);
+            throw new AccountOwnershipException();
         }
 
         mapper.modelMapperForRequest().map(updateAccountRequest, existingAccount);
@@ -83,11 +83,11 @@ public class AccountServiceImp implements AccountService {
         Account accountInDB = accountRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Account not found with id {}", id);
-                    throw new AccountNotFoundException(id);
+                    throw new AccountNotFoundException();
                 });
         if (accountInDB.getBalance().compareTo(BigDecimal.ZERO) > 0) {
             logger.error("Attempt to delete account with balance: {}", accountInDB.getBalance());
-            throw new AccountBalanceException(id);
+            throw new AccountBalanceException();
         }
         logger.info("Account deleted: {}", accountInDB.getAccountNumber());
         accountInDB.setDeleted(true);
@@ -99,7 +99,7 @@ public class AccountServiceImp implements AccountService {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Account not found with id {}", id);
-                    throw new AccountNotFoundException(id);
+                    throw new AccountNotFoundException();
                 });
         int currentUserId = authService.getCurrentUserId();
         if (account.getCustomer().getUser().getId() != currentUserId) {
@@ -177,11 +177,11 @@ public class AccountServiceImp implements AccountService {
         Account accountInDB = accountRepository.findById(id)
                 .orElseThrow(() -> {
                     logger.error("Account not found with id {}", id);
-                    throw new  AccountNotFoundException(id);
+                    throw new  AccountNotFoundException();
                 });
         if (!accountInDB.isDeleted()) {
             logger.warn("Attempt to reactivate an already active account: {}", accountInDB.getAccountNumber());
-            throw new AccountAlreadyActiveException(accountInDB.getAccountNumber());
+            throw new AccountAlreadyActiveException();
         }
         accountInDB.setDeleted(false);
         accountRepository.save(accountInDB);
