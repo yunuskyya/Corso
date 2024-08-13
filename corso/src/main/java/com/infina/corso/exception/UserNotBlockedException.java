@@ -1,11 +1,13 @@
 package com.infina.corso.exception;
 
+import com.infina.corso.shared.Messages;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class UserNotBlockedException extends RuntimeException {
-    public UserNotBlockedException(String message) {
-        super(message);
+    public UserNotBlockedException() {
+        super(Messages.getMessageForLocale("corso.error.user.not.blocked", LocaleContextHolder.getLocale()));
     }
 }
