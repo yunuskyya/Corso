@@ -86,7 +86,7 @@ const AddAccountPage = () => {
                                 className="form-control"
                                 value={searchCustomerId}
                                 onChange={(e) => setSearchCustomerId(e.target.value)}
-                                placeholder="Enter Customer ID"
+                                placeholder="Müşteri No Giriniz"
                             />
                             <button className="btn btn-primary" onClick={handleSearch}>Ara</button>
                             <button className="btn btn-secondary" onClick={handleResetSearch}>Hepsini Getir</button>
@@ -171,7 +171,7 @@ const AddAccountPage = () => {
                         onClick={handleCreateAccount}
                         disabled={!selectedCustomerId || !currencyCode}
                     >
-                        Create Account
+                        Hesap Oluştur
                     </button>
                 </div>
             </div>

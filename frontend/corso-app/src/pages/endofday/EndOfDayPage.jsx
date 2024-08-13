@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
+  END_OF_DAY_CLOSE_DAY,
+  END_OF_DAY_IS_DAY_CLOSED,
   END_OF_DAY_START_CLOSE_DAY,
+  END_OF_DAY_IS_DAY_CLOSE_STARTED,
   REPORTS_MONEY_TRANSFER_FETCH_ALL_EXCEL,
   REPORTS_MONEY_TRANSFER_FETCH_ALL_PDF,
   REPORTS_CUSTOMERS_FETCH_ALL_EXCEL,
@@ -14,24 +17,47 @@ import {
 
 const EndOfDayPage = () => {
   const [reports, setReports] = useState([]);
+  const [isDayCloseStarted, setIsDayCloseStarted] = useState(false);
+
+  useEffect(() => {
+    const checkDayStatus = async () => {
+      try {
+        const [closeStartedResponse] = await Promise.all([
+          axios.get(END_OF_DAY_IS_DAY_CLOSE_STARTED)
+        ]);
+        setIsDayCloseStarted(closeStartedResponse.data);
+      } catch (error) {
+        console.error('Error checking day status:', error);
+      }
+    };
+
+    checkDayStatus();
+  }, []);
 
   const handleStartEndOfDay = async () => {
     try {
-      const response = await axios.get(END_OF_DAY_START_CLOSE_DAY);
-      // Eğer başarılıysa, raporları almak için API çağrısı yap
-      fetchReports();
+      await axios.get(END_OF_DAY_START_CLOSE_DAY);
+      fetchReports(); // Raportları al
+      // Gün sonu işlemlerini başlatma tamamlandığında buton durumlarını güncelle
+      const { data } = await axios.get(END_OF_DAY_IS_DAY_CLOSE_STARTED);
+      setIsDayCloseStarted(data);
     } catch (error) {
       console.error('Error starting end of day process:', error);
     }
   };
 
   const handleCloseDay = async (date) => {
-    // Kullanıcının tarih onayı
     if (window.confirm(`Yeni sistem tarihi: ${date}. Onaylıyor musunuz?`)) {
       try {
-        await axios.post(END_OF_DAY_START_CLOSE_DAY, { date });
-        // Tarih onaylandıktan sonra işlemleri başlat
-        fetchReports();
+        // Tarihi String olarak gönderiyoruz
+        await axios.post(END_OF_DAY_CLOSE_DAY, { date }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        const { data } = await axios.get(END_OF_DAY_IS_DAY_CLOSED);
+        setIsDayClosed(data);
+        setIsDayCloseStarted(false); // Günü kapatma tamamlandığında buton durumlarını güncelle
       } catch (error) {
         console.error('Error closing day:', error);
       }
@@ -40,28 +66,29 @@ const EndOfDayPage = () => {
 
   const fetchReports = async () => {
     try {
-      const [moneyTransferExcel, moneyTransferPdf, customersExcel, customersPdf, accountsExcel, accountsPdf, transactionsExcel, transactionsPdf] = await Promise.all([
-        axios.get(REPORTS_MONEY_TRANSFER_FETCH_ALL_EXCEL, { responseType: 'blob' }),
-        axios.get(REPORTS_MONEY_TRANSFER_FETCH_ALL_PDF, { responseType: 'blob' }),
-        axios.get(REPORTS_CUSTOMERS_FETCH_ALL_EXCEL, { responseType: 'blob' }),
-        axios.get(REPORTS_CUSTOMERS_TRANSFER_FETCH_ALL_PDF, { responseType: 'blob' }),
-        axios.get(REPORTS_ACCOUNTS_FETCH_ALL_EXCEL, { responseType: 'blob' }),
-        axios.get(REPORTS_ACCOUNTS_TRANSFER_FETCH_ALL_PDF, { responseType: 'blob' }),
-        axios.get(REPORTS_TRANSACTIONS_FETCH_ALL_EXCEL, { responseType: 'blob' }),
-        axios.get(REPORTS_TRANSACTIONS_TRANSFER_FETCH_ALL_PDF, { responseType: 'blob' })
-      ]);
+      const reports = [
+        { name: 'Gün Sonu Nakit Akış (Excel)', url: REPORTS_MONEY_TRANSFER_FETCH_ALL_EXCEL, type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+        { name: 'Gün Sonu Nakit Akış (PDF)', url: REPORTS_MONEY_TRANSFER_FETCH_ALL_PDF, type: 'application/pdf' },
+        { name: 'Gün Sonu Müşteri (Excel)', url: REPORTS_CUSTOMERS_FETCH_ALL_EXCEL, type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+        { name: 'Gün Sonu Müşteri (PDF)', url: REPORTS_CUSTOMERS_TRANSFER_FETCH_ALL_PDF, type: 'application/pdf' },
+        { name: 'Gün Sonu Hesap (Excel)', url: REPORTS_ACCOUNTS_FETCH_ALL_EXCEL, type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+        { name: 'Gün Sonu Hesap (PDF)', url: REPORTS_ACCOUNTS_TRANSFER_FETCH_ALL_PDF, type: 'application/pdf' },
+        { name: 'Gün Sonu İşlem (Excel)', url: REPORTS_TRANSACTIONS_FETCH_ALL_EXCEL, type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+        { name: 'Gün Sonu İşlem (PDF)', url: REPORTS_TRANSACTIONS_TRANSFER_FETCH_ALL_PDF, type: 'application/pdf' }
+      ];
 
-      // Raporları bir diziye ekle
-      setReports([
-        { name: 'Gün Sonu Nakit Akış (Excel)', url: URL.createObjectURL(moneyTransferExcel.data) },
-        { name: 'Gün Sonu Nakit Akış (PDF)', url: URL.createObjectURL(moneyTransferPdf.data) },
-        { name: 'Gün Sonu Müşteri (Excel)', url: URL.createObjectURL(customersExcel.data) },
-        { name: 'Gün Sonu Müşteri (PDF)', url: URL.createObjectURL(customersPdf.data) },
-        { name: 'Gün Sonu Hesap (Excel)', url: URL.createObjectURL(accountsExcel.data) },
-        { name: 'Gün Sonu Hesap (PDF)', url: URL.createObjectURL(accountsPdf.data) },
-        { name: 'Gün Sonu İşlem (Excel)', url: URL.createObjectURL(transactionsExcel.data) },
-        { name: 'Gün Sonu İşlem (PDF)', url: URL.createObjectURL(transactionsPdf.data) }
-      ]);
+      // Dosyaları fetch et ve uygun şekilde ayarla
+      const fetchedReports = await Promise.all(
+        reports.map(async (report) => {
+          const response = await axios.get(report.url, { responseType: 'blob' });
+          return {
+            ...report,
+            url: URL.createObjectURL(new Blob([response.data], { type: report.type }))
+          };
+        })
+      );
+
+      setReports(fetchedReports);
     } catch (error) {
       console.error('Error fetching reports:', error);
     }
@@ -85,7 +112,11 @@ const EndOfDayPage = () => {
 
               <div className="row mb-3 justify-content-center">
                 <div className="col-md-4">
-                  <button className="btn btn-primary w-100" onClick={handleStartEndOfDay}>
+                  <button
+                    className="btn btn-primary w-100"
+                    onClick={handleStartEndOfDay}
+                    disabled={isDayCloseStarted}
+                  >
                     Gün Sonu İşlemleri Başlat
                   </button>
                 </div>
@@ -94,15 +125,15 @@ const EndOfDayPage = () => {
                     className="btn btn-danger w-100"
                     onClick={() => {
                       const date = document.getElementById('date').value;
-                      handleCloseDay(date);
+                      if (date) {
+                        handleCloseDay(date);
+                      } else {
+                        alert('Lütfen tarih seçiniz.');
+                      }
                     }}
+                    disabled={!isDayCloseStarted}
                   >
                     Günü Kapat
-                  </button>
-                </div>
-                <div className="col-md-4">
-                  <button className="btn btn-primary w-100">
-                    Günü Başlat
                   </button>
                 </div>
               </div>

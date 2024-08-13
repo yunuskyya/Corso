@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk } from '../../features/transactionSlice'; 
+import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk, createTransactionThunk, resetCreateTransactionStatus, resetMaxBuying} from '../../features/transactionSlice';
 import { currencies } from '../../constants/currencies';
+import { GeneralSpinner } from './../../components/Common/GeneralSpinner';
 import useAuth from '../../hooks/useAuth';
 
 const TransactionOperationsPage = () => {
@@ -14,11 +15,17 @@ const TransactionOperationsPage = () => {
   const [isAmountInputDisabled, setAmountInputDisabled] = useState(true);
   const [isConfirmDisabled, setConfirmDisabled] = useState(true);
   const [selectedAccountBalance, setSelectedAccountBalance] = useState(null);
-  const [maxAmount, setMaxAmount] = useState(null); 
-
+  const [maxAmount, setMaxAmount] = useState(null);
+  const [exchangeRate, setExchangeRate] = useState(null);
+  const [rate, setRate] = useState(null);
+  const [cost, setCost] = useState(null);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertType, setAlertType] = useState('success');
 
   const { user } = useAuth();
   const dispatch = useAppDispatch();
+  const createTransactionStatus = useAppSelector((state) => state.transaction.transactionStatus);
+  const createTransactionError = useAppSelector((state) => state.transaction.createErrorTransaction);
   const customers = useAppSelector((state) => state.transaction.customers);
   const accounts = useAppSelector((state) => state.transaction.accounts);
   const maxBuying = useAppSelector((state) => state.transaction.maxBuying);
@@ -34,6 +41,28 @@ const TransactionOperationsPage = () => {
     }
   }, [selectedCustomer, dispatch]);
 
+  const handleResetForm = () => {
+    dispatch(resetCreateTransactionStatus());
+    dispatch(resetMaxBuying());
+    setRate(null);
+    setCost(0);
+    setSelectedAccountBalance('');
+    setAmount(0); 
+    setSelectedBuyCurrency('');
+    setSelectedSellCurrency('');
+    setSelectedCustomer('');
+    
+};
+
+
+  useEffect(() => {
+    if (selectedAccountBalance !== null && maxAmount !== null) {
+      const rate = selectedAccountBalance / maxAmount;
+      setExchangeRate(rate);
+    }
+  }, [selectedAccountBalance, maxAmount]);
+
+
   useEffect(() => {
     if (selectedSellCurrency && selectedBuyCurrency) {
       dispatch(fetchCurrencyCostThunk({
@@ -43,7 +72,7 @@ const TransactionOperationsPage = () => {
       }));
     }
   }, [selectedSellCurrency, selectedBuyCurrency, selectedAccountBalance, dispatch]);
-  
+
 
   useEffect(() => {
     if (selectedSellCurrency && accounts.length > 0) {
@@ -58,9 +87,35 @@ const TransactionOperationsPage = () => {
 
   useEffect(() => {
     if (maxBuying) {
-        setMaxAmount(maxBuying.maxBuying); // maxBuying değerini kullan
+      setMaxAmount(maxBuying.maxBuying);
     }
   }, [maxBuying]);
+
+
+  //DÖVİZ KURU HESAPLAMASI
+  useEffect(() => {
+    console.log('selectedAccountBalance:', selectedAccountBalance);
+    console.log('maxBuying:', maxBuying);
+
+    if (selectedAccountBalance !== null && maxBuying !== null && maxBuying !== 0) {
+      const computedRate = selectedAccountBalance / maxBuying;
+      console.log('Computed Rate:', computedRate); // Rate hesaplamasını logla
+      setRate(computedRate);
+    } else {
+      setRate(null);
+    }
+  }, [selectedAccountBalance, maxBuying]);
+
+  //MALİYET HESABI 
+  useEffect(() => {
+    if (rate !== null && amount) {
+      const computedCost = rate * parseFloat(amount);
+      console.log("maliyet hesabı usereffect içi : " + computedCost);
+      setCost(computedCost);
+    } else {
+      setCost(null);
+    }
+  }, [rate, amount]);
 
   const handleCustomerChange = (event) => {
     setSelectedCustomer(event.target.value);
@@ -97,8 +152,29 @@ const TransactionOperationsPage = () => {
     }
   };
 
+  const onConfirmTransaction = () => {
+    const selectedAccount = accounts.find(account => account.currency === selectedSellCurrency);
+
+    if (selectedAccount && selectedBuyCurrency && selectedSellCurrency && amount) {
+      dispatch(createTransactionThunk({
+        account_id: selectedAccount.id,
+        purchasedCurrency: selectedBuyCurrency,
+        soldCurrency: selectedSellCurrency,
+        amount: parseFloat(amount),
+        user_id: user.id,
+      }))
+    }
+  };
+
   return (
     <div style={styles.container}>
+      {createTransactionStatus === 'succeeded' && <div className='bg-success'>
+        <div>{"İşlem Tamamlandı"} <button className='m-1 p-1 rounded' onClick={handleResetForm}>Tamam</button></div>
+      </div>}
+      {createTransactionStatus === 'failed' && <div className='bg-warning'>
+        <div>{`Hata: ${createTransactionError}`} <button className='m-1 p-1 rounded' onClick={handleResetForm}>Kapat</button></div>
+      </div>}
+      {createTransactionStatus === 'loading' && <GeneralSpinner />}
       {/* Müşteri Seçimi */}
       <div style={styles.formGroup}>
         <label htmlFor="customerSelect" style={styles.label}>Müşteri Seçiniz</label>
@@ -150,10 +226,16 @@ const TransactionOperationsPage = () => {
               <p style={styles.maxAmountText}>Maks. Alınabilir Döviz Miktarı:</p>
               <p style={styles.maxAmountValue}>{maxBuying !== null ? maxBuying.toFixed(2) : 'Bilgi Yok'}</p>
             </div>
+            <div style={styles.rateBox}>
+              <p style={styles.rateText}>Kur Fiyatı:</p>
+              <p style={styles.rateValue}>{rate !== null ? rate.toFixed(2) : 'Bilgi Yok'}</p>
+            </div>
+            <div style={styles.costBox}>
+              <p style={styles.costText}>Maliyet:</p>
+              <p style={styles.costValue}>{cost !== null ? cost.toFixed(2) : 'Bilgi Yok'}</p>
+            </div>
           </div>
-          <h5 style={styles.previewTitle}>Maliyet</h5>
-          <p style={styles.previewText}>{currencyStatus === 'loading' ? 'Hesaplanıyor...' : `Maliyet: ${maxBuying ? maxBuying.toFixed(2) : 'Bilgi Yok'}`}</p>
-          <button className="btn btn-primary" disabled={isConfirmDisabled}>İşlemi Onayla</button>
+          <button className="btn btn-primary" onClick={onConfirmTransaction} disabled={isConfirmDisabled} style={styles.confirmButton}>İşlemi Onayla</button>
         </div>
       </div>
     </div>
@@ -185,8 +267,10 @@ const styles = {
   },
   transactionPreview: {
     display: 'flex',
-    justifyContent: 'center',
-    marginTop: '1rem'
+    flexDirection: 'column',
+    alignItems: 'center',
+    marginTop: '1rem',
+    width: '100%',
   },
   previewContent: {
     backgroundColor: '#ffffff',
@@ -194,47 +278,88 @@ const styles = {
     borderRadius: '8px',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
     width: '100%',
-    maxWidth: '400px',
-    textAlign: 'center'
-  },
-  previewTitle: {
-    marginBottom: '0.5rem'
-  },
-  previewText: {
-    margin: '0.5rem 0'
+    maxWidth: '600px',
+    textAlign: 'center',
   },
   balanceContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: '1rem'
+    marginBottom: '1rem',
+    width: '100%',
   },
   balanceBox: {
     backgroundColor: '#f1f1f1',
     padding: '0.5rem',
     borderRadius: '4px',
-    flex: 1
-  },
-  balanceText: {
-    fontSize: '0.875rem',
-    color: '#555'
-  },
-  balanceValue: {
-    fontSize: '1rem',
-    fontWeight: 'bold'
+    flex: 1,
+    marginRight: '0.5rem',
+    textAlign: 'center', // Metni ortalar
   },
   maxAmountBox: {
     backgroundColor: '#e0f7fa',
     padding: '0.5rem',
     borderRadius: '4px',
-    flex: 1
+    flex: 1,
+    marginRight: '0.5rem',
+    textAlign: 'center', // Metni ortalar
+  },
+  rateBox: {
+    backgroundColor: '#f1f1f1',
+    padding: '0.5rem',
+    borderRadius: '4px',
+    flex: 1,
+    textAlign: 'center', // Metni ortalar
+    marginRight: '0.5rem'
+  },
+  balanceText: {
+    fontSize: '0.875rem',
+    color: '#555',
+    margin: '0',
+  },
+  balanceValue: {
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    margin: '0',
   },
   maxAmountText: {
     fontSize: '0.875rem',
-    color: '#00796b'
+    color: '#00796b',
+    margin: '0',
   },
   maxAmountValue: {
     fontSize: '1rem',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    margin: '0',
+  },
+  rateText: {
+    fontSize: '0.875rem',
+    color: '#555',
+    margin: '0',
+  },
+  rateValue: {
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    margin: '0',
+  },
+  confirmButton: {
+    marginTop: '1rem',
+  },
+  costBox: {
+    backgroundColor: '#f1f1f1',
+    padding: '0.5rem',
+    borderRadius: '4px',
+    flex: 1,
+    textAlign: 'center',
+  },
+  costText: {
+    fontSize: '0.875rem',
+    color: '#555',
+    margin: '0',
+  },
+  costValue: {
+    fontSize: '1rem',
+    fontWeight: 'bold',
+    margin: '0',
   }
 };
 

@@ -87,6 +87,18 @@ const AddCustomerPage = () => {
             phone: '',
             email: ''
         }));
+        setFormErrors(prevData =>({
+            ...prevData,
+            nameError: '',
+            surnameError: '',
+            tcKimlikNoError: '',
+            companyNameError: '',
+            vknError: '',
+            customerTypeError: '',
+            emailError: '',
+            gsmError: ''
+        })); 
+        
         dispatch(resetCustomerStatus());
     };
 
@@ -127,42 +139,42 @@ const AddCustomerPage = () => {
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="name" className="form-label">İsim</label>
-                                        <input type="text" className="form-control" id="name" placeholder="İsim girin" value={formData.name} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
+                                        <input type="text" className="form-control" id="name" placeholder="İsim giriniz" value={formData.name} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
                                         {formErrors.nameError && <div className="text-danger">{formErrors.nameError}</div>}
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="surname" className="form-label">Soyisim</label>
-                                        <input type="text" className="form-control" id="surname" placeholder="Soyisim girin" value={formData.surname} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
+                                        <input type="text" className="form-control" id="surname" placeholder="Soyisim giriniz" value={formData.surname} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
                                         {formErrors.surnameError && <div className="text-danger">{formErrors.surnameError}</div>}
                                     </div>
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label htmlFor="companyName" className="form-label">Kurum Adı</label>
-                                        <input type="text" className="form-control" id="companyName" placeholder="Kurum Adı girin" value={formData.companyName} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
+                                        <input type="text" className="form-control" id="companyName" placeholder="Kurum Adı giriniz" value={formData.companyName} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
                                         {formErrors.companyNameError && <div className="text-danger">{formErrors.companyNameError}</div>}
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="tcKimlikNo" className="form-label">TCKN</label>
-                                        <input type="text" className="form-control" id="tcKimlikNo" placeholder="TCKN girin" value={formData.tcKimlikNo} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
+                                        <input type="text" className="form-control" id="tcKimlikNo" placeholder="TCKN giriniz" value={formData.tcKimlikNo} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
                                         {formErrors.tcKimlikNoError && <div className="text-danger">{formErrors.tcKimlikNoError}</div>}
                                     </div>
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label htmlFor="vkn" className="form-label">VKN</label>
-                                        <input type="text" className="form-control" id="vkn" placeholder="VKN girin" value={formData.vkn} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
+                                        <input type="text" className="form-control" id="vkn" placeholder="VKN giriniz" value={formData.vkn} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
                                         {formErrors.vknError && <div className="text-danger">{formErrors.vknError}</div>}
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="email" className="form-label">Email</label>
-                                        <input type="email" className="form-control" id="email" placeholder="Email girin" value={formData.email} onChange={handleChange} />
+                                        <input type="email" className="form-control" id="email" placeholder="Email giriniz" value={formData.email} onChange={handleChange} />
                                         {formErrors.emailError && <div className="text-danger">{formErrors.emailError}</div>}
                                     </div>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="phone" className="form-label">GSM</label>
-                                    <input type="text" className="form-control" id="phone" placeholder="GSM girin" value={formData.phone} onChange={handleChange} />
+                                    <input type="text" className="form-control" id="phone" placeholder="GSM giriniz" value={formData.phone} onChange={handleChange} />
                                     {formErrors.gsmError && <div className="text-danger">{formErrors.gsmError}</div>}
                                 </div>
                                 <button type="submit" className="btn btn-primary w-100 mb-2">Müşteri Ekle</button>
