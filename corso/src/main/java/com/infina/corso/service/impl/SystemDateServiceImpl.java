@@ -56,10 +56,6 @@ public class SystemDateServiceImpl implements SystemDateService {
         SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
         systemDate.setDayClosedStarted(true);
         systemDateRepository.save(systemDate);
-        //tüm müşterileri getirecek pdf ve excel methodu -- customerRepository find all ile alınıp responseDto listesine çevrilecek
-        //tüm hesapları getirecek pdf ve excel methodu -- accountRepository find all ile alınıp responseDto listesine çevrilecek
-        //tüm işlemleri getirecek pdf ve excel methodu transactionRepository find all ile alınıp responseDto listesine çevrilecek
-        //tüm nakit akışını getirecek pdf ve excel methodu moneyTransferRepository find all ile alınıp responseDto listesine çevrilecek +
     }
 
 
