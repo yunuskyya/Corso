@@ -4,6 +4,7 @@ import com.infina.corso.config.ModelMapperConfig;
 import com.infina.corso.dto.request.AccountRequestTransaction;
 import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
+import com.infina.corso.exception.InsufficientFundsException;
 import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.*;
 import com.infina.corso.repository.AccountRepository;
@@ -70,8 +71,8 @@ public class TransactionServiceImpl implements TransactionService {
                         BigDecimal newBalance = calculateTransactionCostForCross(account.get(), transactionRequest.getAmount(), rate);
                         //hesap bakiye yeterlilik kontrolü
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-                            throw new RuntimeException("Insufficient funds for account number:  " + account.get().getAccountNumber());
-                        }
+                            throw new InsufficientFundsException("Insufficient funds for account number: " + account.get().getAccountNumber());
+                                    }
                         account.get().setBalance(newBalance);
                     } else {
                         BigDecimal newBalance;
@@ -85,7 +86,7 @@ public class TransactionServiceImpl implements TransactionService {
                             newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getSoldCurrency(), transaction.getTransactionType());
                         }
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
-                            throw new RuntimeException("Insufficient funds for account number: " + account.get().getAccountNumber());
+                            throw new InsufficientFundsException("Insufficient funds for account number: " + account.get().getAccountNumber());
                         }
                         account.get().setBalance(newBalance);
                     }
@@ -105,7 +106,7 @@ public class TransactionServiceImpl implements TransactionService {
                     accountRepository.save(accountPurchasedCurrency);
                     userRepository.save(user);
                 } else
-                    throw new AccountNotFoundException("Customer does not have an account in the desired currency. Please open an account first");
+                    throw new AccountNotFoundException("Account not found with id: " + transactionRequest.getAccount_id());
             } catch (AccountNotFoundException e) {
                 System.out.println("Account not found: " + e.getMessage());
             } catch (UserNotFoundException e) {
