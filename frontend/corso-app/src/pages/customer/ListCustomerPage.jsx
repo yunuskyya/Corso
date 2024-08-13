@@ -16,7 +16,7 @@ const ListCustomerPage = () => {
     const { user } = useAuth();
 
     const [filterRequest, setFilterRequest] = useState({
-        userId: user?.id,
+        userId: user ? user.role === 'ROLE_MANAGER' ? null : user.id : null,
         accountId: '',
         name: '',
         surname: '',
@@ -304,7 +304,7 @@ const ListCustomerPage = () => {
                             <th>Telefon</th>
                             <th>Email</th>
                             <th>Oluşturuldu</th>
-                            <th>İşlem</th>
+                            {user?.role === 'ROLE_BROKER' && <th>İşlemler</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -335,14 +335,16 @@ const ListCustomerPage = () => {
                                 <td>{customer.phone}</td>
                                 <td>{customer.email}</td>
                                 <td>{formatDate(customer.createdAt)}</td>
-                                <td>
-                                    <button className="btn btn-danger btn-sm" onClick={() => alert(`Delete ${customer.name}`)}>
-                                        Sil
-                                    </button>
-                                    <button className="btn btn-warning btn-sm" onClick={() => navigate(`/dashboard/broker/add-account?customerId=${customer.id}`)}>
-                                        Hesap Ekle
-                                    </button>
-                                </td>
+                                {user?.role === 'ROLE_BROKER' && (
+                                    <td>
+                                        <button className="btn btn-danger btn-sm" onClick={() => alert(`Delete ${customer.name}`)}>
+                                            Sil
+                                        </button>
+                                        <button className="btn btn-warning btn-sm" onClick={() => navigate(`/dashboard/broker/add-account?customerId=${customer.id}`)}>
+                                            Hesap Ekle
+                                        </button>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
