@@ -30,6 +30,11 @@ public class SystemDateController {
         systemDateService.startCloseDay();
     }
 
+    @GetMapping
+    public LocalDate getSystemDate(){
+        return systemDateService.getSystemDate();
+    }
+
     @GetMapping("/is-day-close-started")
     public boolean isDayCloseStarted(){
         return systemDateService.isDayClosedStarted();

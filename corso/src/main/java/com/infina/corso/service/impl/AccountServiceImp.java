@@ -131,6 +131,13 @@ public class AccountServiceImp implements AccountService {
     }
 
     @Override
+    public List<GetAllAccountResponse> getAllAccountsForBroker(int id) {
+        return accountRepository.findByCustomer_User_Id(id).stream()
+                .map(account -> mapper.modelMapperForResponse().map(account, GetAllAccountResponse.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Account getByAccountNumber(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber);
     }

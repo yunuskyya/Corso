@@ -24,4 +24,5 @@ public interface AccountService {
     AccountRequestTransaction checkIfAccountExists(Long accountId, String currencyCode);
     void reactivateAccount(Long id);
     List<GetAllAccountForEndOfDayResponse> getAllAccountsforEndOfDay();
+    List<GetAllAccountResponse> getAllAccountsForBroker(int id);
 }

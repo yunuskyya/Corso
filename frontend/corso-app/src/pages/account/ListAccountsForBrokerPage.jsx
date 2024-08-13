@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { getAllAccountsForManager } from '../../features/accountSlice';
+import { getAllAccountsForBrokerById } from '../../features/accountSlice';
 import { Button, Table, Spinner, Alert } from 'react-bootstrap';
 import moment from 'moment';
 import ReactPaginate from 'react-paginate';
+import useAuth from '../../hooks/useAuth';
 
 const ListAccountsForBrokerrPage = () => {
     const dispatch = useAppDispatch();
     const { accounts, status, error } = useAppSelector(state => state.account);
+    const { user } = useAuth();
 
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 10;
 
     useEffect(() => {
-        dispatch(getAllAccountsForManager());
+        dispatch(getAllAccountsForBrokerById(user?.id));
     }, [dispatch]);
 
     const handlePageChange = ({ selected }) => {
@@ -63,7 +65,7 @@ const ListAccountsForBrokerrPage = () => {
                                 <th>Bakiye</th>
                                 <th>Oluşturulma Tarihi</th>
                                 <th>Güncellenme Tarihi</th>
-                                <th>Müşteri ID</th>
+                                <th>Müşteri No</th>
                             </tr>
                         </thead>
                         <tbody>

@@ -15,4 +15,5 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     List<Account> findByCurrencyAndCustomerCustomerType(String currency, CustomerType customerType);
     List<Account> findByCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate);
     Account findByCurrencyAndCustomerId(String currency, Long customerId);
+    List<Account> findByCustomer_User_Id(int userId);
 }
