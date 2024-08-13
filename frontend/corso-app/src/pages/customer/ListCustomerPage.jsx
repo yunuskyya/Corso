@@ -82,12 +82,12 @@ const ListCustomerPage = () => {
 
     return (
         <div className="container my-4">
-            <h1 className="mb-4">Customer List</h1>
+            <h1 className="mb-4">Müşteri Listele</h1>
 
             <div className="mb-4">
                 {/* Customer Type Selection */}
                 <div className="mb-3">
-                    <label htmlFor="customerType" className="form-label">Customer Type</label>
+                    <label htmlFor="customerType" className="form-label">Müşteri Tipi</label>
                     <select
                         id="customerType"
                         name="customerType"
@@ -95,8 +95,8 @@ const ListCustomerPage = () => {
                         value={filterRequest.customerType}
                         onChange={handleCustomerTypeChange}
                     >
-                        <option value="BIREYSEL">Individual</option>
-                        <option value="KURUMSAL">Corporate</option>
+                        <option value="BIREYSEL">BIREYSEL</option>
+                        <option value="KURUMSAL">KURUMSAL</option>
                     </select>
                 </div>
 
@@ -111,7 +111,7 @@ const ListCustomerPage = () => {
                                 name="name"
                                 className="form-control"
                                 value={filterRequest.name}
-                                placeholder="Name"
+                                placeholder="isim"
                                 onChange={handleFilterChange}
                             />
                         </div>
@@ -123,7 +123,7 @@ const ListCustomerPage = () => {
                                 name="surname"
                                 className="form-control"
                                 value={filterRequest.surname}
-                                placeholder="Surname"
+                                placeholder="soyisim"
                                 onChange={handleFilterChange}
                             />
                         </div>
@@ -153,7 +153,7 @@ const ListCustomerPage = () => {
                                 name="companyName"
                                 className="form-control"
                                 value={filterRequest.companyName}
-                                placeholder="Company Name"
+                                placeholder="Kurum adı"
                                 onChange={handleFilterChange}
                             />
                         </div>
@@ -183,7 +183,7 @@ const ListCustomerPage = () => {
                             name="accountId"
                             className="form-control"
                             value={filterRequest.accountId}
-                            placeholder="Account ID"
+                            placeholder="Hesap ID"
                             onChange={handleFilterChange}
                         />
                     </div>
@@ -210,7 +210,7 @@ const ListCustomerPage = () => {
                             name="phone"
                             className="form-control"
                             value={filterRequest.phone}
-                            placeholder="Phone"
+                            placeholder="telofon"
                             onChange={handleFilterChange}
                         />
                     </div>
@@ -256,7 +256,7 @@ const ListCustomerPage = () => {
 
             <div className="d-flex justify-content-between mb-4">
                 <div>
-                    <label htmlFor="pageSize" className="form-label me-2">Page Size:</label>
+                    <label htmlFor="pageSize" className="form-label me-2">Max Satır:</label>
                     <select id="pageSize" className="form-select d-inline w-auto" value={size} onChange={handleSizeChange}>
                         <option value="5">5</option>
                         <option value="10">10</option>
@@ -286,23 +286,23 @@ const ListCustomerPage = () => {
             </div>
 
             {loading && <div className=""><GeneralSpinner /></div>}
-            {error && <div className="alert alert-danger">Error: {error}</div>}
+            {error && <div className="alert alert-danger">Error: {error.message}</div>}
 
             {customers.length > 0 ? (
                 <div className='table-responsive'><table className="table table-striped table-bordered">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Name</th>
-                            <th>Accounts ID list</th>
+                            <th>İsim</th>
+                            <th>Hesap ID'leri</th>
                             <th>TC Kimlik No</th>
                             <th>VKN</th>
-                            <th>Customer Type</th>
-                            <th>Status</th>
-                            <th>Phone</th>
+                            <th>Müşteri Tipi</th>
+                            <th>Durum</th>
+                            <th>Telefon</th>
                             <th>Email</th>
-                            <th>Created At</th>
-                            <th>Action</th>
+                            <th>Oluşturuldu</th>
+                            <th>İşlem</th>
                         </tr>
                     </thead>
                     <tbody>
