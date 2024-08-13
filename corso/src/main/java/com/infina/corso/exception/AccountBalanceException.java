@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class AccountBalanceException extends RuntimeException {
-    public AccountBalanceException(Long accountId) {
-        super(Messages.getMessageForLocale("error.account.has.balance.cannot.delete", LocaleContextHolder.getLocale(), accountId));
+    public AccountBalanceException() {
+        super(Messages.getMessageForLocale("error.account.has.balance.cannot.delete", LocaleContextHolder.getLocale()));
     }
 }
