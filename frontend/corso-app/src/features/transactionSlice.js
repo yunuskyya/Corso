@@ -13,7 +13,8 @@ const initialState = {
     error: null,
     maxBuying: null,
     currencyStatus: 'idle',
-    transactionStatus: 'idle', // İşlem durumunu takip etmek için ekledik
+    transactionStatus: 'idle', 
+    createErrorTransaction: null
 };
 
 export const fetchCustomerListThunk = createAsyncThunk('transaction/fetchCustomerList', async (userId) => {
@@ -38,7 +39,9 @@ export const fetchCurrencyCostThunk = createAsyncThunk(
 export const createTransactionThunk = createAsyncThunk(
     'transaction/createTransaction',
     async ({ account_id, purchasedCurrency, soldCurrency, amount, user_id }) => {
+        console.log("slice  içindeyiz mi ?******");
         const response = await createTransactionApi(account_id, purchasedCurrency, soldCurrency, amount, user_id);
+        console.log("Response log : " +response);
         return response;
     }
 );
@@ -58,6 +61,15 @@ const transactionSlice = createSlice({
         resetTransactionStatus: (state) => {
             state.status = 'idle';
             state.error = null;
+        },
+        resetCreateTransactionStatus: (state) => {
+            state.transactionStatus = 'idle';
+            state.createErrorTransaction = null;
+            
+        },
+
+        resetMaxBuying: (state) => {
+            state.maxBuying = 0;
         },
     },
     extraReducers: (builder) => {
@@ -103,15 +115,15 @@ const transactionSlice = createSlice({
             })
             .addCase(createTransactionThunk.pending, (state) => {
                 state.transactionStatus = 'loading';
-                state.error = null;
+                state.createErrorTransaction = null;
             })
             .addCase(createTransactionThunk.fulfilled, (state, action) => {
                 state.transactionStatus = 'succeeded';
-                state.error = null;
+                state.createErrorTransaction = null;
             })
             .addCase(createTransactionThunk.rejected, (state, action) => {
                 state.transactionStatus = 'failed';
-                state.error = action.error.message;
+                state.createErrorTransaction = action.error.message;
             })
             .addCase(fetchTransactionListForBrokerThunk.pending, (state) => {
                 state.status = 'loading';
@@ -129,5 +141,5 @@ const transactionSlice = createSlice({
     },
 });
 
-export const { resetTransactionStatus } = transactionSlice.actions;
+export const { resetTransactionStatus, resetCreateTransactionStatus, resetMaxBuying} = transactionSlice.actions;
 export default transactionSlice.reducer;

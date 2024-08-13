@@ -74,7 +74,7 @@ const ListAccountsForBrokerrPage = () => {
                                     <td>{account.id}</td>
                                     <td>{account.accountNumber}</td>
                                     <td>{account.currency}</td>
-                                    <td>{account.balance.toFixed(2)}</td>
+                                    <td>{account.balance}</td>
                                     <td>{moment(convertToDate(account.createdAt)).format('YYYY-MM-DD HH:mm:ss')}</td>
                                     <td>{moment(convertToDate(account.updatedAt)).format('YYYY-MM-DD HH:mm:ss')}</td>
                                     <td>{account.customerId}</td>
