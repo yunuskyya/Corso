@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.FORBIDDEN)
 public class AccountOwnershipException extends RuntimeException {
-    public AccountOwnershipException(Long customerId) {
-        super(Messages.getMessageForLocale("error.account.does.not.belong.to.customer", LocaleContextHolder.getLocale(), customerId));
+    public AccountOwnershipException() {
+        super(Messages.getMessageForLocale("error.account.does.not.belong.to.customer", LocaleContextHolder.getLocale()));
     }
 }
