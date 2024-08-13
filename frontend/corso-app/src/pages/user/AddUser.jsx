@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Alert } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap stil dosyasını import et
+import 'bootstrap/dist/css/bootstrap.min.css'; 
 import { useDispatch } from 'react-redux';
-import { registerManager } from '../../features/userSlice'; // Redux eylemi
+import { registerManager } from '../../features/userSlice'; 
 
 const AddUser = () => {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         firstName: '',
-        phone: '',
         lastName: '',
+        phone: '',
         email: '',
+        username: '', 
         password: '',
     });
 
@@ -33,9 +34,10 @@ const AddUser = () => {
             setError('');
             setFormData({
                 firstName: '',
-                phone: '',
                 lastName: '',
+                phone: '',
                 email: '',
+                username: '',
                 password: '',
             });
         } catch (err) {
@@ -93,6 +95,18 @@ const AddUser = () => {
                         placeholder="Email adresinizi girin"
                         name="email"
                         value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="formUsername">
+                    <Form.Label>Kullanıcı Adı</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="Kullanıcı adınızı girin"
+                        name="username"
+                        value={formData.username}
                         onChange={handleChange}
                         required
                     />
