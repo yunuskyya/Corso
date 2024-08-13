@@ -1,67 +1,121 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
+import { Form, Button, Container, Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap stil dosyasını import et
+import {registerBroker} from '../../features/userSlice'; // Redux eylemi
+import { useDispatch } from 'react-redux';
 
 const AddBrokerPage = () => {
-    const [broker, setBroker] = useState({
-        name: "",
-        surname: "",
-        email: "",
-        phone: "",
+        const dispatch = useDispatch();
+        const [broker, setBroker] = useState({
+        firstName: '',
+        lastName: '',
+        username: '',
+        email: '',
+        phone: '',
+
     });
+
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
 
     const handleChange = (e) => {
         setBroker({ ...broker, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(broker);
+        try {
+            console.log(broker);
+            await dispatch(registerBroker(broker)).unwrap();
+            setSuccess('Broker başarıyla eklendi.');
+            setError('');
+            setBroker({
+                firstName: '',
+                lastName: '',
+                username: '',
+                email: '',
+                phone: '',
+
+            });
+        } catch (err) {
+            setError('Broker asdas asdasd hata oluştu.');
+            setSuccess('');
+          
+        }
     };
 
     return (
-        <div>
-            <h1>Add Broker</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>Name</label>
-                    <input
+        <Container style={{ maxWidth: '600px', marginTop: '50px' }}>
+            <h1 className="text-center mb-4">Personel Ekle</h1>
+            {error && <Alert variant="danger">{error}</Alert>}
+            {success && <Alert variant="success">{success}</Alert>}
+            <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="formFirstName">
+                    <Form.Label>İsim</Form.Label>
+                    <Form.Control
                         type="text"
-                        name="name"
-                        value={broker.name}
+                        placeholder="İsminizi girin"
+                        name="firstName"
+                        value={broker.firstName}
                         onChange={handleChange}
+                        required
                     />
-                </div>
-                <div>
-                    <label>Surname</label>
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formLastName">
+                    <Form.Label>Soyisim</Form.Label>
+                    <Form.Control
                         type="text"
-                        name="surname"
-                        value={broker.surname}
+                        placeholder="Soyisminizi girin"
+                        name="lastName"
+                        value={broker.lastName}
                         onChange={handleChange}
+                        required
                     />
-                </div>
-                <div>
-                    <label>Email</label>
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formUsername">
+                    <Form.Label>username</Form.Label>
+                    <Form.Control
+                        type="text"
+                        placeholder="username giriniz"
+                        name="username"
+                        value={broker.username}
+                        onChange={handleChange}
+                        required
+                    />
+                </Form.Group>
+
+                <Form.Group controlId="formEmail">
+                    <Form.Label>Email</Form.Label>
+                    <Form.Control
                         type="email"
+                        placeholder="Email adresinizi girin"
                         name="email"
                         value={broker.email}
                         onChange={handleChange}
+                        required
                     />
-                </div>
-                <div>
-                    <label>Phone</label>
-                    <input
+                </Form.Group>
+
+                <Form.Group controlId="formPhone">
+                    <Form.Label>Telefon Numarası</Form.Label>
+                    <Form.Control
                         type="text"
+                        placeholder="Telefon numaranızı girin"
                         name="phone"
                         value={broker.phone}
                         onChange={handleChange}
+                        required
                     />
-                </div>
-                <button type="submit">Add Broker</button>
-            </form>
-        </div>
+                </Form.Group>
+
+                <Button variant="primary" type="submit" className="mt-3">
+                    Ekle
+                </Button >
+            </Form>
+        </Container>
     );
 };
-
 
 export default AddBrokerPage;

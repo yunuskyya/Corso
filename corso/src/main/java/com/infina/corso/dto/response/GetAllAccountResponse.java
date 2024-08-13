@@ -14,4 +14,5 @@ public class GetAllAccountResponse {
     private BigDecimal balance;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long customerId;
 }
