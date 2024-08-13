@@ -20,6 +20,7 @@ export const CUSTOMER_URL_FILTER = CUSTOMER_URL + '/filter'
 export const ACCOUNT_URL = BASE_URL + '/accounts';
 export const ACCOUNT_URL_CUSTOMER = BASE_URL + '/accounts/faketest';
 export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transaction/{customerId}';
+export const ACCOUNT_URL_CREATE_ACCOUT = ACCOUNT_URL + '/{customerId}';
 
 // currency urls:
 
