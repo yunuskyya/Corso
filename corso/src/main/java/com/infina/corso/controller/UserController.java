@@ -144,4 +144,12 @@ public class UserController {
         return new GenericMessage(Messages.getMessageForLocale("corso.activate.user.success.message.successfully",
                 LocaleContextHolder.getLocale()));
     }
+    @GetMapping("/allBrokers")
+    @PreAuthorize("hasRole('ROLE_MANAGER')")
+    public ResponseEntity<Page<GetAllUserResponse>> getAllBrokers(Pageable pageable) {
+        Page<GetAllUserResponse> brokers = userService.getAllBrokers(pageable);
+        return ResponseEntity.ok(brokers);
+    }
+
+
 }
