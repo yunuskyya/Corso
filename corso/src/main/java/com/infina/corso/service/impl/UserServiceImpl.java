@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void registerManager(@Valid RegisterManagerRequest request) {
         User newUser = modelMapperForRequest.map(request, User.class);
-        String rawPassword = request.getPassword();  // Ham şifreyi saklayın
+        String rawPassword = request.getPassword();
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         newUser.setAuthorities(new HashSet<>() {{
             add(Role.ROLE_MANAGER);
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
         newUser.setActive(true);
         userRepository.save(newUser);
         logger.info("Manager registered: {}", newUser.getEmail());
-        emailHelper.sendRegistrationEmail(newUser);
+        emailHelper.sendRegistrationEmail(request);
 
     }
 
