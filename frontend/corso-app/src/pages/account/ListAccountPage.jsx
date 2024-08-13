@@ -81,7 +81,7 @@ const AccountsList = () => {
                         </tbody>
                     </Table>
                     <div className="d-flex justify-content-center">
-                        <ReactPaginate
+                         <ReactPaginate
                             previousLabel={'Önceki'}
                             nextLabel={'Sonraki'}
                             breakLabel={'...'}
@@ -99,7 +99,7 @@ const AccountsList = () => {
                             breakClassName={'page-item'}
                             breakLinkClassName={'page-link'}
                             activeClassName={'active'}
-                        />
+                        /> 
                     </div>
                 </>
             )}

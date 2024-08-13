@@ -4,7 +4,7 @@ import { userListBroker } from '../../features/userSlice';
 import { Table, Spinner, Alert } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 
-const BrokerListPage = () => {
+const ListBrokerPage = () => {
     const dispatch = useDispatch();
     const { userList, status, error } = useSelector(state => state.user);
 
@@ -68,7 +68,7 @@ const BrokerListPage = () => {
                         </tbody>
                     </Table>
                     <div className="d-flex justify-content-center">
-                        <ReactPaginate
+                         <ReactPaginate
                             previousLabel={'Önceki'}
                             nextLabel={'Sonraki'}
                             breakLabel={'...'}
@@ -86,7 +86,7 @@ const BrokerListPage = () => {
                             breakClassName={'page-item'}
                             breakLinkClassName={'page-link'}
                             activeClassName={'active'}
-                        />
+                        /> 
                     </div>
                 </>
             )}
@@ -94,4 +94,4 @@ const BrokerListPage = () => {
     );
 };
 
-export default BrokerListPage;
+export default ListBrokerPage;
