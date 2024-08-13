@@ -78,4 +78,11 @@ public class AccountController {
         return new GenericMessage(Messages.getMessageForLocale("corso.reactivate.account.success.message",
                 LocaleContextHolder.getLocale()));
     }
+
+    @GetMapping("/broker/{userId}")
+    @PreAuthorize("hasRole('ROLE_BROKER')")
+    @Operation(summary = "Get accounts by user ID", description = "Retrieve a list of accounts by user ID.")
+    public ResponseEntity<List<GetAllAccountResponse>> getAllAccountsForBroker(@PathVariable int userId) {
+        return ResponseEntity.ok(accountService.getAllAccountsForBroker(userId));
+    }
 }
