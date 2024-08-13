@@ -9,6 +9,7 @@ const UserList = () => {
     const { userList, status, error } = useSelector(state => state.user);
 
     const [currentPage, setCurrentPage] = useState(0);
+    const [alert, setAlert] = useState({ show: false, message: '', variant: '' });  // Hata ve başarı mesajlarını saklamak için kullanılan state
     const itemsPerPage = 5;
 
     useEffect(() => {
@@ -17,16 +18,37 @@ const UserList = () => {
 
     const handleDelete = (userId) => {
         if (window.confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
-            dispatch(deleteUser({ userId }));
+            dispatch(deleteUser({ userId }))
+                .unwrap()
+                .then(() => {
+                    setAlert({ show: true, message: 'Kullanıcı başarıyla silindi.', variant: 'success' });
+                })
+                .catch((err) => {
+                    setAlert({ show: true, message: `Hata: ${err.message}`, variant: 'danger' });
+                });
         }
     };
 
     const handleActivate = (email) => {
-        dispatch(activateUser({ email }));
+        dispatch(activateUser({ email }))
+            .unwrap()
+            .then(() => {
+                setAlert({ show: true, message: 'Kullanıcı başarıyla aktifleştirildi.', variant: 'success' });
+            })
+            .catch((err) => {
+                setAlert({ show: true, message: `Hata: ${err.message}`, variant: 'danger' });
+            });
     };
 
     const handleUnblock = (email) => {
-        dispatch(unblockUser({ email }));
+        dispatch(unblockUser({ email }))
+            .unwrap()
+            .then(() => {
+                setAlert({ show: true, message: 'Kullanıcının engeli başarıyla kaldırıldı.', variant: 'success' });
+            })
+            .catch((err) => {
+                setAlert({ show: true, message: `Hata: ${err.message}`, variant: 'danger' });
+            });
     };
 
     const handlePageChange = ({ selected }) => {
@@ -57,6 +79,7 @@ const UserList = () => {
     return (
         <div>
             <h1 className="text-center mb-4">Kullanıcılar</h1>
+            {alert.show && <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>{alert.message}</Alert>}
             {userList.length === 0 ? (
                 <p className="text-center">Kullanıcı bulunamadı.</p>
             ) : (

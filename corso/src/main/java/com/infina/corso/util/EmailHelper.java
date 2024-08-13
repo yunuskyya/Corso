@@ -1,5 +1,6 @@
 package com.infina.corso.util;
 
+import com.infina.corso.dto.request.RegisterManagerRequest;
 import com.infina.corso.model.User;
 import com.infina.corso.service.MailService;
 import com.infina.corso.service.TokenService;
@@ -13,6 +14,7 @@ public class EmailHelper {
     private final MailService mailService;
     private final TokenService tokenService;
 
+    private final String changePasswordUrl = "http://localhost:5173/login";
     private final String resetPasswordUrl = "http://localhost:5173/set-password";
 
     public void sendTokenEmail(String to, String token) {
@@ -23,12 +25,26 @@ public class EmailHelper {
         mailService.sendSimpleMessage(to, subject, text);
     }
 
-    public void sendRegistrationEmail(User user) {
-        String subject = "Complete Your Registration";
-        String text = String.format("To complete your registration, please set your password using the following link: %s?token=%s",
-                resetPasswordUrl, user.getResetPasswordToken());
-        mailService.sendSimpleMessage(user.getEmail(), subject, text);
+    public void sendRegistrationEmail(RegisterManagerRequest request) {
+        String subject = "Hesabınız Başarıyla Oluşturuldu";
+        String changePasswordUrl = "http://localhost:5173/login";
+
+        String text = String.format(
+                "Merhaba %s %s,\n\n" +
+                        "Hesabınız başarıyla oluşturulmuştur. Aşağıda hesabınız için giriş bilgilerinizi bulabilirsiniz:\n\n" +
+                        "Kullanıcı Adı: %s\n" +
+                        "Şifre: %s\n\n" +
+                        "Hesabınıza giriş yaparak şifenizi değiştirmenizi öneririz." +
+                        "Giriş için aşağıdaki bağlantıyı kullanabilirsiniz:\n" +
+                        "%s\n\n" +
+                        "Saygılarımızla,\n" +
+                        "Corso",
+                request.getFirstName(), request.getLastName(), request.getEmail(), request.getPassword(), changePasswordUrl
+        );
+
+        mailService.sendSimpleMessage(request.getEmail(), subject, text);
     }
+
     public void sendAccountLockedEmail(User user) {
         String to = user.getEmail();
         String subject = "Hesabınız bloke edildi";
