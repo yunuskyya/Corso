@@ -7,7 +7,8 @@ import {
     USER_ACTIVATE_URL, 
     USER_UNBLOCK_URL ,
     USER_DELETE_URL,
-    USER_LIST_URL
+    USER_LIST_URL,
+    USER_LIST_BROKER_URL
 } from '../constants/apiUrl';
 
 // Broker kullanıcısı oluşturma
@@ -113,4 +114,12 @@ export const unblockUser = async (unblockUserRequest) => {
         throw error;
     });
     
+}
+export const userListBroker = async () => {
+    return axiosInstance.get(USER_LIST_BROKER_URL).then(response => {
+        return response.data;
+    }).catch(error => {
+        console.error(error);
+        throw error;
+    });
 }
