@@ -4,7 +4,7 @@ import ReactPaginate from 'react-paginate';
 import moment from 'moment';
 import { userListBroker } from '../../api/userApi'; // API fonksiyonunun yolu
 
-const BrokerListPage = () => {
+const ListBrokerPage = () => {
     const dispatch = useDispatch();
     const { userList, status, error } = useSelector(state => state.user);
 
@@ -140,4 +140,4 @@ const formatDate = (dateArray) => {
     return 'NULL DATE'
 };
 
-export default BrokerListPage;
+export default ListBrokerPage;
