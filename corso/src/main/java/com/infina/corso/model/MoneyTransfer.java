@@ -17,6 +17,8 @@ public class MoneyTransfer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String currencyCode;
+
     private char direction;
 
     private double amount;

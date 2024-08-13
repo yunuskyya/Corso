@@ -1,6 +1,6 @@
 package com.infina.corso.controller;
 
-import com.infina.corso.dto.response.MoneyTransferResponse;
+import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.service.MoneyTransferService;
 import com.infina.corso.service.TransactionService;
@@ -71,7 +71,7 @@ public class ReportController {
 
     @GetMapping("/export-money-transfers/excel")
     public ResponseEntity<byte[]> exportMoneyTransfersToExcel() throws IOException {
-        List<MoneyTransferResponse> moneyTransfers = moneyTransferService.collectAllMoneyTransfers();
+        List<MoneyTransferResponseForList> moneyTransfers = moneyTransferService.collectAllMoneyTransfers();
 
         ByteArrayInputStream in = excelReportService.exportMoneyTransfersToExcel(moneyTransfers);
 
@@ -86,7 +86,7 @@ public class ReportController {
 
     @GetMapping("/export-money-transfers/pdf")
     public ResponseEntity<byte[]> exportMoneyTransfersToPdf() {
-        List<MoneyTransferResponse> moneyTransfers = moneyTransferService.collectAllMoneyTransfers();
+        List<MoneyTransferResponseForList> moneyTransfers = moneyTransferService.collectAllMoneyTransfers();
 
         ByteArrayInputStream in = pdfReportService.exportMoneyTransfersToPdf(moneyTransfers);
 
