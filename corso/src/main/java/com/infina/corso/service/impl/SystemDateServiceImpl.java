@@ -1,5 +1,6 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.exception.SystemDateNotFoundException;
 import com.infina.corso.model.SystemDate;
 import com.infina.corso.repository.SystemDateRepository;
 import com.infina.corso.service.SystemDateService;
@@ -53,7 +54,7 @@ public class SystemDateServiceImpl implements SystemDateService {
     }
 
     public void startCloseDay(){
-        SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
+        SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new  SystemDateNotFoundException());
         systemDate.setDayClosedStarted(true);
         systemDateRepository.save(systemDate);
     }
@@ -62,10 +63,10 @@ public class SystemDateServiceImpl implements SystemDateService {
 
     public void closeDay(LocalDate date) {
         try {
-            SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
+            SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new SystemDateNotFoundException());
             systemDate.setDate(date);
             systemDate.setDayClosedStarted(false);
-        } catch (Exception e) {
+        } catch (SystemDateNotFoundException e) {
             // Genel bir hata yakalama
             System.out.println("Hata: " + e.getMessage());
         }
