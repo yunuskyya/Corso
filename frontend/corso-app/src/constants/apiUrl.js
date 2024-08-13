@@ -22,6 +22,7 @@ export const ACCOUNT_URL_CUSTOMER = BASE_URL + '/accounts/faketest';
 export const ACCOUNT_URL_LIST_FOR_BROKER = BASE_URL + '/accounts/customer/transaction/{customerId}';
 export const ACCOUNT_URL_CREATE_ACCOUT = ACCOUNT_URL + '/{customerId}';
 export const ACCOUNT_URL_LIST_FOR_MANAGER = BASE_URL + '/accounts';
+export const ACCOUNT_URL_LIST_FOR_BROKER_BY_ID = ACCOUNT_URL + '/broker/{userId}';
 
 // currency urls:
 

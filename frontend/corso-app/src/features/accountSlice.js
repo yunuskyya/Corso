@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { createAccount, getAllAccountsSelectedCustomer, deleteAccount,getAllAccounts } from '../api/accountApi';
+import { createAccount, getAllAccountsSelectedCustomer, deleteAccount, getAllAccounts, getAllAccountsForBroker } from '../api/accountApi';
 
 const initialState = {
     accounts: [],
@@ -35,6 +35,14 @@ export const getAllAccountsForManager = createAsyncThunk(
     'account/getAllAccountsForManager',
     async () => {
         const response = await getAllAccounts();
+        return response;
+    }
+);
+
+export const getAllAccountsForBrokerById = createAsyncThunk(
+    'account/getAllAccountsForBrokerById',
+    async (userId) => {
+        const response = await getAllAccountsForBroker(userId);
         return response;
     }
 );
@@ -106,6 +114,19 @@ const accountSlice = createSlice({
                 state.error = null;
             })
             .addCase(removeAccount.rejected, (state, action) => {
+                state.status = 'failed';
+                state.error = action.error.message;
+            })
+            .addCase(getAllAccountsForBrokerById.pending, (state) => {
+                state.status = 'loading';
+                state.error = null;
+            })
+            .addCase(getAllAccountsForBrokerById.fulfilled, (state, action) => {
+                state.status = 'succeeded';
+                state.accounts = action.payload;
+                state.error = null;
+            })
+            .addCase(getAllAccountsForBrokerById.rejected, (state, action) => {
                 state.status = 'failed';
                 state.error = action.error.message;
             });
