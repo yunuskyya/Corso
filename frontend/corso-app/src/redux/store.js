@@ -4,6 +4,7 @@ import customerReducer from '../features/customerSlice';
 import accountReducer from '../features/accountSlice';
 import transactionReducer from '../features/transactionSlice';
 import customerListReducer from '../features/customerListSlice';
+import createAccountReducer from '../features/createAccountSlice';
 
 export const store = configureStore({
     reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
         customer: customerReducer,
         customerList: customerListReducer,
         account: accountReducer,
-        transaction: transactionReducer
+        transaction: transactionReducer,
+        createAccount: createAccountReducer,
     }
 });
