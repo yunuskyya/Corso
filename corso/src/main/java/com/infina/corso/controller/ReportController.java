@@ -4,7 +4,6 @@ import com.infina.corso.dto.response.GetAllAccountForEndOfDayResponse;
 import com.infina.corso.dto.response.GetAllCustomerForEndOfDayResponse;
 import com.infina.corso.dto.response.MoneyTransferResponseForList;
 import com.infina.corso.dto.response.TransactionResponse;
-import com.infina.corso.model.SystemDate;
 import com.infina.corso.repository.SystemDateRepository;
 import com.infina.corso.service.MoneyTransferService;
 import com.infina.corso.service.TransactionService;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/reports")

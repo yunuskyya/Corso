@@ -195,11 +195,11 @@ export const BROKER_OPERATIONS = [
                 link: BROKER_LIST_CUSTOMER,
                 page: <ListCustomerPage />,
             },
-            {
-                title: 'IBAN İşlemleri',
-                link: BROKER_IBAN,
-                page: <IbanPage />,
-            }
+            // {
+            //     title: 'IBAN İşlemleri',
+            //     link: BROKER_IBAN,
+            //     page: <IbanPage />,
+            // }
         ]
     },
     {

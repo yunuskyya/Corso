@@ -3,7 +3,6 @@ package com.infina.corso.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter

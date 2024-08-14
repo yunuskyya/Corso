@@ -1,6 +1,6 @@
 // src/redux/slices/customerSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { filterCustomersPaged } from '../api/customerApi';
+import { filterCustomersPaged, softDeleteCustomer } from '../api/customerApi';
 
 export const fetchFilteredCustomers = createAsyncThunk(
     'customers/fetchFilteredCustomers',
@@ -14,6 +14,20 @@ export const fetchFilteredCustomers = createAsyncThunk(
     }
 );
 
+export const softDeleteCustomerById = createAsyncThunk(
+    'customers/softDeleteCustomerById',
+    async ({ customerId, customer }, thunkAPI) => {
+        console.log('customerId:', customerId);
+        console.log('customer:', customer);
+        try {
+            const response = await softDeleteCustomer(customerId, customer);
+            return response.data; // Assuming the response contains the data in the `data` field
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data || 'An error occurred'); // Handle cases where `error.response` might be undefined
+        }
+    }
+);
+
 const customerListSlice = createSlice({
     name: 'customersList',
     initialState: {
@@ -22,8 +36,15 @@ const customerListSlice = createSlice({
         currentPage: 0,
         loading: false,
         error: null,
+        deleteError: null,
+        deleteSuccess: false,
     },
-    reducers: {},
+    reducers: {
+        resetDeleteState: (state) => {
+            state.deleteError = null;
+            state.deleteSuccess = false;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchFilteredCustomers.pending, (state) => {
@@ -39,8 +60,22 @@ const customerListSlice = createSlice({
             .addCase(fetchFilteredCustomers.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(softDeleteCustomerById.pending, (state) => {
+                state.loading = true;
+                state.deleteError = null;
+                state.deleteSuccess = false;
+            })
+            .addCase(softDeleteCustomerById.fulfilled, (state) => {
+                state.loading = false;
+                state.deleteSuccess = true;
+            })
+            .addCase(softDeleteCustomerById.rejected, (state, action) => {
+                state.loading = false;
+                state.deleteError = action.payload;
             });
     },
 });
 
+export const { resetDeleteState } = customerListSlice.actions;
 export default customerListSlice.reducer;

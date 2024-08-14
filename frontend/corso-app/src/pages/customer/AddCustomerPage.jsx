@@ -69,6 +69,7 @@ const AddCustomerPage = () => {
         e.preventDefault();
         if (Object.values(formErrors).some(err => err !== '')) {
             alert('Lütfen formu doğru şekilde doldurunuz.');
+            return;
         }
 
         dispatch(createNewCustomer(formData));
@@ -87,8 +88,7 @@ const AddCustomerPage = () => {
             phone: '',
             email: ''
         }));
-        setFormErrors(prevData =>({
-            ...prevData,
+        setFormErrors({
             nameError: '',
             surnameError: '',
             tcKimlikNoError: '',
@@ -97,8 +97,7 @@ const AddCustomerPage = () => {
             customerTypeError: '',
             emailError: '',
             gsmError: ''
-        })); 
-        
+        });
         dispatch(resetCustomerStatus());
     };
 
@@ -139,42 +138,42 @@ const AddCustomerPage = () => {
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="name" className="form-label">İsim</label>
-                                        <input type="text" className="form-control" id="name" placeholder="İsim giriniz" value={formData.name} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
+                                        <input type="text" className="form-control" id="name" placeholder="İsim girin" value={formData.name} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
                                         {formErrors.nameError && <div className="text-danger">{formErrors.nameError}</div>}
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="surname" className="form-label">Soyisim</label>
-                                        <input type="text" className="form-control" id="surname" placeholder="Soyisim giriniz" value={formData.surname} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
+                                        <input type="text" className="form-control" id="surname" placeholder="Soyisim girin" value={formData.surname} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
                                         {formErrors.surnameError && <div className="text-danger">{formErrors.surnameError}</div>}
                                     </div>
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label htmlFor="companyName" className="form-label">Kurum Adı</label>
-                                        <input type="text" className="form-control" id="companyName" placeholder="Kurum Adı giriniz" value={formData.companyName} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
+                                        <input type="text" className="form-control" id="companyName" placeholder="Kurum Adı girin" value={formData.companyName} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
                                         {formErrors.companyNameError && <div className="text-danger">{formErrors.companyNameError}</div>}
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="tcKimlikNo" className="form-label">TCKN</label>
-                                        <input type="text" className="form-control" id="tcKimlikNo" placeholder="TCKN giriniz" value={formData.tcKimlikNo} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
+                                        <input type="text" className="form-control" id="tcKimlikNo" placeholder="TCKN girin" value={formData.tcKimlikNo} onChange={handleChange} disabled={formData.customerType !== 'BIREYSEL'} />
                                         {formErrors.tcKimlikNoError && <div className="text-danger">{formErrors.tcKimlikNoError}</div>}
                                     </div>
                                 </div>
                                 <div className="row mb-3">
                                     <div className="col-md-6">
                                         <label htmlFor="vkn" className="form-label">VKN</label>
-                                        <input type="text" className="form-control" id="vkn" placeholder="VKN giriniz" value={formData.vkn} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
+                                        <input type="text" className="form-control" id="vkn" placeholder="VKN girin" value={formData.vkn} onChange={handleChange} disabled={formData.customerType !== 'KURUMSAL'} />
                                         {formErrors.vknError && <div className="text-danger">{formErrors.vknError}</div>}
                                     </div>
                                     <div className="col-md-6">
                                         <label htmlFor="email" className="form-label">Email</label>
-                                        <input type="email" className="form-control" id="email" placeholder="Email giriniz" value={formData.email} onChange={handleChange} />
+                                        <input type="email" className="form-control" id="email" placeholder="Email girin" value={formData.email} onChange={handleChange} />
                                         {formErrors.emailError && <div className="text-danger">{formErrors.emailError}</div>}
                                     </div>
                                 </div>
                                 <div className="mb-3">
                                     <label htmlFor="phone" className="form-label">GSM</label>
-                                    <input type="text" className="form-control" id="phone" placeholder="GSM giriniz" value={formData.phone} onChange={handleChange} />
+                                    <input type="text" className="form-control" id="phone" placeholder="GSM girin" value={formData.phone} onChange={handleChange} />
                                     {formErrors.gsmError && <div className="text-danger">{formErrors.gsmError}</div>}
                                 </div>
                                 <button type="submit" className="btn btn-primary w-100 mb-2">Müşteri Ekle</button>
@@ -189,62 +188,61 @@ const AddCustomerPage = () => {
 };
 
 function checkErrors(id, value, setFormErrors) {
+    const onlyLettersRegex = /^[a-zA-ZığüşöçİĞÜŞÖÇ]+$/;
+    const onlyNumbersRegex = /^[0-9]+$/;
+
     switch (id) {
         case 'name':
             setFormErrors(prevErrors => ({
                 ...prevErrors,
-                nameError: value.length < 2 ? 'İsim en az 2 karakter olmalıdır.' : ''
+                nameError: !onlyLettersRegex.test(value) ? 'İsim sadece harflerden oluşmalıdır.' :
+                    value.length < 2 ? 'İsim en az 2 karakter olmalıdır.' : ''
             }));
             break;
         case 'surname':
             setFormErrors(prevErrors => ({
                 ...prevErrors,
-                surnameError: value.length < 2 ? 'Soyisim en az 2 karakter olmalıdır.' : ''
+                surnameError: !onlyLettersRegex.test(value) ? 'Soyisim sadece harflerden oluşmalıdır.' :
+                    value.length < 2 ? 'Soyisim en az 2 karakter olmalıdır.' : ''
             }));
             break;
         case 'tcKimlikNo':
             setFormErrors(prevErrors => ({
                 ...prevErrors,
-                tcKimlikNoError: value.length !== 11 ? 'TCKN 11 karakter olmalıdır.' : ''
+                tcKimlikNoError: value.length !== 11 ? 'TCKN 11 karakter olmalıdır.' :
+                    !onlyNumbersRegex.test(value) ? 'TCKN sadece rakamlardan oluşmalıdır.' : ''
             }));
             break;
         case 'companyName':
             setFormErrors(prevErrors => ({
                 ...prevErrors,
-                companyNameError: value.length < 2 ? 'Kurum adı en az 2 karakter olmalıdır.' : ''
+                companyNameError: !onlyLettersRegex.test(value) ? 'Kurum adı sadece harflerden oluşmalıdır.' :
+                    value.length < 2 ? 'Kurum adı en az 2 karakter olmalıdır.' : ''
             }));
             break;
         case 'vkn':
             setFormErrors(prevErrors => ({
                 ...prevErrors,
-                vknError: value.length !== 10 ? 'VKN 10 karakter olmalıdır.' : ''
-            }));
-            break;
-        case 'customerType':
-            setFormErrors(prevErrors => ({
-                ...prevErrors,
-                customerTypeError: value === '' ? 'Müşteri tipi seçiniz.' : ''
+                vknError: value.length !== 10 ? 'VKN 10 karakter olmalıdır.' :
+                    !onlyNumbersRegex.test(value) ? 'VKN sadece rakamlardan oluşmalıdır.' : ''
             }));
             break;
         case 'email':
-            const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
             setFormErrors(prevErrors => ({
                 ...prevErrors,
-                emailError: !emailRegex.test(value) ? 'Geçerli bir e-posta adresi girin.' : ''
+                emailError: !value.includes('@') || !value.includes('.') ? 'Geçerli bir email adresi giriniz.' : ''
             }));
             break;
         case 'phone':
-            const phoneRegex = /^05[0-9]{9}$/;
             setFormErrors(prevErrors => ({
                 ...prevErrors,
-                gsmError: !phoneRegex.test(value) ? 'Geçerli bir GSM numarası girin. (05XXXXXXXXX)' : ''
+                gsmError: value.length !== 11 ? 'GSM 11 karakter olmalıdır.' :
+                    !onlyNumbersRegex.test(value) ? 'GSM sadece rakamlardan oluşmalıdır.' : ''
             }));
             break;
         default:
             break;
     }
 }
-
-
 
 export default AddCustomerPage;

@@ -14,6 +14,7 @@ export const CURRENT_USER_URL = USER_URL + '/role';
 export const CUSTOMER_URL = BASE_URL + '/customer';
 export const CUSTOMER_URL_LIST_FOR_BROKER = BASE_URL + '/customer/transaction/broker/{userId}';
 export const CUSTOMER_URL_FILTER = CUSTOMER_URL + '/filter'
+export const CUSTOMER_URL_SOFT_DELETE = CUSTOMER_URL + '/{customerId}';
 
 // account urls:
 
