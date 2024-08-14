@@ -140,6 +140,40 @@ const transactionSlice = createSlice({
             });
     },
 });
+// CSS-in-JS stiller
+const styles = {
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '2rem'
+    },
+    header: {
+        marginBottom: '1.5rem',
+        textAlign: 'center'
+    },
+    form: {
+        width: '100%',
+        maxWidth: '500px'
+    },
+    formGroup: {
+        marginBottom: '1rem'
+    },
+    label: {
+        display: 'block',
+        marginBottom: '0.5rem'
+    },
+    select: {
+        width: '100%'
+    },
+    input: {
+        width: '100%'
+    },
+    button: {
+        width: '100%',
+        marginTop: '1rem'
+    }
+};
 
 export const { resetTransactionStatus, resetCreateTransactionStatus, resetMaxBuying} = transactionSlice.actions;
 export default transactionSlice.reducer;

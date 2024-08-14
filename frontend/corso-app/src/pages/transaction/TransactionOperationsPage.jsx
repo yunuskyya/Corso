@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk, createTransactionThunk, resetCreateTransactionStatus, resetMaxBuying} from '../../features/transactionSlice';
+import { fetchCustomerListThunk, fetchAccountsForCustomerThunk, fetchCurrencyCostThunk, createTransactionThunk, resetCreateTransactionStatus, resetMaxBuying } from '../../features/transactionSlice';
 import { currencies } from '../../constants/currencies';
 import { GeneralSpinner } from './../../components/Common/GeneralSpinner';
 import useAuth from '../../hooks/useAuth';
@@ -21,6 +21,7 @@ const TransactionOperationsPage = () => {
   const [cost, setCost] = useState(null);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertType, setAlertType] = useState('success');
+  const [showAlert, setShowAlert] = useState(false); // Uyarı için state
 
   const { user } = useAuth();
   const dispatch = useAppDispatch();
@@ -47,12 +48,12 @@ const TransactionOperationsPage = () => {
     setRate(null);
     setCost(0);
     setSelectedAccountBalance('');
-    setAmount(0); 
+    setAmount(0);
     setSelectedBuyCurrency('');
     setSelectedSellCurrency('');
     setSelectedCustomer('');
-    
-};
+
+  };
 
 
   useEffect(() => {
@@ -154,7 +155,12 @@ const TransactionOperationsPage = () => {
 
   const onConfirmTransaction = () => {
     const selectedAccount = accounts.find(account => account.currency === selectedSellCurrency);
-
+    if (amount > maxBuying) {
+      setAlertMessage('Girdiğiniz miktar maksimum alınabilir dövizi aşıyor.');
+      setAlertType('warning');
+      setShowAlert(true);
+      return alert;
+    }
     if (selectedAccount && selectedBuyCurrency && selectedSellCurrency && amount) {
       dispatch(createTransactionThunk({
         account_id: selectedAccount.id,
@@ -235,9 +241,18 @@ const TransactionOperationsPage = () => {
               <p style={styles.costValue}>{cost !== null ? cost.toFixed(2) : 'Bilgi Yok'}</p>
             </div>
           </div>
-          <button className="btn btn-primary" onClick={onConfirmTransaction} disabled={isConfirmDisabled} style={styles.confirmButton}>İşlemi Onayla</button>
-        </div>
+          <div style={styles.buttonContainer}>
+            <button className="btn btn-primary m-1" onClick={onConfirmTransaction} disabled={isConfirmDisabled}>İşlemi Onayla</button>
+            <button className="btn btn-secondary m-1" onClick={handleResetForm}>Temizle</button>
+          </div>
+
+          {showAlert && <div className={`alert alert-${alertType} ${styles.alert}`} role="alert">
+            {alertMessage}
+            <button className='btn btn-primary m-1' onClick={() => setShowAlert(false)}>Tamam</button>
+          </div>}
+        
       </div>
+    </div>
     </div>
   );
 };

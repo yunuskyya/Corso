@@ -6,10 +6,7 @@ import com.infina.corso.dto.request.TransactionRequest;
 import com.infina.corso.dto.response.TransactionResponse;
 import com.infina.corso.exception.UserNotFoundException;
 import com.infina.corso.model.*;
-import com.infina.corso.repository.AccountRepository;
-import com.infina.corso.repository.CustomerRepository;
-import com.infina.corso.repository.TransactionRepository;
-import com.infina.corso.repository.UserRepository;
+import com.infina.corso.repository.*;
 import com.infina.corso.service.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +32,9 @@ public class TransactionServiceImpl implements TransactionService {
     private final UserServiceImpl userServiceImpl;
     private final SystemDateService systemDateService;
     private final CustomerRepository customerRepository;
+    private final SystemDateRepository systemDateRepository;
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyService, CustomerService customerService, AccountRepository accountRepository, UserRepository userRepository, AccountService accountService, SystemDateService systemDateService, CustomerRepository customerRepository) {
+    public TransactionServiceImpl(TransactionRepository transactionRepository, ModelMapperConfig modelMapperConfig, UserServiceImpl userServiceImpl, CurrencyServiceImp currencyService, CustomerService customerService, AccountRepository accountRepository, UserRepository userRepository, AccountService accountService, SystemDateService systemDateService, CustomerRepository customerRepository, SystemDateRepository systemDateRepository) {
         this.transactionRepository = transactionRepository;
         this.modelMapperConfig = modelMapperConfig;
         this.userService = userServiceImpl;
@@ -48,6 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
         this.userServiceImpl = userServiceImpl;
         this.systemDateService = systemDateService;
         this.customerRepository = customerRepository;
+        this.systemDateRepository = systemDateRepository;
     }
 
     @Transactional
@@ -176,6 +175,14 @@ public class TransactionServiceImpl implements TransactionService {
         List<Transaction> transactionList = transactionRepository.findAll();
         return convertTractionListAsDto(transactionList);
     }
+
+    public List<TransactionResponse> collectAllTransactionForDayClose (){
+        LocalDate localDate = systemDateRepository.findById(1).get().getDate();
+        List<Transaction> transactionList = transactionRepository.findBySystemDate(localDate);
+        return convertTractionListAsDto(transactionList);
+    }
+
+
 
     //Entity listesinin Dto listesine çevrimi
     private List<TransactionResponse> convertTractionListAsDto(List<Transaction> transactionList) {
