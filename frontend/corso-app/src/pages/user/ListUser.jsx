@@ -42,7 +42,7 @@ const UserList = () => {
                 return isMatch && user.accountLocked;
             }
     
-            return false; // Default case
+            return false; 
         });
         setFilteredUsers(filtered);
     }, [searchTerm, userList, filterState]);
@@ -99,7 +99,7 @@ const UserList = () => {
             }
             return momentDate.format('DD-MM-YYYY HH:mm:ss'); // Customize format as needed
         }
-        return 'NULL TARİH';
+        return '';
     };
 
     if (status === 'loading') {
@@ -118,7 +118,7 @@ const UserList = () => {
     const startIndex = currentPage * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
-    const pageCount = Math.min(Math.ceil(filteredUsers.length / itemsPerPage), 10); // Max 10 pages
+    const pageCount = Math.min(Math.ceil(filteredUsers.length / itemsPerPage), 10); 
 
     return (
         <div className="container mt-4">
@@ -138,21 +138,21 @@ const UserList = () => {
                 <Button
                     variant={filterState === 'all' ? "primary" : "secondary"}
                     onClick={() => setFilterState('all')}
-                    className="me-2" // Bootstrap margin-end class
+                    className="me-2"
                 >
                     Tüm Kullanıcıları Göster
                 </Button>
                 <Button
                     variant={filterState === 'active' ? "primary" : "secondary"}
                     onClick={() => setFilterState('active')}
-                    className="me-2" // Bootstrap margin-end class
+                    className="me-2" 
                 >
                     Aktif Kullanıcıları Göster
                 </Button>
                 <Button
                     variant={filterState === 'deleted' ? "primary" : "secondary"}
                     onClick={() => setFilterState('deleted')}
-                    className="me-2" // Bootstrap margin-end class
+                    className="me-2"
                 >
                     Silinmiş Kullanıcıları Göster
                 </Button>
@@ -186,11 +186,11 @@ const UserList = () => {
                                 {paginatedUsers.map(user => (
                                     <tr key={user.id}>
                                         <td>{user.id}</td>
-                                        <td>{user.username || 'Yok'}</td>
-                                        <td>{user.firstName || 'Yok'}</td>
-                                        <td>{user.lastName || 'Yok'}</td>
+                                        <td>{user.username || ''}</td>
+                                        <td>{user.firstName || ''}</td>
+                                        <td>{user.lastName || ''}</td>
                                         <td>{user.email}</td>
-                                        <td>{user.phone || 'Yok'}</td>
+                                        <td>{user.phone || ''}</td>
                                         <td>{formatDate(user.createdAt)}</td>
                                         <td>{formatDate(user.updatedAt)}</td>
                                         <td>
@@ -199,7 +199,7 @@ const UserList = () => {
                                                     variant="danger"
                                                     onClick={() => handleDelete(user)}
                                                     size="sm"
-                                                    className="me-2" // Bootstrap margin-end class
+                                                    className="me-2" 
                                                 >
                                                     Sil
                                                 </Button>
@@ -209,7 +209,7 @@ const UserList = () => {
                                                     variant="success"
                                                     onClick={() => handleActivate(user)}
                                                     size="sm"
-                                                    className="me-2" // Bootstrap margin-end class
+                                                    className="me-2" 
                                                 >
                                                     Aktifleştir
                                                 </Button>
