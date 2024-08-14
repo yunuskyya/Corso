@@ -28,6 +28,7 @@ const ListCashFlowPage = () => {
     const handleListClick = async () => {
         try {
             const direction = transactionDirection === 'IN' ? 'G' : transactionDirection === 'OUT' ? 'Ç' : null; // Yön dönüşümünü yap
+            console.log("listele butonu çalıştı: " )
             const response = await fetchFilteredMoneyTransferList({
                 customerId: selectedCustomer,
                 startDate,
@@ -41,11 +42,11 @@ const ListCashFlowPage = () => {
     };
 
     const handleClearClick = () => {
+        setTransactionList(prevList => [...prevList.filter(() => false)]);
         setSelectedCustomer('');
         setStartDate('');
         setEndDate('');
         setTransactionDirection('');
-        setTransactionList([]);
     };
 
     // Tarih formatını dönüştüren yardımcı fonksiyon
@@ -152,9 +153,9 @@ const ListCashFlowPage = () => {
                     </thead>
                     <tbody>
                         {transactionList?.map((transaction) => (
-                            <tr key={transaction.systemDate}>
+                            <tr key={transaction.id}>
                                 <td>{transaction.customerNameSurname}</td>
-                                <td>{formatDate(transaction.systemDate)}</td> {/* Tarih formatını dönüştür */}
+                                <td>{formatDate(transaction.systemDate)}</td>
                                 <td>{transaction.receiver}</td>
                                 <td>{transaction.sender}</td>
                                 <td>{transaction.amount}</td>

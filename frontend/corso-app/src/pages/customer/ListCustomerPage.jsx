@@ -18,6 +18,7 @@ const ListCustomerPage = () => {
     const [filterRequest, setFilterRequest] = useState({
         userId: user ? user.role === 'ROLE_MANAGER' ? null : user.id : null,
         accountId: '',
+        customerId: '',
         name: '',
         surname: '',
         companyName: '',
@@ -84,7 +85,7 @@ const ListCustomerPage = () => {
 
     return (
         <div className="container my-4">
-            <h1 className="mb-4">Müşteri Listele</h1>
+            <h1 className="mb-4">Müşteri İşlemleri</h1>
 
             <div className="mb-4">
                 {/* Customer Type Selection */}
@@ -177,7 +178,7 @@ const ListCustomerPage = () => {
                 {/* Common Filters */}
 
                 <div className="row">
-                    <div className="col-6 col-lg-3 mb-3">
+                    {/* <div className="col-6 col-lg-3 mb-3">
                         <label htmlFor="accountId" className="form-label">Hesap NO</label>
                         <input
                             type="text"
@@ -186,6 +187,18 @@ const ListCustomerPage = () => {
                             className="form-control"
                             value={filterRequest.accountId}
                             placeholder="Hesap ID"
+                            onChange={handleFilterChange}
+                        />
+                    </div> */}
+                    <div className="col-6 col-lg-3 mb-3">
+                        <label htmlFor="customerId" className="form-label">Müşteri No</label>
+                        <input
+                            type="text"
+                            id="customerId"
+                            name="customerId"
+                            className="form-control"
+                            value={filterRequest.customerId}
+                            placeholder="Müşteri No"
                             onChange={handleFilterChange}
                         />
                     </div>
@@ -205,31 +218,31 @@ const ListCustomerPage = () => {
                         </select>
                     </div>
                     <div className="col-6 col-lg-3 mb-3">
-                        <label htmlFor="phone" className="form-label">Phone</label>
+                        <label htmlFor="phone" className="form-label">Telefon Numarası</label>
                         <input
                             type="text"
                             id="phone"
                             name="phone"
                             className="form-control"
                             value={filterRequest.phone}
-                            placeholder="telofon"
+                            placeholder="Telefon Numarası"
                             onChange={handleFilterChange}
                         />
                     </div>
                     <div className="col-6 col-lg-3 mb-3">
-                        <label htmlFor="email" className="form-label">Email</label>
+                        <label htmlFor="email" className="form-label">E-Posta</label>
                         <input
                             type="text"
                             id="email"
                             name="email"
                             className="form-control"
                             value={filterRequest.email}
-                            placeholder="Email"
+                            placeholder="E-Posta"
                             onChange={handleFilterChange}
                         />
                     </div>
                     <div className="col-6 col-lg-3 mb-3">
-                        <label htmlFor="dateStart" className="form-label">Start Date</label>
+                        <label htmlFor="dateStart" className="form-label">Başlangıç Tarihi</label>
                         <input
                             type="date"
                             id="dateStart"
@@ -241,7 +254,7 @@ const ListCustomerPage = () => {
                     </div>
 
                     <div className="col-6 col-lg-3 mb-3">
-                        <label htmlFor="dateEnd" className="form-label">End Date</label>
+                        <label htmlFor="dateEnd" className="form-label">Bitiş Tarihi</label>
                         <input
                             type="date"
                             id="dateEnd"
@@ -294,15 +307,15 @@ const ListCustomerPage = () => {
                 <div className='table-responsive'><table className="table table-striped table-bordered">
                     <thead>
                         <tr>
-                            <th>ID</th>
+                            <th>Müşteri No</th>
                             <th>İsim</th>
-                            <th>Hesap ID'leri</th>
+                            {/* <th>Hesap ID'leri</th> */}
                             <th>TC Kimlik No</th>
                             <th>VKN</th>
                             <th>Müşteri Tipi</th>
                             <th>Durum</th>
                             <th>Telefon</th>
-                            <th>Email</th>
+                            <th>E-Posta</th>
                             <th>Oluşturuldu</th>
                             {user?.role === 'ROLE_BROKER' && <th>İşlemler</th>}
                         </tr>
@@ -312,7 +325,7 @@ const ListCustomerPage = () => {
                             <tr key={customer.id}>
                                 <td>{customer.id}</td>
                                 <td>{customer.name}</td>
-                                <td>
+                                {/* <td>
                                     <div className="dropdown">
                                         <button className="btn btn-secondary dropdown-toggle" type="button" id={`dropdownMenuButton-${customer.id}`} data-bs-toggle="dropdown" aria-expanded="false">
                                             Accounts
@@ -327,7 +340,7 @@ const ListCustomerPage = () => {
                                             ))}
                                         </ul>
                                     </div>
-                                </td>
+                                </td> */}
                                 <td>{customer.tcKimlikNo}</td>
                                 <td>{customer.vkn}</td>
                                 <td>{customer.customerType}</td>
