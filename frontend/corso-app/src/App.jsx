@@ -35,7 +35,7 @@ const AppContent = () => {
         setTimeout(() => {
           dispatch(logout());
           setShowModal(false);
-          navigate('/login'); // Redirect to login page
+          navigate('/login'); 
         }, 3000);
       });
     }

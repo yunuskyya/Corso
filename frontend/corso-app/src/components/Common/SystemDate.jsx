@@ -26,7 +26,7 @@ const SystemDate = () => {
             ) : error ? (
                 <p>Error: {error.message}</p>
             ) : (
-                <p className={`text-${systemDate.dayClosedStarted ? 'danger' : 'success'} col align-self-center m-0 p-0`}>System Date: {new Date(systemDate.date).toLocaleDateString()}</p>
+                <p className={`text-${systemDate.dayClosedStarted ? 'danger' : 'success'} col align-self-center m-0 p-0`}>Sistem Saati: {new Date(systemDate.date).toLocaleDateString()}</p>
             )}
         </div>
     );
