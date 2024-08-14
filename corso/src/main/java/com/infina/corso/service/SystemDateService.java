@@ -10,4 +10,6 @@ public interface SystemDateService {
     void startCloseDay();
     boolean isDayClosed();
     boolean isDayClosedStarted();
+    void initializeSystemDate();
+    SystemDate getFullDateData();
 }

@@ -23,9 +23,11 @@ public class SystemDateServiceImpl implements SystemDateService {
 
 
     //sistemi ilk defa açtığımızda bir defa tetiklenecek method
-    private void initializeSystemDate() {
+    @Override
+    public void initializeSystemDate() {
         SystemDate systemDate = systemDateRepository.findById(1).orElseGet(() -> {
             SystemDate newDate = new SystemDate();
+            newDate.setId(1);
             newDate.setDate(LocalDate.now());// Varsayılan tarih
             return systemDateRepository.save(newDate);
         });
@@ -44,6 +46,11 @@ public class SystemDateServiceImpl implements SystemDateService {
     public LocalDate getSystemDate() {
         Optional<SystemDate> systemDate = systemDateRepository.findById(1);
         return systemDate.get().getDate();
+    }
+
+    @Override
+    public SystemDate getFullDateData() {
+        return systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
     }
 
     private SystemDate advanceDateByOneDay(SystemDate systemDate){
