@@ -122,7 +122,6 @@ const UserList = () => {
 
     return (
         <div className="container mt-4">
-            <h1 className="text-center mb-4">Kullanıcılar</h1>
             {alert.show && <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>{alert.message}</Alert>}
             <Form className="mb-4">
                 <Form.Group controlId="search">
@@ -172,14 +171,14 @@ const UserList = () => {
                             <thead className="thead-dark">
                                 <tr>
                                     <th style={{ width: '5%' }}>ID</th>
-                                    <th style={{ width: '20%' }}>Kullanıcı Adı</th>
-                                    <th style={{ width: '20%' }}>Ad</th>
-                                    <th style={{ width: '20%' }}>Soyad</th>
-                                    <th style={{ width: '20%' }}>E-posta</th>
-                                    <th style={{ width: '15%' }}>Telefon</th>
+                                    <th style={{ width: '15%' }}>Kullanıcı Adı</th>
+                                    <th style={{ width: '10%' }}>Ad</th>
+                                    <th style={{ width: '10%' }}>Soyad</th>
+                                    <th style={{ width: '10%' }}>E-posta</th>
+                                    <th style={{ width: '10%' }}>Telefon</th>
                                     <th style={{ width: '15%' }}>Oluşturulma Tarihi</th>
                                     <th style={{ width: '15%' }}>Güncellenme Tarihi</th>
-                                    <th style={{ width: '15%' }}>İşlemler</th>
+                                    <th style={{ width: '10%' }}>İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -200,6 +199,7 @@ const UserList = () => {
                                                     onClick={() => handleDelete(user)}
                                                     size="sm"
                                                     className="me-2" 
+                                                    style={{ padding: '5px 40px', fontSize: '16px' }} 
                                                 >
                                                     Sil
                                                 </Button>
