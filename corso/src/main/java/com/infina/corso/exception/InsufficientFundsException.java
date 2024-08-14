@@ -6,8 +6,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UserNotBlockedException extends RuntimeException {
-    public UserNotBlockedException() {
-        super(Messages.getMessageForLocale("corso.error.user.not.blocked", LocaleContextHolder.getLocale()));
+public class InsufficientFundsException extends RuntimeException {
+
+    public InsufficientFundsException(String accountNumber) {
+        super(Messages.getMessageForLocale("corso.error.insufficient.funds", LocaleContextHolder.getLocale()) + " Account: " + accountNumber);
     }
 }
+

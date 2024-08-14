@@ -3,15 +3,14 @@ package com.infina.corso.controller;
 
 import com.infina.corso.model.SystemDate;
 import com.infina.corso.service.SystemDateService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/v1/system-date")
+@CrossOrigin(origins = "*")
 public class SystemDateController {
 
     private final SystemDateService systemDateService;
@@ -21,7 +20,9 @@ public class SystemDateController {
     }
 
     @PostMapping("/close-day")
-    public void closeDay(LocalDate date){
+    public void closeDay(@RequestBody Map<String, String> requestBody) {
+        String dateString = requestBody.get("date");
+        LocalDate date = LocalDate.parse(dateString); // String'i LocalDate'e dönüştür
         systemDateService.closeDay(date);
     }
 
@@ -33,6 +34,11 @@ public class SystemDateController {
     @GetMapping
     public SystemDate getSystemDate(){
         return systemDateService.getFullDateData();
+    }
+
+    @GetMapping("/is-day-close-started")
+    public boolean isDayCloseStarted(){
+        return systemDateService.isDayClosedStarted();
     }
 
 }

@@ -26,7 +26,16 @@ public class ErrorHandler {
             InvalidTokenException.class,
             UserNotBlockedException.class,
             PasswordMismatchException.class,
-            AccessDeniedException.class
+            AccessDeniedException.class,
+            AccountAlreadyActiveException.class,
+            AccountNotFoundException.class,
+            CustomerNotFoundException.class,
+            InsufficientFundsException.class,
+            CurrencyNotFoundException.class,
+            SystemDateNotFoundException.class,
+
+
+
     })
     ResponseEntity<ApiError> handleCustomException(Exception exception, HttpServletRequest request) {
         ApiError error = new ApiError();
@@ -57,6 +66,18 @@ public class ErrorHandler {
             error.setStatus(400);
         } else if (exception instanceof PasswordMismatchException) {
             error.setStatus(400);
+        } else if (exception instanceof AccountAlreadyActiveException) {
+            error.setStatus(409);
+        } else if (exception instanceof AccountNotFoundException) {
+            error.setStatus(404);
+        } else if (exception instanceof CustomerNotFoundException) {
+            error.setStatus(404);
+        } else if (exception instanceof InsufficientFundsException) {
+            error.setStatus(400);
+        } else if (exception instanceof CurrencyNotFoundException) {
+            error.setStatus(404);
+        } else if (exception instanceof SystemDateNotFoundException) {
+            error.setStatus(404);
         }
         return ResponseEntity.status(error.getStatus()).body(error);
     }

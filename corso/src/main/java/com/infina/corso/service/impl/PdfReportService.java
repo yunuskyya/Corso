@@ -10,7 +10,6 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
-import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
@@ -27,9 +26,9 @@ public class PdfReportService {
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        document.add(new Paragraph("Transactions"));
+        document.add(new Paragraph("İşlem Listesi"));
 
-        Table table = new Table(new float[]{1, 1, 2, 2, 2});
+        Table table = new Table(new float[]{1, 1, 2, 2, 2, 2});
         table.setWidth(UnitValue.createPercentValue(100));
 
         table.addHeaderCell("Müsteri");
@@ -40,7 +39,7 @@ public class PdfReportService {
         table.addHeaderCell("Tarih");
 
         for (TransactionResponse transaction : transactions) {
-            table.addCell(transaction.getName()+transaction.getSurname());
+            table.addCell(transaction.getName()+" "+transaction.getSurname());
             table.addCell(transaction.getPurchasedCurrency());
             table.addCell(transaction.getSoldCurrency());
             table.addCell(String.valueOf(transaction.getAmount()));
@@ -60,7 +59,7 @@ public class PdfReportService {
         PdfDocument pdfDoc = new PdfDocument(writer);
         Document document = new Document(pdfDoc);
 
-        document.add(new Paragraph("Money Transfers"));
+        document.add(new Paragraph("Para Akış Listesi"));
 
         Table table = new Table(new float[]{1, 2, 2, 2,2});
         table.setWidth(UnitValue.createPercentValue(100));

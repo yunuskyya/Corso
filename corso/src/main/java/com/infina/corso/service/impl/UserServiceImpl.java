@@ -165,7 +165,7 @@ public class UserServiceImpl implements UserService {
         });
         if (!userInDb.isAccountLocked()){
             logger.debug("User is not blocked: {}", userUnblockRequest.getEmail());
-            throw new UserNotBlockedException("User is not blocked.");
+            throw new UserNotBlockedException();
         }
         userInDb.setAccountLocked(false);
         userRepository.save(userInDb);

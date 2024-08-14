@@ -39,7 +39,7 @@ public class IbanServiceImpl implements IbanService {
         Optional<Customer> customer = customerRepository.findById(ibanRegisterRequest.getCustomer_id());
         Iban iban = modelMapperForRequest.map(ibanRegisterRequest, Iban.class);
         if (checkIbanForDuplicate(iban, customer)) {
-            throw new DuplicateIbanException("Bu IBAN zaten mevcut.");
+            throw new DuplicateIbanException();
         }
         customer.get().getIbans().add(iban);
         iban.setCustomer(customer.get());

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.infina.corso.dto.request.CurrencyRequestForCost;
 import com.infina.corso.dto.response.CurrencyResponse;
 import com.infina.corso.dto.response.CurrencyResponseForCost;
+import com.infina.corso.exception.ApiCallException;
 import com.infina.corso.model.Currency;
 import com.infina.corso.service.CurrencyService;
 import org.springframework.data.redis.core.ListOperations;
@@ -58,23 +59,6 @@ public class CurrencyServiceImp implements CurrencyService {
         }
     }
 
-    /* boolean isCrossRate = !currencyRequestForCost.getSoldCurrencyCode().equals("TL") && !currencyRequestForCost.getPurchasedCurrencyCode().equals("TL");
-        CurrencyResponseForCost currencyResponseForCost = new CurrencyResponseForCost();
-        if(isCrossRate){
-           Double cost = rateCalculate(currencyRequestForCost.getSoldCurrencyCode(), currencyRequestForCost.getPurchasedCurrencyCode());
-           currencyResponseForCost.setCost(cost);
-           return currencyResponseForCost;
-        }
-        Currency currency = findByCode(currencyRequestForCost.getPurchasedCurrencyCode());
-        double currencyPrice;
-        if (currencyRequestForCost.getPurchasedCurrencyCode().equals("TL")) {
-            currency = findByCode(currencyRequestForCost.getSoldCurrencyCode());
-            currencyPrice = Double.parseDouble(currency.getBuying());
-        } else currencyPrice = Double.parseDouble(currency.getSelling());
-        Double cost = currencyPrice* currencyRequestForCost.getAmount();
-        currencyResponseForCost.setCost(cost);
-        return currencyResponseForCost; */
-
     private Double rateCalculate(String soldCurrency, String purchasedCurrency) {
         Currency soldCurrencyEntity = findByCode(soldCurrency);
         Double a = Double.parseDouble(soldCurrencyEntity.getSelling());
@@ -83,12 +67,6 @@ public class CurrencyServiceImp implements CurrencyService {
         Double rate = a / b;
         return rate;
     }
-
-
-    /* public Currency findByCode(TransactionRequest transactionRequest) {
-        String code = transactionRequest.getPurchasedCurrency();
-        return currencyRepository.findByCode(code);
-    } */
 
     public Currency findByCode(String code) {
         ListOperations<String, Currency> listOps = currencyRedisTemplate.opsForList();
@@ -129,16 +107,16 @@ public class CurrencyServiceImp implements CurrencyService {
                 listOps.rightPushAll("currencyList", currencies);
                 return currencyResponse;
             } else {
-                throw new RuntimeException("API çağrısında bir hata oluştu: " + response.statusCode());
+                throw new ApiCallException();
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-            throw new RuntimeException("Veri alımı sırasında bir hata oluştu", e);
+            throw new ApiCallException();
         }
     }
-
-
 }
+
+
 
 
 

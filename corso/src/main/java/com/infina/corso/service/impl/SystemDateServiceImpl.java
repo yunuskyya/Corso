@@ -1,13 +1,12 @@
 package com.infina.corso.service.impl;
 
+import com.infina.corso.exception.SystemDateNotFoundException;
 import com.infina.corso.model.SystemDate;
 import com.infina.corso.repository.SystemDateRepository;
 import com.infina.corso.service.SystemDateService;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -33,11 +32,6 @@ public class SystemDateServiceImpl implements SystemDateService {
         });
     }
 
-    public boolean isDayClosed(){
-        Optional<SystemDate> systemDate = systemDateRepository.findById(1);
-        return systemDate.get().isDayClosed();
-    }
-
     public boolean isDayClosedStarted(){
         Optional<SystemDate> systemDate = systemDateRepository.findById(1);
         return systemDate.get().isDayClosedStarted();
@@ -60,7 +54,7 @@ public class SystemDateServiceImpl implements SystemDateService {
     }
 
     public void startCloseDay(){
-        SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
+        SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new  SystemDateNotFoundException());
         systemDate.setDayClosedStarted(true);
         systemDateRepository.save(systemDate);
     }
@@ -69,10 +63,10 @@ public class SystemDateServiceImpl implements SystemDateService {
 
     public void closeDay(LocalDate date) {
         try {
-            SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new IllegalStateException("Sistem tarihi bulunamadı."));
+            SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new SystemDateNotFoundException());
             systemDate.setDate(date);
             systemDate.setDayClosedStarted(false);
-        } catch (Exception e) {
+        } catch (SystemDateNotFoundException e) {
             // Genel bir hata yakalama
             System.out.println("Hata: " + e.getMessage());
         }
@@ -99,18 +93,20 @@ public class SystemDateServiceImpl implements SystemDateService {
             } else {
                 System.out.println("Hata: Gün zaten kapatılmış veya gün kapatma işlemi başlatılmadan gün kapatılmaya çalışılıyor.");
             }
+            systemDateRepository.save(systemDate);
         } catch (Exception e) {
             // Genel bir hata yakalama
             System.out.println("Hata: " + e.getMessage());
         }
-    } */
+    }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+
+    /*@Scheduled(cron = "0 0 0 * * ?")
     public void autoCloseDayAtMidnight() {
         SystemDate systemDate = systemDateRepository.findById(1).get();
-        if (!systemDate.isDayClosed()) {
+        if (!systemDate.isDayClosedStarted()) {
             System.out.println("Automatically closing the day at " + LocalDateTime.now());
-            //closeDay();
+
         }
-    }
+    } */
 }
