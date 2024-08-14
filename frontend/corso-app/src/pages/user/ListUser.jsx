@@ -13,13 +13,8 @@ const UserList = () => {
     const [alert, setAlert] = useState({ show: false, message: '', variant: '' });
     const [searchTerm, setSearchTerm] = useState('');
     const [filteredUsers, setFilteredUsers] = useState([]);
-    const [filterState, setFilterState] = useState('active'); // Kullanıcıları filtreleme durumu
+    const [filterState, setFilterState] = useState('active'); // User filter state
     const itemsPerPage = 5;
-
-    useEffect(() => {
-  
-        dispatch(fetchUserList());
-    }, [dispatch]);
 
     useEffect(() => {
         dispatch(fetchUserList());
@@ -32,7 +27,7 @@ const UserList = () => {
             const isMatch = email.toLowerCase().includes(searchTerm.toLowerCase());
     
             if (filterState === 'all') {
-                return isMatch; // Tüm kullanıcıları göster
+                return isMatch; // Show all users
             }
     
             if (filterState === 'active') {
@@ -47,11 +42,10 @@ const UserList = () => {
                 return isMatch && user.accountLocked;
             }
     
-            return false; // Varsayılan durum, geçerli değil
+            return false; 
         });
         setFilteredUsers(filtered);
     }, [searchTerm, userList, filterState]);
-    
 
     const handleDelete = (user) => {
         if (window.confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz?')) {
@@ -83,7 +77,7 @@ const UserList = () => {
         dispatch(unblockUser({ email: user.email }))
             .unwrap()
             .then(() => {
-                setAlert({ show: true, message: 'Kullanıcının engeli başarıyla kaldırıldı.', variant: 'success' });
+                setAlert({ show: true, message: 'Kullanıcı başarıyla engellemeyi kaldırdı.', variant: 'success' });
                 dispatch(fetchUserList());
             })
             .catch((err) => {
@@ -95,30 +89,18 @@ const UserList = () => {
         setCurrentPage(selected);
     };
   
-const formatDate = (dateArray) => {
-
-    if (dateArray) {
-        const [year, month, day, hours, minutes, seconds, nanoseconds] = dateArray;
-
-        // Create a new Date object with correct zero-based month adjustment
-        // Convert nanoseconds to milliseconds
-        const date = new Date(year, month - 1, day, hours, minutes, seconds, Math.floor(nanoseconds / 1000000));
-
-        // Create a moment object from the Date object
-        const momentDate = moment(date);
-
-        // Check if the date is valid
-        if (!momentDate.isValid()) {
-            return 'Invalid Date';
+    const formatDate = (dateArray) => {
+        if (dateArray) {
+            const [year, month, day, hours, minutes, seconds, nanoseconds] = dateArray;
+            const date = new Date(year, month - 1, day, hours, minutes, seconds, Math.floor(nanoseconds / 1000000));
+            const momentDate = moment(date);
+            if (!momentDate.isValid()) {
+                return 'Geçersiz Tarih';
+            }
+            return momentDate.format('DD-MM-YYYY HH:mm:ss'); // Customize format as needed
         }
-
-        // Format the date as desired
-        return momentDate.format('DD-MM-YYYY HH:mm:ss'); // Customize format as needed
-
-    }
-
-    return 'NULL DATE'
-};
+        return '';
+    };
 
     if (status === 'loading') {
         return (
@@ -132,52 +114,53 @@ const formatDate = (dateArray) => {
         return <Alert variant="danger">Hata: {error}</Alert>;
     }
 
-    const paginatedUsers = filteredUsers.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
-    const pageCount = Math.ceil(filteredUsers.length / itemsPerPage);
+    // Calculate pagination
+    const startIndex = currentPage * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+    const pageCount = Math.min(Math.ceil(filteredUsers.length / itemsPerPage), 10); 
 
     return (
         <div className="container mt-4">
-            <h1 className="text-center mb-4">Kullanıcılar</h1>
             {alert.show && <Alert variant={alert.variant} onClose={() => setAlert({ show: false })} dismissible>{alert.message}</Alert>}
             <Form className="mb-4">
                 <Form.Group controlId="search">
                     <Form.Control
                         type="text"
-                        placeholder="Email ile ara..."
+                        placeholder="E-posta ile ara..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </Form.Group>
             </Form>
             <div className="mb-4">
-            <Button
-    variant={filterState === 'active' ? "primary" : "secondary"}
-    onClick={() => setFilterState('active')}
->
-    Aktif Kullanıcıları Göster
-</Button>
-<Button
-    variant={filterState === 'deleted' ? "primary" : "secondary"}
-    onClick={() => setFilterState('deleted')}
-    className="ms-2"
->
-    Silinmiş Kullanıcıları Göster
-</Button>
-<Button
-    variant={filterState === 'blocked' ? "primary" : "secondary"}
-    onClick={() => setFilterState('blocked')}
-    className="ms-2"
->
-    Bloke Olmuş Kullanıcıları Göster
-</Button>
-<Button
-    variant={filterState === 'all' ? "primary" : "secondary"}
-    onClick={() => setFilterState('all')}
-    className="ms-2"
->
-    Tüm Kullanıcıları Göster
-</Button>
-
+                <Button
+                    variant={filterState === 'all' ? "primary" : "secondary"}
+                    onClick={() => setFilterState('all')}
+                    className="me-2"
+                >
+                    Tüm Kullanıcıları Göster
+                </Button>
+                <Button
+                    variant={filterState === 'active' ? "primary" : "secondary"}
+                    onClick={() => setFilterState('active')}
+                    className="me-2" 
+                >
+                    Aktif Kullanıcıları Göster
+                </Button>
+                <Button
+                    variant={filterState === 'deleted' ? "primary" : "secondary"}
+                    onClick={() => setFilterState('deleted')}
+                    className="me-2"
+                >
+                    Silinmiş Kullanıcıları Göster
+                </Button>
+                <Button
+                    variant={filterState === 'blocked' ? "primary" : "secondary"}
+                    onClick={() => setFilterState('blocked')}
+                >
+                    Engellenmiş Kullanıcıları Göster
+                </Button>
             </div>
             {filteredUsers.length === 0 ? (
                 <p className="text-center">Kullanıcı bulunamadı.</p>
@@ -188,25 +171,25 @@ const formatDate = (dateArray) => {
                             <thead className="thead-dark">
                                 <tr>
                                     <th style={{ width: '5%' }}>ID</th>
-                                    <th style={{ width: '20%' }}>Kullanıcı Adı</th>
-                                    <th style={{ width: '20%' }}>İsim</th>
-                                    <th style={{ width: '20%' }}>Soyisim</th>
-                                    <th style={{ width: '20%' }}>Email</th>
-                                    <th style={{ width: '15%' }}>Telefon Numarası</th>
+                                    <th style={{ width: '15%' }}>Kullanıcı Adı</th>
+                                    <th style={{ width: '10%' }}>Ad</th>
+                                    <th style={{ width: '10%' }}>Soyad</th>
+                                    <th style={{ width: '10%' }}>E-posta</th>
+                                    <th style={{ width: '10%' }}>Telefon</th>
                                     <th style={{ width: '15%' }}>Oluşturulma Tarihi</th>
-                                    <th style={{ width: '15%' }}>Güncelleme Tarihi</th>
-                                    <th style={{ width: '15%' }}>İşlem</th>
+                                    <th style={{ width: '15%' }}>Güncellenme Tarihi</th>
+                                    <th style={{ width: '10%' }}>İşlemler</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {paginatedUsers.map(user => (
                                     <tr key={user.id}>
                                         <td>{user.id}</td>
-                                        <td>{user.username || 'N/A'}</td>
-                                        <td>{user.firstName || 'N/A'}</td>
-                                        <td>{user.lastName || 'N/A'}</td>
+                                        <td>{user.username || ''}</td>
+                                        <td>{user.firstName || ''}</td>
+                                        <td>{user.lastName || ''}</td>
                                         <td>{user.email}</td>
-                                        <td>{user.phone || 'N/A'}</td>
+                                        <td>{user.phone || ''}</td>
                                         <td>{formatDate(user.createdAt)}</td>
                                         <td>{formatDate(user.updatedAt)}</td>
                                         <td>
@@ -215,6 +198,8 @@ const formatDate = (dateArray) => {
                                                     variant="danger"
                                                     onClick={() => handleDelete(user)}
                                                     size="sm"
+                                                    className="me-2" 
+                                                    style={{ padding: '5px 40px', fontSize: '16px' }} 
                                                 >
                                                     Sil
                                                 </Button>
@@ -224,6 +209,7 @@ const formatDate = (dateArray) => {
                                                     variant="success"
                                                     onClick={() => handleActivate(user)}
                                                     size="sm"
+                                                    className="me-2" 
                                                 >
                                                     Aktifleştir
                                                 </Button>
@@ -234,7 +220,7 @@ const formatDate = (dateArray) => {
                                                     onClick={() => handleUnblock(user)}
                                                     size="sm"
                                                 >
-                                                    Blokeyi Kaldır
+                                                    Engellemeyi Kaldır
                                                 </Button>
                                             )}
                                         </td>
@@ -251,7 +237,7 @@ const formatDate = (dateArray) => {
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={5}
                         onPageChange={handlePageChange}
-                        containerClassName={"pagination d-flex justify-content-center mt-4"}
+                        containerClassName={"pagination justify-content-center"}
                         pageClassName={"page-item"}
                         pageLinkClassName={"page-link"}
                         previousClassName={"page-item"}

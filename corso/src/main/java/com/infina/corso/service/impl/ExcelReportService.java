@@ -29,7 +29,8 @@ public class ExcelReportService {
         headerRow.createCell(2).setCellValue("Satılan Döviz");
         headerRow.createCell(3).setCellValue("Miktar");
         headerRow.createCell(4).setCellValue("Gerçekleşen Kur Fiyatı");
-        headerRow.createCell(5).setCellValue("Tarih");
+        headerRow.createCell(5).setCellValue("Maliyet");
+        headerRow.createCell(6).setCellValue("Tarih");
 
         int rowNum = 1;
         for (TransactionResponse transaction : transactions) {
@@ -39,7 +40,8 @@ public class ExcelReportService {
             row.createCell(2).setCellValue(transaction.getSoldCurrency());
             row.createCell(3).setCellValue(transaction.getAmount());
             row.createCell(4).setCellValue(transaction.getRate());
-            row.createCell(5).setCellValue(transaction.getTransactionSystemDate().toString());
+            row.createCell(5).setCellValue(transaction.getCost().toString());
+            row.createCell(6).setCellValue(transaction.getTransactionSystemDate().toString());
         }
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();

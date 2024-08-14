@@ -115,6 +115,12 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
         return convertMoneyTransferListToDto(moneyTransferList);
     }
 
+    public List<MoneyTransferResponseForList> collectMoneyTransfersForEndOfDay() {
+        LocalDate date = systemDateRepository.findById(1).get().getDate();
+        List<MoneyTransfer> moneyTransferList = moneyTransferRepository.findBySystemDate(date);
+        return convertMoneyTransferListToDto(moneyTransferList);
+    }
+
     private List<MoneyTransferResponseForList> convertMoneyTransferListToDto(List<MoneyTransfer> moneyTransferList) {
         return moneyTransferList.stream()
                 .map(moneyTransfer -> {

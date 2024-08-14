@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Alert, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap stil dosyasını import et
-import {registerBroker} from '../../features/userSlice'; // Redux eylemi
+import { registerBroker } from '../../features/userSlice'; // Redux eylemi
 import { useDispatch } from 'react-redux';
 
 const AddBrokerPage = () => {
-        const dispatch = useDispatch();
-        const [broker, setBroker] = useState({
+    const dispatch = useDispatch();
+    const [broker, setBroker] = useState({
         firstName: '',
         lastName: '',
         username: '',
         email: '',
         phone: '',
-
     });
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [loading, setLoading] = useState(false); // Yükleme durumu ekle
 
     const handleChange = (e) => {
         setBroker({ ...broker, [e.target.name]: e.target.value });
@@ -24,8 +24,8 @@ const AddBrokerPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); // Form gönderildiğinde yüklemeyi başlat
         try {
-            console.log(broker);
             await dispatch(registerBroker(broker)).unwrap();
             setSuccess('Broker başarıyla eklendi.');
             setError('');
@@ -35,17 +35,17 @@ const AddBrokerPage = () => {
                 username: '',
                 email: '',
                 phone: '',
-
             });
         } catch (err) {
-            setError('Broker asdas asdasd hata oluştu.');
+            setError('Broker eklenirken bir hata oluştu.');
             setSuccess('');
-          
+        } finally {
+            setLoading(false); // Yüklemeyi bitir
         }
     };
 
     return (
-        <Container style={{ maxWidth: '600px', marginTop: '50px' }}>
+        <Container className="my-5" style={{ maxWidth: '600px' }}>
             <h1 className="text-center mb-4">Personel Ekle</h1>
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
@@ -62,7 +62,7 @@ const AddBrokerPage = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formLastName">
+                <Form.Group controlId="formLastName" className="mt-3">
                     <Form.Label>Soyisim</Form.Label>
                     <Form.Control
                         type="text"
@@ -74,11 +74,11 @@ const AddBrokerPage = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formUsername">
-                    <Form.Label>username</Form.Label>
+                <Form.Group controlId="formUsername" className="mt-3">
+                    <Form.Label>Kullanıcı Adı</Form.Label>
                     <Form.Control
                         type="text"
-                        placeholder="username giriniz"
+                        placeholder="Kullanıcı adınızı girin"
                         name="username"
                         value={broker.username}
                         onChange={handleChange}
@@ -86,7 +86,7 @@ const AddBrokerPage = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formEmail">
+                <Form.Group controlId="formEmail" className="mt-3">
                     <Form.Label>Email</Form.Label>
                     <Form.Control
                         type="email"
@@ -98,7 +98,7 @@ const AddBrokerPage = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formPhone">
+                <Form.Group controlId="formPhone" className="mt-3">
                     <Form.Label>Telefon Numarası</Form.Label>
                     <Form.Control
                         type="text"
@@ -110,9 +110,14 @@ const AddBrokerPage = () => {
                     />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="mt-3">
-                    Ekle
-                </Button >
+                <Button 
+                    variant="primary" 
+                    type="submit" 
+                    className="mt-4 w-100"
+                    disabled={loading} // Yükleme durumunda butonu devre dışı bırak
+                >
+                    {loading ? <Spinner animation="border" size="sm" /> : 'Ekle'}
+                </Button>
             </Form>
         </Container>
     );

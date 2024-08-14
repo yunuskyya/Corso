@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Alert } from 'react-bootstrap';
-import 'bootstrap/dist/css/bootstrap.min.css'; // Bootstrap stil dosyasını import et
+import { Form, Button, Container, Alert, Spinner } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
-import { registerManager } from '../../features/userSlice'; // Redux eylemi
+import { registerManager } from '../../features/userSlice'; 
 
 const AddUser = () => {
     const dispatch = useDispatch();
@@ -14,8 +13,9 @@ const AddUser = () => {
         password: '',
     });
 
-    const [error, setError] = useState('');
+    const [error, setError] = useState({});
     const [success, setSuccess] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -25,12 +25,27 @@ const AddUser = () => {
         });
     };
 
+    const handlePhoneChange = (e) => {
+        const { name, value } = e.target;
+        const filteredValue = value.replace(/[^0-9]/g, ''); 
+        setFormData({
+            ...formData,
+            [name]: filteredValue,
+        });
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true); 
         try {
             await dispatch(registerManager(formData)).unwrap();
             setSuccess('Yönetici başarıyla oluşturuldu.');
-            setError('');
+            setError({});
+
+            setTimeout(() => {
+                setSuccess('');
+            }, 3000);
+
             setFormData({
                 firstName: '',
                 phone: '',
@@ -39,15 +54,25 @@ const AddUser = () => {
                 password: '',
             });
         } catch (err) {
-            setError('Yönetici oluşturulurken bir hata oluştu.');
+            if (err.response && err.response.data) {
+                setError(err.response.data); // Backend'den gelen hata mesajları
+            } else {
+                setError({ global: 'Yönetici oluşturulurken bir hata oluştu.' });
+            }
             setSuccess('');
+
+            setTimeout(() => {
+                setError({});
+            }, 3000);
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <Container style={{ maxWidth: '600px', marginTop: '50px' }}>
             <h1 className="text-center mb-4">Yönetici Oluştur</h1>
-            {error && <Alert variant="danger">{error}</Alert>}
+            {error.global && <Alert variant="danger">{error.global}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group controlId="formFirstName">
@@ -58,8 +83,11 @@ const AddUser = () => {
                         name="firstName"
                         value={formData.firstName}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!error.firstName} // Hata varsa kırmızı yap
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {error.firstName}
+                    </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="formLastName">
@@ -70,8 +98,11 @@ const AddUser = () => {
                         name="lastName"
                         value={formData.lastName}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!error.lastName}
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {error.lastName}
+                    </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="formPhone">
@@ -81,9 +112,12 @@ const AddUser = () => {
                         placeholder="Telefon numaranızı girin"
                         name="phone"
                         value={formData.phone}
-                        onChange={handleChange}
-                        required
+                        onChange={handlePhoneChange}
+                        isInvalid={!!error.phone}
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {error.phone}
+                    </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="formEmail">
@@ -94,8 +128,11 @@ const AddUser = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!error.email}
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {error.email}
+                    </Form.Control.Feedback>
                 </Form.Group>
 
                 <Form.Group controlId="formPassword">
@@ -106,12 +143,36 @@ const AddUser = () => {
                         name="password"
                         value={formData.password}
                         onChange={handleChange}
-                        required
+                        isInvalid={!!error.password}
                     />
+                    <Form.Control.Feedback type="invalid">
+                        {error.password}
+                    </Form.Control.Feedback>
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="mt-3">
-                    Oluştur
+                <Button 
+                    variant="primary" 
+                    type="submit" 
+                    className="mt-3" 
+                    size="lg" 
+                    style={{ width: '100%' }} 
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                            <Spinner
+                                as="span"
+                                animation="border"
+                                size="lg"
+                                role="status"
+                                aria-hidden="true"
+                                style={{ width: '2rem', height: '2rem' }}
+                            /> 
+                            <span style={{ marginLeft: '10px' }}>Yükleniyor...</span>
+                        </div>
+                    ) : (
+                        'Oluştur'
+                    )}
                 </Button>
             </Form>
         </Container>

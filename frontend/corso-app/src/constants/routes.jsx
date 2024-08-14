@@ -16,6 +16,7 @@ import ChangePassword from '../pages/user/ChangePassword';
 import AddBrokerPage from '../pages/broker/AddBrokerPage';
 import ListBrokerPage from './../pages/broker/ListBrokerPage';
 import ListAccountsForBrokerPage from './../pages/account/ListAccountsForBrokerPage';
+import ListTransactionHistoryPageForManager  from './../pages/transaction/ListTransactionHistoryPageForManager';
 
 // -------------- ADMIN --------------
 export const ADMIN = '/admin';
@@ -36,20 +37,15 @@ export const ADMIN_OPERATIONS = [
         self_page: null,
         operations: [
             {
-                title: 'Kullanıcı Eke',
+                title: 'Yönetici Ekle',
                 link: ADMIN_ADD_USER,
                 page: <AddUser />,
             },
             {
-                title: 'Broker Listele',
+                title: 'Listele',
                 link: ADMIN_LIST_BROKERS,
                 page: <ListUser />,
             },
-            // {
-            //     title: 'Kullanıcı Yetkilendir',
-            //     link: ADMIN_ACTVATE_USER,
-            //     page: <ActivateUser />,
-            // }
         ]
     },
     {
@@ -108,13 +104,13 @@ export const MANAGER_OPERATIONS = [
             {
                 title: 'Geçmiş İşlemler',
                 link: MANAGER_TRANSACTION_HISTORY,
-                page: <ListTransactionHistoryPage />,
+                page: <ListTransactionHistoryPageForManager/>,
             },
         ]
 
     },
     {
-        title: 'Broker İşlemleri',
+        title: 'Personel İşlemleri',
         title_link: null,
         self_page: null,
         operations: [

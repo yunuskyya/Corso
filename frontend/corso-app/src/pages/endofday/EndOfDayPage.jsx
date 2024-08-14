@@ -21,6 +21,7 @@ const EndOfDayPage = () => {
   const dispatch = useAppDispatch();
   const [reports, setReports] = useState([]);
   const [isDayCloseStarted, setIsDayCloseStarted] = useState(false);
+  const [isDayClosed, setIsDayClosed] = useState(false);
 
   useEffect(() => {
     const checkDayStatus = async () => {
@@ -63,6 +64,7 @@ const EndOfDayPage = () => {
         setIsDayClosed(data);
         setIsDayCloseStarted(false); // Günü kapatma tamamlandığında buton durumlarını güncelle
         dispatch(fetchSystemDate()); // Sistem tarihini güncelle
+        window.location.reload();
       } catch (error) {
         console.error('Error closing day:', error);
       }

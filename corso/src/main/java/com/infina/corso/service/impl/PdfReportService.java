@@ -28,7 +28,7 @@ public class PdfReportService {
 
         document.add(new Paragraph("İşlem Listesi"));
 
-        Table table = new Table(new float[]{1, 1, 2, 2, 2, 2});
+        Table table = new Table(new float[]{1, 1, 2, 2, 2, 2,2});
         table.setWidth(UnitValue.createPercentValue(100));
 
         table.addHeaderCell("Müsteri");
@@ -36,6 +36,7 @@ public class PdfReportService {
         table.addHeaderCell("Satılan Doviz");
         table.addHeaderCell("Miktar");
         table.addHeaderCell("Gerceklesen Kur Fiyatı");
+        table.addHeaderCell("Maliyet");
         table.addHeaderCell("Tarih");
 
         for (TransactionResponse transaction : transactions) {
@@ -44,6 +45,7 @@ public class PdfReportService {
             table.addCell(transaction.getSoldCurrency());
             table.addCell(String.valueOf(transaction.getAmount()));
             table.addCell(String.valueOf(transaction.getRate()));
+            table.addCell(transaction.getCost().toString());
             table.addCell(transaction.getTransactionSystemDate().toString());
         }
         document.add(table);

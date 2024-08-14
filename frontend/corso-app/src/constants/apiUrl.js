@@ -44,6 +44,7 @@ export const CURRENCY_URL_COST = BASE_URL + '/currencies/cost';
 
 export const TRANSACTION_URL_CREATE = BASE_URL + '/transaction/create';
 export const TRANSACTION_URL_GET_ALL_BY_BROKER = BASE_URL + '/transaction/get-all/{userId}';
+export const TRANSACTION_URL_GET_ALL_FOR_CUSTOMER = BASE_URL + '/transaction/get-all';
 
 // money transfer urls:
 
