@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Alert } from 'react-bootstrap';
+import { Form, Button, Container, Alert, Spinner } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useDispatch } from 'react-redux';
 import { changePassword } from '../../features/userSlice';
@@ -14,6 +14,7 @@ const ChangePassword = () => {
 
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -30,11 +31,11 @@ const ChangePassword = () => {
             setSuccess('');
             return;
         }
+        setLoading(true);
         try {
-            // Burada sadece mevcut şifre ve yeni şifreler gönderilecek
             await dispatch(changePassword({
-                oldPassword: formData.currentPassword, // Eski şifre
-                newPassword: formData.newPassword, // Yeni şifre
+                oldPassword: formData.currentPassword,
+                newPassword: formData.newPassword,
             })).unwrap();
             setSuccess('Şifre başarıyla değiştirildi.');
             setError('');
@@ -46,11 +47,13 @@ const ChangePassword = () => {
         } catch (err) {
             setError('Şifre değiştirilirken bir hata oluştu.');
             setSuccess('');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <Container style={{ maxWidth: '600px', marginTop: '50px' }}>
+        <Container className="my-5" style={{ maxWidth: '600px' }}>
             <h1 className="text-center mb-4">Şifre Değiştir</h1>
             {error && <Alert variant="danger">{error}</Alert>}
             {success && <Alert variant="success">{success}</Alert>}
@@ -67,7 +70,7 @@ const ChangePassword = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formNewPassword">
+                <Form.Group controlId="formNewPassword" className="mt-3">
                     <Form.Label>Yeni Şifre</Form.Label>
                     <Form.Control
                         type="password"
@@ -79,7 +82,7 @@ const ChangePassword = () => {
                     />
                 </Form.Group>
 
-                <Form.Group controlId="formConfirmNewPassword">
+                <Form.Group controlId="formConfirmNewPassword" className="mt-3">
                     <Form.Label>Yeni Şifreyi Onayla</Form.Label>
                     <Form.Control
                         type="password"
@@ -91,8 +94,13 @@ const ChangePassword = () => {
                     />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="mt-3">
-                    Şifreyi Değiştir
+                <Button 
+                    variant="primary" 
+                    type="submit" 
+                    className="mt-4 w-100"
+                    disabled={loading}
+                >
+                    {loading ? <Spinner animation="border" size="sm" /> : 'Şifreyi Değiştir'}
                 </Button>
             </Form>
         </Container>
@@ -100,4 +108,3 @@ const ChangePassword = () => {
 };
 
 export default ChangePassword;
-    

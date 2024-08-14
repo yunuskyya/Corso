@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Spinner, Alert } from 'react-bootstrap';
+import { Table, Spinner, Alert, Form, InputGroup } from 'react-bootstrap';
 import ReactPaginate from 'react-paginate';
 import moment from 'moment';
 import { userListBroker } from '../../api/userApi'; // API fonksiyonunun yolu
 
 const BrokerListPage = () => {
     const [brokers, setBrokers] = useState([]);
+    const [filteredBrokers, setFilteredBrokers] = useState([]);
     const [status, setStatus] = useState('loading');
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
+    const [searchQuery, setSearchQuery] = useState('');
     const itemsPerPage = 10;
 
     useEffect(() => {
@@ -16,6 +18,7 @@ const BrokerListPage = () => {
             try {
                 const data = await userListBroker();
                 setBrokers(data.content || []);
+                setFilteredBrokers(data.content || []);
                 setStatus('succeeded');
             } catch (error) {
                 setError('Failed to fetch broker list');
@@ -25,8 +28,23 @@ const BrokerListPage = () => {
         fetchBrokers();
     }, []);
 
+    useEffect(() => {
+        if (searchQuery) {
+            const filtered = brokers.filter(broker =>
+                broker.email.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+            setFilteredBrokers(filtered);
+        } else {
+            setFilteredBrokers(brokers);
+        }
+    }, [searchQuery, brokers]);
+
     const handlePageChange = ({ selected }) => {
         setCurrentPage(selected);
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
     };
 
     const convertToDate = (dateArray) => {
@@ -51,13 +69,23 @@ const BrokerListPage = () => {
     }
 
     const offset = currentPage * itemsPerPage;
-    const paginatedBrokers = brokers.slice(offset, offset + itemsPerPage);
-    const pageCount = Math.ceil(brokers.length / itemsPerPage);
+    const paginatedBrokers = filteredBrokers.slice(offset, offset + itemsPerPage);
+    const pageCount = Math.ceil(filteredBrokers.length / itemsPerPage);
 
     return (
         <div>
             <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>Broker Listesi</h1>
-            {brokers.length === 0 ? (
+            <div className="mb-4">
+                <InputGroup className="mb-3">
+                    <Form.Control
+                        type="text"
+                        placeholder="E-posta adresine göre ara..."
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                    />
+                </InputGroup>
+            </div>
+            {filteredBrokers.length === 0 ? (
                 <p style={{ textAlign: 'center' }}>Hiç broker bulunamadı.</p>
             ) : (
                 <>
@@ -85,7 +113,7 @@ const BrokerListPage = () => {
                                     <td>{broker.phone}</td>
                                     <td>{formatDate(broker.updatedAt)}</td>
                                     <td>{formatDate(broker.createdAt)}</td>                                
-                                    </tr>
+                                </tr>
                             ))}
                         </tbody>
                     </Table>
@@ -115,8 +143,8 @@ const BrokerListPage = () => {
         </div>
     );
 };
-const formatDate = (dateArray) => {
 
+const formatDate = (dateArray) => {
     if (dateArray) {
         const [year, month, day, hours, minutes, seconds, nanoseconds] = dateArray;
 
@@ -137,7 +165,7 @@ const formatDate = (dateArray) => {
 
     }
 
-    return 'NULL DATE'
+    return 'NULL DATE';
 };
 
 export default BrokerListPage;
