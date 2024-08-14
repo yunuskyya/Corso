@@ -3,6 +3,7 @@ package com.infina.corso.dto.response;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
@@ -16,4 +17,5 @@ public class TransactionResponse {
     private int amount;
     private LocalDate transactionSystemDate;
     private Double rate;
+    private Double cost;
 }

@@ -89,7 +89,7 @@ public class ReportController {
     // GÜN SONU TRANSACTION PDF
     @GetMapping("/export-transactions/pdf")
     public ResponseEntity<byte[]> exportToPdf() {
-        List<TransactionResponse> transactions = transactionService.collectAllTransactions();
+        List<TransactionResponse> transactions = transactionService.collectAllTransactionForDayClose();
         ByteArrayInputStream in = pdfReportService.exportTransactionsToPdf(transactions);
 
         HttpHeaders headers = new HttpHeaders();
@@ -104,7 +104,7 @@ public class ReportController {
 
     @GetMapping("/export-transactions/excel")
     public ResponseEntity<byte[]> exportToExcel() throws IOException {
-        List<TransactionResponse> transactions = transactionService.collectAllTransactions();
+        List<TransactionResponse> transactions = transactionService.collectAllTransactionForDayClose();
         ByteArrayInputStream in = excelReportService.exportTransactionsToExcel(transactions);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=transactions.xlsx");
@@ -120,7 +120,7 @@ public class ReportController {
     // GUN SONU NAKIT AKIS EXCEL
     @GetMapping("/export-money-transfers/excel")
     public ResponseEntity<byte[]> exportMoneyTransfersToExcel() throws IOException {
-        List<MoneyTransferResponseForList> moneyTransfers = moneyTransferService.collectAllMoneyTransfers();
+        List<MoneyTransferResponseForList> moneyTransfers = moneyTransferService.collectMoneyTransfersForEndOfDay();
 
         ByteArrayInputStream in = excelReportService.exportMoneyTransfersToExcel(moneyTransfers);
 
@@ -135,7 +135,7 @@ public class ReportController {
     // GUN SONU NAKIT AKIS PDF
     @GetMapping("/export-money-transfers/pdf")
     public ResponseEntity<byte[]> exportMoneyTransfersToPdf() {
-        List<MoneyTransferResponseForList> moneyTransfers = moneyTransferService.collectAllMoneyTransfers();
+        List<MoneyTransferResponseForList> moneyTransfers = moneyTransferService.collectMoneyTransfersForEndOfDay();
 
         ByteArrayInputStream in = pdfReportService.exportMoneyTransfersToPdf(moneyTransfers);
 

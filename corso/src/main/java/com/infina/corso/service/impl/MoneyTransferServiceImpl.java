@@ -15,6 +15,7 @@ import com.infina.corso.repository.SystemDateRepository;
 import com.infina.corso.service.MoneyTransferService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -112,6 +113,12 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
 
     public List<MoneyTransferResponseForList> collectAllMoneyTransfers() {
         List<MoneyTransfer> moneyTransferList = moneyTransferRepository.findAll();
+        return convertMoneyTransferListToDto(moneyTransferList);
+    }
+
+    public List<MoneyTransferResponseForList> collectMoneyTransfersForEndOfDay() {
+        LocalDate date = systemDateRepository.findById(1).get().getDate();
+        List<MoneyTransfer> moneyTransferList = moneyTransferRepository.findBySystemDate(date);
         return convertMoneyTransferListToDto(moneyTransferList);
     }
 

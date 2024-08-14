@@ -16,6 +16,7 @@ import ChangePassword from '../pages/user/ChangePassword';
 import AddBrokerPage from '../pages/broker/AddBrokerPage';
 import ListBrokerPage from './../pages/broker/ListBrokerPage';
 import ListAccountsForBrokerPage from './../pages/account/ListAccountsForBrokerPage';
+import ListTransactionHistoryPageForManager  from './../pages/transaction/ListTransactionHistoryPageForManager';
 
 // -------------- ADMIN --------------
 export const ADMIN = '/admin';
@@ -108,7 +109,7 @@ export const MANAGER_OPERATIONS = [
             {
                 title: 'Geçmiş İşlemler',
                 link: MANAGER_TRANSACTION_HISTORY,
-                page: <ListTransactionHistoryPage />,
+                page: <ListTransactionHistoryPageForManager/>,
             },
         ]
 

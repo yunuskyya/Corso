@@ -3,7 +3,6 @@ import useAuth from '../../hooks/useAuth';
 import { fetchCustomerList } from '../../api/transactionApi';
 import { fetchIbanListByCustomer, createMoneyTransfer } from '../../api/moneyTransferApi';
 
-
 const AddCashPage = () => {
     const { user } = useAuth();
     const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -12,6 +11,8 @@ const AddCashPage = () => {
     const [currencyType, setCurrencyType] = useState('');
     const [customerList, setCustomerList] = useState([]);
     const [ibanList, setIbanList] = useState([]);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertType, setAlertType] = useState(''); // success or error
 
     // Müşteri listesini API'den çek
     useEffect(() => {
@@ -21,6 +22,8 @@ const AddCashPage = () => {
                 setCustomerList(response.content);  // API'den gelen müşteri listesini set ediyoruz
             } catch (error) {
                 console.error('Error fetching customer list:', error);
+                setAlertMessage('Error fetching customer list.');
+                setAlertType('danger');
             }
         };
         getCustomerList();
@@ -32,10 +35,11 @@ const AddCashPage = () => {
             const getIbanList = async () => {
                 try {
                     const response = await fetchIbanListByCustomer(selectedCustomer);
-                    console.log('useEffect method içi erkal : ', response);
                     setIbanList(response);  // API'den gelen IBAN listesini set ediyoruz
                 } catch (error) {
                     console.error('Error fetching IBAN list:', error);
+                    setAlertMessage('Error fetching IBAN list.');
+                    setAlertType('danger');
                 }
             };
             getIbanList();
@@ -62,6 +66,11 @@ const AddCashPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (parseFloat(amount) >= 1000000000) {
+            setAlertMessage('Girilen miktar 1 milyarı geçemez.');
+            setAlertType('danger');
+            return;
+        }
         const transferRequest = {
             customer_id: selectedCustomer,
             currencyCode: currencyType,
@@ -71,12 +80,22 @@ const AddCashPage = () => {
         };
         try {
             const response = await createMoneyTransfer(transferRequest);
-            console.log('Transfer successful:', response);
-            // Success handling here
+            setAlertMessage('İşlem Tamamlandı!');
+            setAlertType('success');
         } catch (error) {
             console.error('Error creating money transfer:', error);
-            // Error handling here
+            setAlertMessage('Error creating money transfer.');
+            setAlertType('danger');
         }
+    };
+
+    const handleReset = () => {
+        setSelectedCustomer('');
+        setSelectedIban('');
+        setAmount('');
+        setCurrencyType('');
+        setAlertMessage('');
+        setAlertType('');
     };
 
     return (
@@ -141,6 +160,7 @@ const AddCashPage = () => {
                         id="amount"
                         step="0.01"
                         min="0"
+                        max="1000000000" // Burada 1 milyar sınırını koyuyoruz
                         value={amount}
                         onChange={(e) => setAmount(e.target.value)}
                         style={styles.input}
@@ -148,13 +168,28 @@ const AddCashPage = () => {
                     />
                 </div>
 
-                {/* Gönder Butonu */}
+                {/* Hata/Success Mesajı */}
+                {alertMessage && (
+                    <div className={`alert alert-${alertType}`} role="alert" style={styles.alert}>
+                        {alertMessage}
+                    </div>
+                )}
+
+                {/* Gönder ve Temizle Butonları */}
                 <button
                     type="submit"
                     className="btn btn-primary"
                     style={styles.button}
                 >
                     Onayla
+                </button>
+                <button
+                    type="button"
+                    onClick={handleReset}
+                    className="btn btn-secondary"
+                    style={{ ...styles.button, marginTop: '16px' }}
+                >
+                    Temizle
                 </button>
             </form>
         </div>
@@ -193,6 +228,11 @@ const styles = {
     button: {
         width: '100%',
         marginTop: '1rem'
+    },
+    alert: {
+        marginTop: '10px',
+        width: '100%',
+        textAlign: 'center'
     }
 };
 
