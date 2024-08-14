@@ -16,7 +16,18 @@ const Navbar = ({ onLogout }) => {
     const handleLogout = async () => {
         await onLogout();
     };
-
+    const getRoleDisplayName = (role) => {
+        switch (role) {
+            case 'broker':
+                return 'Personel';
+            case 'manager':
+                return 'Yönetici';
+            case 'admin':
+                return 'Admin';
+            default:
+                return 'Bilinmeyen Rol';
+        }
+    };
     return (
         <nav className={`navbar navbar-expand-lg border-bottom shadow`}>
             <div className="container-fluid">
@@ -50,13 +61,13 @@ const Navbar = ({ onLogout }) => {
                         {user && isLoginSuccess && (
                             <div className='row'>
                                 <div className='col-12 fs-6 fw-bold text-info text-center'>{user.username}</div>
-                                <div className='col-12 fs-6 fw-italic text-info text-center'>{user.role.split('_')[1].toLowerCase()}</div>
+                                <div className='col-12 fs-6 fw-italic text-info text-center'>{getRoleDisplayName(user.role.split('_')[1].toLowerCase())}</div>
                             </div>
 
                         )}
                         {user && isLoginSuccess && (
                             <li className="nav-item">
-                                <button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Logout</button>
+                                <button className="btn btn-outline-danger my-2 my-sm-0" onClick={handleLogout}>Çıkış Yap</button>
                             </li>
                         )}
                     </ul>
