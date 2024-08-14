@@ -37,6 +37,7 @@ public class PdfReportService {
         table.addHeaderCell("Satılan Doviz");
         table.addHeaderCell("Miktar");
         table.addHeaderCell("Gerceklesen Kur Fiyatı");
+        table.addHeaderCell("Maliyet");
         table.addHeaderCell("Tarih");
 
         for (TransactionResponse transaction : transactions) {
@@ -45,6 +46,7 @@ public class PdfReportService {
             table.addCell(transaction.getSoldCurrency());
             table.addCell(String.valueOf(transaction.getAmount()));
             table.addCell(String.valueOf(transaction.getRate()));
+            table.addCell(transaction.getCost().toString());
             table.addCell(transaction.getTransactionSystemDate().toString());
         }
         document.add(table);

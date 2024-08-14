@@ -65,7 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
                         Double rate = calculateCurrencyRate(transactionRequest.getSoldCurrency(), transactionRequest.getPurchasedCurrency());
                         transaction.setRate(rate);
                         double transactionAmountInSoldCurrency = transactionRequest.getAmount();
-                        BigDecimal newBalance = calculateTransactionCostForCross(account.get(), transactionRequest.getAmount(), rate);
+                        BigDecimal newBalance = calculateTransactionCostForCross(account.get(), transactionRequest.getAmount(), rate, transaction);
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                             throw new RuntimeException("Insufficient funds for account number:  " + account.get().getAccountNumber());
                         }
@@ -75,11 +75,11 @@ public class TransactionServiceImpl implements TransactionService {
                         if (transaction.getSoldCurrency().equals("TL")) {
                             transaction.setTransactionType('A');
                             transaction.setRate(Double.parseDouble(currencyService.findByCode(transactionRequest.getPurchasedCurrency()).getSelling()));
-                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType());
+                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getPurchasedCurrency(), transaction.getTransactionType(),transaction);
                         } else {
                             transaction.setTransactionType('S');
                             transaction.setRate(Double.parseDouble(currencyService.findByCode(transactionRequest.getSoldCurrency()).getBuying()));
-                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getSoldCurrency(), transaction.getTransactionType());
+                            newBalance = calculateNewBalanceForTRY(account.get(), transaction.getAmount(), transaction.getSoldCurrency(), transaction.getTransactionType(), transaction);
                         }
                         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
                             throw new RuntimeException("Insufficient funds for account number: " + account.get().getAccountNumber());
@@ -127,9 +127,10 @@ public class TransactionServiceImpl implements TransactionService {
         return rate;
     }
 
-    private BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate) {
+    private BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate, Transaction transaction) {
         BigDecimal balance = account.getBalance();
         BigDecimal cost = calculateNewBalanceForCross(amount, rate);
+        transaction.setCost(cost);
         BigDecimal newBalance = balance.subtract(cost);
         return newBalance;
     }
@@ -156,9 +157,10 @@ public class TransactionServiceImpl implements TransactionService {
         return cost;
     }
 
-    private BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType) {
+    private BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType, Transaction transaction) {
         BigDecimal balance = account.getBalance();
         BigDecimal cost = calculateTransactionCostForTRY(transactionType, amount, purchasedCurrency);
+        transaction.setCost(cost);
         BigDecimal newBalance = balance.subtract(cost);
         return newBalance;
     }

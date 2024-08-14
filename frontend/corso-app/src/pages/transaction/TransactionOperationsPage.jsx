@@ -52,7 +52,10 @@ const TransactionOperationsPage = () => {
     setSelectedBuyCurrency('');
     setSelectedSellCurrency('');
     setSelectedCustomer('');
-
+    setAmountInputDisabled(true);
+    setBuyCurrencyDisabled(true);
+    setConfirmDisabled(true);
+    setSellCurrencyDisabled(true);
   };
 
 
