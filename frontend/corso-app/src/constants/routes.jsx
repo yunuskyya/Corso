@@ -37,12 +37,12 @@ export const ADMIN_OPERATIONS = [
         self_page: null,
         operations: [
             {
-                title: 'Kullanıcı Eke',
+                title: 'Yönetici Ekle',
                 link: ADMIN_ADD_USER,
                 page: <AddUser />,
             },
             {
-                title: 'Broker Listele',
+                title: 'Listele',
                 link: ADMIN_LIST_BROKERS,
                 page: <ListUser />,
             },
@@ -110,7 +110,7 @@ export const MANAGER_OPERATIONS = [
 
     },
     {
-        title: 'Broker İşlemleri',
+        title: 'Personel İşlemleri',
         title_link: null,
         self_page: null,
         operations: [
