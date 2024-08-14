@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -29,7 +30,7 @@ public class PdfReportService {
 
         document.add(new Paragraph("İşlem Listesi"));
 
-        Table table = new Table(new float[]{1, 1, 2, 2, 2, 2});
+        Table table = new Table(new float[]{1, 1, 2, 2, 2, 2,2});
         table.setWidth(UnitValue.createPercentValue(100));
 
         table.addHeaderCell("Müsteri");

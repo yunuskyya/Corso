@@ -41,7 +41,7 @@ public class Transaction {
     private int amount;
 
    @Column
-    private BigDecimal cost;
+    private Double cost;
 
     @Column
     private Double rate;

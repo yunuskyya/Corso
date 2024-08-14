@@ -130,7 +130,7 @@ public class TransactionServiceImpl implements TransactionService {
     private BigDecimal calculateTransactionCostForCross(Account account, double amount, double rate, Transaction transaction) {
         BigDecimal balance = account.getBalance();
         BigDecimal cost = calculateNewBalanceForCross(amount, rate);
-        transaction.setCost(cost);
+        transaction.setCost(cost.doubleValue());
         BigDecimal newBalance = balance.subtract(cost);
         return newBalance;
     }
@@ -160,7 +160,7 @@ public class TransactionServiceImpl implements TransactionService {
     private BigDecimal calculateNewBalanceForTRY(Account account, double amount, String purchasedCurrency, char transactionType, Transaction transaction) {
         BigDecimal balance = account.getBalance();
         BigDecimal cost = calculateTransactionCostForTRY(transactionType, amount, purchasedCurrency);
-        transaction.setCost(cost);
+        transaction.setCost(cost.doubleValue());
         BigDecimal newBalance = balance.subtract(cost);
         return newBalance;
     }

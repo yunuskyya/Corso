@@ -1,22 +1,29 @@
-import React, { useState } from 'react';
-import { useAppDispatch } from '../../redux/hooks';
-import { fetchTransactionListForBrokerThunk } from './../../features/transactionSlice';
+import React, { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { fetchTransactionListForBrokerThunk, fetchCustomerListThunk } from './../../features/transactionSlice';
 import useAuth from '../../hooks/useAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';  // Bootstrap 5.3
 
 const ListTransactionHistoryPage = () => {
+    const [selectedCustomer, setSelectedCustomer] = useState('');
     // const [startDate, setStartDate] = useState('');
     // const [endDate, setEndDate] = useState('');
     const [transactionList, setTransactionList] = useState([]);
     const dispatch = useAppDispatch();
-    const { user } = useAuth(); 
-    const userId = user?.id; 
+    const customers = useAppSelector((state) => state.transaction.customers);
+    const { user } = useAuth();
+    const userId = user?.id;
+
+    useEffect(() => {
+        dispatch(fetchCustomerListThunk(user.id));
+    }, [dispatch, user.id]);
+
 
     const handleListClick = async () => {
         if (userId) {
             try {
                 console.log("buton methodu içine girdi!!");
-                console.log("User id: "+userId);
+                console.log("User id: " + userId);
                 const transactions = await dispatch(fetchTransactionListForBrokerThunk(userId)).unwrap();
                 setTransactionList(transactions);
             } catch (error) {
@@ -30,7 +37,7 @@ const ListTransactionHistoryPage = () => {
         const [year, month, day] = dateArray;
         return `${day.toString().padStart(2, '0')}.${month.toString().padStart(2, '0')}.${year}`;
     };
-    
+
 
     const handleClearClick = () => {
         // setStartDate('');
@@ -47,8 +54,8 @@ const ListTransactionHistoryPage = () => {
                         <input
                             type="date"
                             className="form-control"
-                            // value={startDate}
-                            // onChange={(e) => setStartDate(e.target.value)}
+                        // value={startDate}
+                        // onChange={(e) => setStartDate(e.target.value)}
                         />
                     </label>
                 </div>
@@ -58,8 +65,8 @@ const ListTransactionHistoryPage = () => {
                         <input
                             type="date"
                             className="form-control"
-                            // value={endDate}
-                            // onChange={(e) => setEndDate(e.target.value)}
+                        // value={endDate}
+                        // onChange={(e) => setEndDate(e.target.value)}
                         />
                     </label>
                 </div>
@@ -73,6 +80,15 @@ const ListTransactionHistoryPage = () => {
                 </div>
             </div>
             <div>
+                <div style={styles.formGroup}>
+                    <label htmlFor="customerSelect" style={styles.label}>Müşteri Seçiniz</label>
+                    <select className="form-select" id="customerSelect" value={selectedCustomer} /*</div>onChange={handleCustomerChange}</div>*/ style={styles.select}>
+                        <option value="" disabled>Bir Müşteri Seçiniz</option>
+                        {customers?.content?.map((customer) => (
+                            <option key={customer.id} value={customer.id}>{customer.name} {customer.surname}</option>
+                        ))}
+                    </select>
+                </div>
                 <table className="table table-striped">
                     <thead>
                         <tr>
@@ -81,6 +97,7 @@ const ListTransactionHistoryPage = () => {
                             <th scope="col">Döviz Kuru</th>
                             <th scope="col">Satın Alınan Döviz</th>
                             <th scope="col">Satılan Döviz</th>
+                            <th scope="col">Maliyet</th>
                             <th scope="col">Alınan Döviz Miktarı</th>
                         </tr>
                     </thead>
@@ -93,6 +110,7 @@ const ListTransactionHistoryPage = () => {
                                     <td>{transaction.rate}</td>
                                     <td>{transaction.purchasedCurrency}</td>
                                     <td>{transaction.soldCurrency}</td>
+                                    <td>{transaction.cost}</td>
                                     <td>{transaction.amount}</td>
                                 </tr>
                             ))
@@ -107,5 +125,29 @@ const ListTransactionHistoryPage = () => {
         </div>
     );
 };
+
+const styles = {
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      marginTop: '2rem'
+    },
+    formGroup: {
+      marginBottom: '1rem',
+      width: '100%',
+      maxWidth: '400px'
+    },
+    label: {
+      display: 'block',
+      marginBottom: '0.5rem'
+    },
+    select: {
+      width: '100%'
+    },
+    input: {
+      width: '100%'
+    }
+  };
 
 export default ListTransactionHistoryPage;

@@ -17,5 +17,5 @@ public class TransactionResponse {
     private int amount;
     private LocalDate transactionSystemDate;
     private Double rate;
-    private BigDecimal cost;
+    private Double cost;
 }
