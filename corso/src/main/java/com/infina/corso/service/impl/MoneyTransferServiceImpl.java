@@ -3,6 +3,7 @@ package com.infina.corso.service.impl;
 import com.infina.corso.dto.request.MoneyTransferRequestForAddMoney;
 import com.infina.corso.dto.request.MoneyTransferRequestForList;
 import com.infina.corso.dto.response.MoneyTransferResponseForList;
+import com.infina.corso.exception.CustomerNotFoundException;
 import com.infina.corso.model.Account;
 import com.infina.corso.model.Customer;
 import com.infina.corso.model.MoneyTransfer;
@@ -127,7 +128,7 @@ public class MoneyTransferServiceImpl implements MoneyTransferService {
                     MoneyTransferResponseForList response = modelMapperForResponse
                             .map(moneyTransfer, MoneyTransferResponseForList.class);
                     Customer customer = customerRepository.findById(moneyTransfer.getCustomer_id())
-                            .orElseThrow(() -> new RuntimeException("Customer not found"));
+                            .orElseThrow(() -> new CustomerNotFoundException(moneyTransfer.getCustomer_id())); // Özel hata sınıfını kullanıyoruz
                     String customerNameSurname = customer.getName() + " " + customer.getSurname();
                     response.setCustomerNameSurname(customerNameSurname);
                     return response;

@@ -6,6 +6,7 @@ import { useTheme } from '../../context/ThemeProvider';
 import AccordionNavs from './AccordionNavs';
 import useAuth from '../../hooks/useAuth';
 import logo from '../../assets/LogoCorso.png';
+import SystemDate from './SystemDate';
 
 const Navbar = ({ onLogout }) => {
     const { theme, toggleTheme } = useTheme();
@@ -32,14 +33,15 @@ const Navbar = ({ onLogout }) => {
 
                     </ul>
                     <ul className="navbar-nav ms-auto">
+                        {user && isLoginSuccess && (<li className=''><SystemDate /></li>)}
                         <li className="nav-item dropdown">
                             <a className="nav-link dropdown-toggle" href="#" id="themeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Theme
+                                Tema
                             </a>
                             <ul className="dropdown-menu" aria-labelledby="themeDropdown">
-                                <li><button className="dropdown-item" onClick={() => toggleTheme('default')}>Default</button></li>
-                                <li><button className="dropdown-item" onClick={() => toggleTheme('light')}>Light</button></li>
-                                <li><button className="dropdown-item" onClick={() => toggleTheme('dark')}>Dark</button></li>
+                                <li><button className="dropdown-item" onClick={() => toggleTheme('default')}>Varsayılan</button></li>
+                                <li><button className="dropdown-item" onClick={() => toggleTheme('light')}>Aydınlık</button></li>
+                                <li><button className="dropdown-item" onClick={() => toggleTheme('dark')}>Koyu</button></li>
                             </ul>
                         </li>
                         {user && isLoginSuccess && (<div className='d-block d-lg-none'>

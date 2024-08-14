@@ -9,4 +9,6 @@ public interface SystemDateService {
     void closeDay(LocalDate date);
     void startCloseDay();
     boolean isDayClosedStarted();
+    void initializeSystemDate();
+    SystemDate getFullDateData();
 }

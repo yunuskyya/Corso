@@ -2,9 +2,9 @@ package com.infina.corso.config;
 
 
 import com.infina.corso.service.CurrencyService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import jakarta.annotation.PostConstruct;
 
 @Component
 public class ThreadInitializer {

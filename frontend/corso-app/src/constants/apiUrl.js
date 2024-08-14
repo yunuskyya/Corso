@@ -57,7 +57,7 @@ export const IBAN_URL_FETCH_LIST_BY_CUSTOMER_ID = BASE_URL + '/iban/customer/{cu
 
 export const END_OF_DAY_CLOSE_DAY = BASE_URL + '/system-date/close-day';
 export const END_OF_DAY_START_CLOSE_DAY = BASE_URL + '/system-date/start-close-day';
-export const END_OF_DAY_IS_DAY_CLOSED = BASE_URL + '/system-date/is-day-closed';
+export const END_OF_DAY_IS_DAY_CLOSED = BASE_URL + '/system-date/is-day-close-started';
 export const END_OF_DAY_IS_DAY_CLOSE_STARTED = BASE_URL + '/system-date/is-day-close-started';
 export const REPORTS_MONEY_TRANSFER_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-money-transfers/excel';
 export const REPORTS_MONEY_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-money-transfers/pdf';
@@ -67,4 +67,5 @@ export const REPORTS_ACCOUNTS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-acco
 export const REPORTS_ACCOUNTS_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-accounts/pdf';
 export const REPORTS_TRANSACTIONS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-transactions/excel';
 export const REPORTS_TRANSACTIONS_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-transactions/pdf';
+export const GET_SYSTEM_DATE = BASE_URL + '/system-date/';
 
