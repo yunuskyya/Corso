@@ -45,11 +45,6 @@ export const ADMIN_OPERATIONS = [
                 link: ADMIN_LIST_BROKERS,
                 page: <ListUser />,
             },
-            {
-                title: 'Kullanıcı Yetkilendir',
-                link: ADMIN_ACTVATE_USER,
-                page: <ActivateUser />,
-            }
         ]
     },
     {
