@@ -1,7 +1,7 @@
 // src/pages/CustomerListPage.js
 import { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchFilteredCustomers } from '../../features/customerListSlice';
+import { fetchFilteredCustomers, softDeleteCustomerById, resetDeleteState } from '../../features/customerListSlice';
 import useAuth from '../../hooks/useAuth';
 import moment from 'moment';
 import { currencies } from '../../constants/currencies';
@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom';
 const ListCustomerPage = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { customers, totalPages, currentPage, loading, error } = useAppSelector((state) => state.customerList);
+    const { customers, totalPages, currentPage, loading, error, deleteError, deleteSuccess } = useAppSelector((state) => state.customerList);
 
     const { user } = useAuth();
 
@@ -83,9 +83,50 @@ const ListCustomerPage = () => {
         setSize(e.target.value);
     };
 
+    // const handleSoftDelete = (customer) => {
+    //     console.log('Soft delete customer:', customer);
+    //     const id = customer.id;
+
+    //     // Creating the updated customer object with only the specified fields and status updated
+    //     const updatedCustomer = {
+    //         customerType: customer.customerType,
+    //         status: 'DELETED',
+    //         phone: customer.phone,
+    //         email: customer.email
+    //     };
+
+    //     // Conditionally adding fields based on customerType
+    //     if (customer.customerType === 'KURUMSAL') {
+    //         updatedCustomer.companyName = customer.companyName;
+    //         updatedCustomer.vkn = customer.vkn;
+    //     } else if (customer.customerType === 'BIREYSEL') {
+    //         updatedCustomer.name = customer.name;
+    //         updatedCustomer.surname = customer.surname;
+    //         updatedCustomer.tcKimlikNo = customer.tcKimlikNo;
+    //     }
+
+    //     console.log('Updated customer:', updatedCustomer);
+
+    //     dispatch(softDeleteCustomerById({ customerId: id, customer: updatedCustomer }));
+    // };
+
+
+
+
+    // const handleCloseAlert = () => {
+    //     dispatch(resetDeleteState());
+    // };
+
     return (
         <div className="container my-4">
             <h1 className="mb-4">Müşteri İşlemleri</h1>
+
+            {/* {deleteSuccess && <div className='bg-success'>
+                <div>{"Müşteri başarılı bir şekilde silindi"} <button className='m-1 p-1 rounded' onClick={handleCloseAlert}>Tamam</button></div>
+            </div>}
+            {deleteError && <div className='bg-danger'>
+                <div>{"Müşteri silme hatalı: " + deleteError.message} <button className='m-1 p-1 rounded' onClick={handleCloseAlert}>Tamam</button></div>
+            </div>} */}
 
             <div className="mb-4">
                 {/* Customer Type Selection */}
@@ -350,9 +391,9 @@ const ListCustomerPage = () => {
                                 <td>{formatDate(customer.createdAt)}</td>
                                 {user?.role === 'ROLE_BROKER' && (
                                     <td>
-                                        <button className="btn btn-danger btn-sm" onClick={() => alert(`Delete ${customer.name}`)}>
+                                        {/* <button className="btn btn-danger btn-sm" onClick={() => handleSoftDelete(customer)}>
                                             Sil
-                                        </button>
+                                        </button> */}
                                         <button className="btn btn-warning btn-sm" onClick={() => navigate(`/dashboard/broker/add-account?customerId=${customer.id}`)}>
                                             Hesap Ekle
                                         </button>

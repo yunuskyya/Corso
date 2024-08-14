@@ -1,5 +1,5 @@
 import { axiosInstance } from './interceptor'
-import { ACCOUNT_URL_CREATE_ACCOUT, CUSTOMER_URL, CUSTOMER_URL_FILTER } from '../constants/apiUrl'
+import { ACCOUNT_URL_CREATE_ACCOUT, CUSTOMER_URL, CUSTOMER_URL_FILTER, CUSTOMER_URL_SOFT_DELETE } from '../constants/apiUrl'
 
 export const createCustomer = async (customerRequest) => {
 
@@ -74,3 +74,15 @@ export const createAccount = async (customerId, createAccountRequest) => {
         throw error;
     }
 };
+
+export const softDeleteCustomer = async (customerId, customer) => {
+    console.log('softDeleteCustomer customerId:', customerId);
+    console.log('softDeleteCustomer customer:', customer);
+    try {
+        const response = await axiosInstance.put(CUSTOMER_URL_SOFT_DELETE.replace('{customerId}', customerId), customer);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}

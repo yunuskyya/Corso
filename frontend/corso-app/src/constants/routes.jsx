@@ -45,11 +45,11 @@ export const ADMIN_OPERATIONS = [
                 link: ADMIN_LIST_BROKERS,
                 page: <ListUser />,
             },
-            {
-                title: 'Kullanıcı Yetkilendir',
-                link: ADMIN_ACTVATE_USER,
-                page: <ActivateUser />,
-            }
+            // {
+            //     title: 'Kullanıcı Yetkilendir',
+            //     link: ADMIN_ACTVATE_USER,
+            //     page: <ActivateUser />,
+            // }
         ]
     },
     {
@@ -199,11 +199,11 @@ export const BROKER_OPERATIONS = [
                 link: BROKER_LIST_CUSTOMER,
                 page: <ListCustomerPage />,
             },
-            {
-                title: 'IBAN İşlemleri',
-                link: BROKER_IBAN,
-                page: <IbanPage />,
-            }
+            // {
+            //     title: 'IBAN İşlemleri',
+            //     link: BROKER_IBAN,
+            //     page: <IbanPage />,
+            // }
         ]
     },
     {
