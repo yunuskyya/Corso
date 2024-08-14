@@ -64,4 +64,5 @@ export const REPORTS_ACCOUNTS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-acco
 export const REPORTS_ACCOUNTS_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-accounts/pdf';
 export const REPORTS_TRANSACTIONS_FETCH_ALL_EXCEL = BASE_URL + '/reports/export-transactions/excel';
 export const REPORTS_TRANSACTIONS_TRANSFER_FETCH_ALL_PDF = BASE_URL + '/reports/export-transactions/pdf';
+export const GET_SYSTEM_DATE = BASE_URL + '/system-date/';
 

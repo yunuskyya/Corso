@@ -1,4 +1,4 @@
-import {configureStore} from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/authSlice';
 import customerReducer from '../features/customerSlice';
 import accountReducer from '../features/accountSlice';
@@ -7,6 +7,7 @@ import customerListReducer from '../features/customerListSlice';
 import createAccountReducer from '../features/createAccountSlice';
 import userReducer from '../features/userSlice';
 import moneyTransferReducer from '../features/moneyTransferSlice';
+import systemDate from '../features/systemDateSlice';
 
 export const store = configureStore({
     reducer: {
@@ -18,6 +19,7 @@ export const store = configureStore({
         createAccount: createAccountReducer,
         user: userReducer,
         transaction: transactionReducer,
-        moneyTransfer: moneyTransferReducer
+        moneyTransfer: moneyTransferReducer,
+        systemDate: systemDate
     }
 });
