@@ -138,31 +138,30 @@ const UserList = () => {
                 <Button
                     variant={filterState === 'all' ? "primary" : "secondary"}
                     onClick={() => setFilterState('all')}
-                    className="ms-2"
+                    className="me-2" // Bootstrap margin-end class
                 >
                     Tüm Kullanıcıları Göster
                 </Button>
                 <Button
                     variant={filterState === 'active' ? "primary" : "secondary"}
                     onClick={() => setFilterState('active')}
+                    className="me-2" // Bootstrap margin-end class
                 >
                     Aktif Kullanıcıları Göster
                 </Button>
                 <Button
                     variant={filterState === 'deleted' ? "primary" : "secondary"}
                     onClick={() => setFilterState('deleted')}
-                    className="ms-2"
+                    className="me-2" // Bootstrap margin-end class
                 >
                     Silinmiş Kullanıcıları Göster
                 </Button>
                 <Button
                     variant={filterState === 'blocked' ? "primary" : "secondary"}
                     onClick={() => setFilterState('blocked')}
-                    className="ms-2"
                 >
                     Engellenmiş Kullanıcıları Göster
                 </Button>
-              
             </div>
             {filteredUsers.length === 0 ? (
                 <p className="text-center">Kullanıcı bulunamadı.</p>
@@ -200,6 +199,7 @@ const UserList = () => {
                                                     variant="danger"
                                                     onClick={() => handleDelete(user)}
                                                     size="sm"
+                                                    className="me-2" // Bootstrap margin-end class
                                                 >
                                                     Sil
                                                 </Button>
@@ -209,6 +209,7 @@ const UserList = () => {
                                                     variant="success"
                                                     onClick={() => handleActivate(user)}
                                                     size="sm"
+                                                    className="me-2" // Bootstrap margin-end class
                                                 >
                                                     Aktifleştir
                                                 </Button>
@@ -236,7 +237,7 @@ const UserList = () => {
                         marginPagesDisplayed={2}
                         pageRangeDisplayed={5}
                         onPageChange={handlePageChange}
-                        containerClassName={"pagination d-flex justify-content-center mt-4"}
+                        containerClassName={"pagination justify-content-center"}
                         pageClassName={"page-item"}
                         pageLinkClassName={"page-link"}
                         previousClassName={"page-item"}
