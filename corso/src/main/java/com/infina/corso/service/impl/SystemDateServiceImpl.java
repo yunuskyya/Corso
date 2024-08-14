@@ -66,6 +66,7 @@ public class SystemDateServiceImpl implements SystemDateService {
             SystemDate systemDate = systemDateRepository.findById(1).orElseThrow(() -> new SystemDateNotFoundException());
             systemDate.setDate(date);
             systemDate.setDayClosedStarted(false);
+            systemDateRepository.save(systemDate);
         } catch (SystemDateNotFoundException e) {
             // Genel bir hata yakalama
             System.out.println("Hata: " + e.getMessage());

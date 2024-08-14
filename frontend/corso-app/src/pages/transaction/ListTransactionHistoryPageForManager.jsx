@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { fetchTransactionListForBrokerThunk, fetchCustomerListThunk } from './../../features/transactionSlice';
+import { fetchTransactionListForManagerThunk } from './../../features/transactionSlice';
 import useAuth from '../../hooks/useAuth';
 import 'bootstrap/dist/css/bootstrap.min.css';  // Bootstrap 5.3
 
 const ListTransactionHistoryPageForManager = () => {
-    const [selectedCustomer, setSelectedCustomer] = useState('');
     // const [startDate, setStartDate] = useState('');
     // const [endDate, setEndDate] = useState('');
     const [transactionList, setTransactionList] = useState([]);
@@ -15,16 +14,12 @@ const ListTransactionHistoryPageForManager = () => {
 
 
     const handleListClick = async () => {
-        if (userId) {
             try {
-                console.log("buton methodu içine girdi!!");
-                console.log("User id: " + userId);
-                const transactions = await dispatch(fetchTransactionListForBrokerThunk(userId)).unwrap();
+                const transactions = await dispatch(fetchTransactionListForManagerThunk()).unwrap();
                 setTransactionList(transactions);
             } catch (error) {
                 console.error('Error fetching transactions:', error);
             }
-        }
     };
 
     const formatDate = (dateArray) => {
