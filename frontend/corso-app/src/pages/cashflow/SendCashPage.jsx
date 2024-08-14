@@ -3,7 +3,6 @@ import useAuth from '../../hooks/useAuth';
 import { fetchCustomerList } from '../../api/transactionApi';
 import { fetchIbanListByCustomer, createMoneyTransfer } from '../../api/moneyTransferApi';
 
-
 const SendCashPage = () => {
     const { user } = useAuth();
     const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -12,6 +11,8 @@ const SendCashPage = () => {
     const [currencyType, setCurrencyType] = useState('');
     const [customerList, setCustomerList] = useState([]);
     const [ibanList, setIbanList] = useState([]);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertType, setAlertType] = useState('');
 
     // Müşteri listesini API'den çek
     useEffect(() => {
@@ -32,7 +33,6 @@ const SendCashPage = () => {
             const getIbanList = async () => {
                 try {
                     const response = await fetchIbanListByCustomer(selectedCustomer);
-                    console.log('useEffect method içi erkal : ', response);
                     setIbanList(response);  // API'den gelen IBAN listesini set ediyoruz
                 } catch (error) {
                     console.error('Error fetching IBAN list:', error);
@@ -62,6 +62,11 @@ const SendCashPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (parseFloat(amount) >= 1000000000) {
+            setAlertMessage('Girilen miktar 1 milyarı geçemez.');
+            setAlertType('danger');
+            return;
+        }
         const transferRequest = {
             customer_id: selectedCustomer,
             currencyCode: currencyType,
@@ -73,10 +78,24 @@ const SendCashPage = () => {
             const response = await createMoneyTransfer(transferRequest);
             console.log('Transfer successful:', response);
             // Success handling here
+            setAlertMessage('Para gönderme işlemi başarılı!');
+            setAlertType('success');
         } catch (error) {
             console.error('Error creating money transfer:', error);
             // Error handling here
+            setAlertMessage('Para gönderme sırasında bir hata oluştu.');
+            setAlertType('danger');
         }
+    };
+
+
+    const handleReset = () => {
+        setSelectedCustomer('');
+        setSelectedIban('');
+        setAmount('');
+        setCurrencyType('');
+        setAlertMessage('');
+        setAlertType('');
     };
 
     return (
@@ -148,13 +167,28 @@ const SendCashPage = () => {
                     />
                 </div>
 
-                {/* Gönder Butonu */}
+                {/* Hata/Success Mesajı */}
+                {alertMessage && (
+                    <div className={`alert alert-${alertType}`} role="alert">
+                        {alertMessage}
+                    </div>
+                )}
+
+                {/* Gönder ve Temizle Butonları */}
                 <button
                     type="submit"
                     className="btn btn-primary"
                     style={styles.button}
                 >
                     Onayla
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-secondary"
+                    style={styles.button}
+                    onClick={handleReset}
+                >
+                    Temizle
                 </button>
             </form>
         </div>

@@ -3,7 +3,8 @@ import { fetchCustomerList as fetchCustomerListApi,
          fetchAccountsForCustomerBalanceHigherThanZero as fetchAccountsForCustomerBalanceHigherThanZeroApi,
          fetchCurrencyCost as fetchCurrencyCostApi, 
          createTransaction as createTransactionApi,
-         fetchTransactionListForBroker as fetchTransactionListForBrokerApi } from '../api/transactionApi';
+         fetchTransactionListForBroker as fetchTransactionListForBrokerApi, 
+         fetchTransactionListForManager as fetchTransactionListForManegerApi} from '../api/transactionApi';
 
 const initialState = {
     customers: [],
@@ -50,6 +51,14 @@ export const fetchTransactionListForBrokerThunk = createAsyncThunk(
     'transaction/fetchTransactionListForBroker',
     async (userId) => {
         const response = await fetchTransactionListForBrokerApi(userId);
+        return response;
+    }
+);
+
+export const fetchTransactionListForManagerThunk = createAsyncThunk(
+    'transaction/fetchTransactionListForManeger',
+    async () => {
+        const response = await fetchTransactionListForManegerApi();
         return response;
     }
 );
@@ -140,6 +149,7 @@ const transactionSlice = createSlice({
             });
     },
 });
+
 
 export const { resetTransactionStatus, resetCreateTransactionStatus, resetMaxBuying} = transactionSlice.actions;
 export default transactionSlice.reducer;

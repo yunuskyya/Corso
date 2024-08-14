@@ -10,5 +10,6 @@ public interface MoneyTransferService {
     void saveMoneyTransfer(MoneyTransferRequestForAddMoney moneyTransfer);
     List<MoneyTransferResponseForList> collectAllMoneyTransfers();
     List<MoneyTransferResponseForList> filterMoneyTransfers(MoneyTransferRequestForList moneyTransferRequestForList);
+    List<MoneyTransferResponseForList> collectMoneyTransfersForEndOfDay();
 
 }
