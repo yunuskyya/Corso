@@ -11,7 +11,6 @@ import com.infina.corso.model.Token;
 import com.infina.corso.model.User;
 import com.infina.corso.repository.UserRepository;
 import com.infina.corso.service.AuthService;
-import com.infina.corso.service.MailService;
 import com.infina.corso.service.TokenService;
 import com.infina.corso.util.EmailHelper;
 import org.apache.logging.log4j.LogManager;

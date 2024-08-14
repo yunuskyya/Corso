@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAppDispatch } from '../../redux/hooks';
+import { fetchSystemDate } from '../../features/systemDateSlice';
 import {
   END_OF_DAY_CLOSE_DAY,
   END_OF_DAY_IS_DAY_CLOSED,
@@ -16,6 +18,7 @@ import {
 } from '../../constants/apiUrl';
 
 const EndOfDayPage = () => {
+  const dispatch = useAppDispatch();
   const [reports, setReports] = useState([]);
   const [isDayCloseStarted, setIsDayCloseStarted] = useState(false);
 
@@ -41,6 +44,7 @@ const EndOfDayPage = () => {
       // Gün sonu işlemlerini başlatma tamamlandığında buton durumlarını güncelle
       const { data } = await axios.get(END_OF_DAY_IS_DAY_CLOSE_STARTED);
       setIsDayCloseStarted(data);
+      dispatch(fetchSystemDate()); // Sistem tarihini güncelle
     } catch (error) {
       console.error('Error starting end of day process:', error);
     }
@@ -58,6 +62,7 @@ const EndOfDayPage = () => {
         const { data } = await axios.get(END_OF_DAY_IS_DAY_CLOSED);
         setIsDayClosed(data);
         setIsDayCloseStarted(false); // Günü kapatma tamamlandığında buton durumlarını güncelle
+        dispatch(fetchSystemDate()); // Sistem tarihini güncelle
       } catch (error) {
         console.error('Error closing day:', error);
       }
