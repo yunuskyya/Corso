@@ -1,6 +1,7 @@
 package com.infina.corso.controller;
 
 
+import com.infina.corso.model.SystemDate;
 import com.infina.corso.service.SystemDateService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +31,8 @@ public class SystemDateController {
     }
 
     @GetMapping
-    public LocalDate getSystemDate(){
-        return systemDateService.getSystemDate();
+    public SystemDate getSystemDate(){
+        return systemDateService.getFullDateData();
     }
 
 }
