@@ -1,5 +1,5 @@
 import {axiosInstance} from './interceptor'
-import { CUSTOMER_URL_LIST_FOR_BROKER, CURRENCY_URL_COST, ACCOUNT_URL_LIST_FOR_BROKER, TRANSACTION_URL_CREATE, TRANSACTION_URL_GET_ALL_BY_BROKER } from '../constants/apiUrl';
+import { CUSTOMER_URL_LIST_FOR_BROKER, CURRENCY_URL_COST, ACCOUNT_URL_LIST_FOR_BROKER, TRANSACTION_URL_CREATE, TRANSACTION_URL_GET_ALL_BY_BROKER, TRANSACTION_URL_GET_ALL_FOR_CUSTOMER } from '../constants/apiUrl';
 
 
 export const fetchCustomerList = async (userId) => {
@@ -22,6 +22,17 @@ export const fetchTransactionListForBroker = async (userId) => {
         throw error;
     }
 };
+
+export const fetchTransactionListForManager = async () => {
+    try {
+        const response = await axiosInstance.get(TRANSACTION_URL_GET_ALL_FOR_CUSTOMER);
+        return response.data; 
+    } catch (error) {
+        console.error('Error fetching transaction list:', error);
+        throw error;
+    }
+}; 
+
 
 export const fetchAccountsForCustomerBalanceHigherThanZero = async (customerId) => {
     try {
